@@ -1,6 +1,9 @@
 # vim_sdl2_port
 A port of vim7.4 to run on Simple DirectMedia Layer (SDL) version 2.
+
 Licensed under original vim license (see uganda.txt for details).
+
+For information of vim, see README_vim.txt
 
 Currently compiles and runs in win32 MINGW.
 

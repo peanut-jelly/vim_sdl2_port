@@ -1,3 +1,17 @@
+/* vi:set ts=8 sts=4 sw=4:
+ *
+ * VIM - Vi IMproved    by Bram Moolenaar
+ *
+ * Do ":help uganda"  in Vim to read copying and usage conditions.
+ * Do ":help credits" in Vim to see a list of people who contributed.
+ * See README.txt for an overview of the Vim source code.
+ */
+/*
+ * gui_sdl2.c
+ * sdl2 helper routines
+ * not used now.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -8,6 +8,10 @@
  * See README.txt for an overview of the Vim source code.
  */
 /*
+ * gui_w32.c
+ * modified a lot of things to make it work with sdl2 api.
+ */
+/*
  * Windows GUI.
  *
  * GUI support for Microsoft Windows.  Win32 initially; maybe Win16 later

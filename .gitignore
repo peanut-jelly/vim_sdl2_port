@@ -2,6 +2,7 @@
 # keep the original default .gitignore content
 
 gobji386/
+*.exe
 
 *.pydevproject
 .project
@@ -215,3 +216,4 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+*.exe

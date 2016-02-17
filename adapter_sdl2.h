@@ -63,7 +63,8 @@ enum display_task_type
     DISP_TASK_DRAWLINE,
     DISP_TASK_BEEP,
     DISP_TASK_UNDERCURL,
-    DISP_TASK_FLUSH
+    DISP_TASK_FLUSH,
+    DISP_TASK_REQUIREESC
 };
 
 typedef struct disp_task_textout_t
@@ -174,6 +175,12 @@ typedef struct disp_task_flush_t
     Uint32 type;
 } disp_task_flush_t;
 
+// only used for quitting sync between vim thread and sdl thread.
+typedef struct disp_task_requireesc_t
+{
+    Uint32 type;
+} disp_task_requireesc_t;
+
 typedef union disp_task_t
 {
     Uint32 type;
@@ -192,6 +199,7 @@ typedef union disp_task_t
     disp_task_beep_t beep;
     disp_task_undercurl_t undercurl;
     disp_task_flush_t flush;
+    disp_task_requireesc_t requireesc;
 } disp_task_t;
 
 extern int display_has_task();

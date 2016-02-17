@@ -145,8 +145,28 @@ adapter_event_t evnt={ADAPT_EVENT_QUITALL,
     vim_ex_quitall, 0, 0};
 adapter_push_event(evnt);
 // need another event to flush adapter queue.
-// simply send_flush_to_adapter does not work.
-// send a esc key seems working.
+// it is like a three-way tcp handshake.
+// A simple send_flush_to_adapter does not work,
+// so send a esc-keydown.
+// when vim control flow reaches the point where mySDLrunning
+// is set to zero, it will send a require_esc to sdl display.
+// sdl display will send the important esc then.
+// Don't send the esc now because maybe vim is in insert mode now
+// (or whatever mode it happens to be), and the esc will back to 
+// normal mode.
+}
+
+void send_setcellsize_to_adapter(int w, int h)
+{
+extern void adpt_set_cell_size_callback(int tt, void* ud0, void* ud1);
+adapter_event_t evnt={ADAPT_EVENT_SETCELLSIZE,
+    adpt_set_cell_size_callback,
+    (void*)w, (void*)h};
+adapter_push_event(evnt);
+}
+
+void send_esc_to_adapter()
+{
 SDL_KeyboardEvent k;
 k.type= SDL_KEYDOWN;
 k.timestamp = SDL_GetTicks();
@@ -162,13 +182,3 @@ k.keysym= (SDL_Keysym)
     };
 send_keydown_to_adapter(k);
 }
-
-void send_setcellsize_to_adapter(int w, int h)
-{
-extern void adpt_set_cell_size_callback(int tt, void* ud0, void* ud1);
-adapter_event_t evnt={ADAPT_EVENT_SETCELLSIZE,
-    adpt_set_cell_size_callback,
-    (void*)w, (void*)h};
-adapter_push_event(evnt);
-}
-

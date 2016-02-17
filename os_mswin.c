@@ -26,6 +26,7 @@
 #include "vim.h"
 
 #include "pthread.h"
+#include "adapter_sdl2.h"
 
 #ifdef WIN16
 # define SHORT_FNAME		/* always 8.3 file name */
@@ -213,6 +214,8 @@ mch_exit(int r)
     //MYCHANGE 2016 Feb. 3 - elegant quitting.
     //exit(r);
     myVimRunning=0;
+    disp_task_requireesc_t resc = {DISP_TASK_REQUIREESC};
+    display_push_task(&resc);
 }
 
 #endif /* FEAT_GUI_MSWIN */

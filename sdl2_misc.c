@@ -424,7 +424,9 @@ gDisplayTargetCur_surf = gDisplayTarget0_surf;
 sKeyboardState=SDL_GetKeyboardState(NULL);
 
 send_textarea_resize_to_adapter(DISPLAY_W, DISPLAY_H);
-send_redraw_to_adapter();
+// The following redraw will clear the intro message. 
+// Redraw is not necessary here.
+//send_redraw_to_adapter();
 }
 
 static void
@@ -859,6 +861,13 @@ if (SDL_MUSTLOCK(gDisplayTargetCur_surf))
 }
 
 static void
+_on_disp_require_esc()
+{
+extern void send_esc_to_adapter();
+send_esc_to_adapter();
+}
+
+static void
 myDisplay_draw()
 {
     /*
@@ -916,6 +925,9 @@ myDisplay_draw()
                 break;
             case DISP_TASK_FLUSH:
                 // do nothing
+                break;
+            case DISP_TASK_REQUIREESC:
+                _on_disp_require_esc();
                 break;
             default:
                 fnWarn("unknown display task");

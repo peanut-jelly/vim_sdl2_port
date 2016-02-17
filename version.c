@@ -1196,10 +1196,11 @@ intro_message(colon)
     char	*p;
     static char	*(lines[]) =
     {
-	N_("VIM - Vi IMproved"),
+	N_("VIM - Vi IMproved - SDL2 port embeded"),
 	"",
 	N_("version "),
 	N_("by Bram Moolenaar et al."),
+        N_("This SDL2 port by peanut-jelly."),
 #ifdef MODIFIED_BY
 	" ",
 #endif

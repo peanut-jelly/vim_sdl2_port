@@ -759,6 +759,9 @@ $(OUTDIR)/gui_w32.o:	gui_w32.c gui_w48.c gui_w32_rc.h $(INCL) \
 $(OUTDIR)/gui.o: gui.c adapter_sdl2.h
 	$(CC) -c $(CFLAGS) gui.c -o $@
 
+$(OUTDIR)/os_mswin.o: os_mswin.c adapter_sdl2.h
+	$(CC) -c $(CFLAGS) os_mswin.c -o $@
+
 
 
 

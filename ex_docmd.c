@@ -6601,18 +6601,21 @@ ex_cquit(eap)
 // used for adapt_event_quit
 void vim_ex_quitall(int tt, void* ud0, void* ud1)
 {
+/*
 extern void ex_quit_all(exarg_T*);
 //fnWarn("vim_ex_quitall not working");
 exarg_T	eap;
 eap.forceit=0;
 ex_quit_all(&eap);
+*/
 
 // gui_shell_closed will clear myVimRunning to 0 if possible(no files need to
 // be saved), but it will not quit immediately quit after the flag becomes 0.
 // vim will wait for another event to quit to main loop and then break out.
-// the extra event is in `send_quitall_to_adapter' (it's a keydown of escape)
-// extern void gui_shell_closed();
-//gui_shell_closed();
+// The sync is done by 'require_esc' sent from vim to display when 
+// `myVimRunning' becomes zero.
+ extern void gui_shell_closed();
+gui_shell_closed();
 }
 /*
  * ":qall": try to quit all windows

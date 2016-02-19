@@ -39,8 +39,8 @@ static int
  * ":ascii" and "ga".
  */
     void
-do_ascii(eap)
-    exarg_T	*eap UNUSED;
+do_ascii(exarg_T* eap)
+    //exarg_T	*eap UNUSED;
 {
     int		c;
     int		cval;
@@ -139,8 +139,8 @@ do_ascii(eap)
  * ":left", ":center" and ":right": align text.
  */
     void
-ex_align(eap)
-    exarg_T	*eap;
+ex_align(exarg_T* eap)
+    //exarg_T	*eap;
 {
     pos_T	save_curpos;
     int		len;
@@ -242,8 +242,8 @@ ex_align(eap)
  * Get the length of the current line, excluding trailing white space.
  */
     static int
-linelen(has_tab)
-    int	    *has_tab;
+linelen(int* has_tab)
+    //int	    *has_tab;
 {
     char_u  *line;
     char_u  *first;
@@ -298,9 +298,9 @@ sort_compare __ARGS((const void *s1, const void *s2));
 #ifdef __BORLANDC__
 _RTLENTRYF
 #endif
-sort_compare(s1, s2)
-    const void	*s1;
-    const void	*s2;
+sort_compare(const void* s1, const void* s2)
+    //const void	*s1;
+    //const void	*s2;
 {
     sorti_T	l1 = *(sorti_T *)s1;
     sorti_T	l2 = *(sorti_T *)s2;
@@ -346,8 +346,8 @@ sort_compare(s1, s2)
  * ":sort".
  */
     void
-ex_sort(eap)
-    exarg_T	*eap;
+ex_sort(exarg_T* eap)
+    //exarg_T	*eap;
 {
     regmatch_T	regmatch;
     int		len;
@@ -580,8 +580,8 @@ sortend:
  * ":retab".
  */
     void
-ex_retab(eap)
-    exarg_T	*eap;
+ex_retab(exarg_T* eap)
+    //exarg_T	*eap;
 {
     linenr_T	lnum;
     int		got_tab = FALSE;
@@ -730,10 +730,10 @@ ex_retab(eap)
  * return FAIL for failure, OK otherwise
  */
     int
-do_move(line1, line2, dest)
-    linenr_T	line1;
-    linenr_T	line2;
-    linenr_T	dest;
+do_move(linenr_T line1, linenr_T line2, linenr_T dest)
+    //linenr_T	line1;
+    //linenr_T	line2;
+    //linenr_T	dest;
 {
     char_u	*str;
     linenr_T	l;
@@ -845,10 +845,10 @@ do_move(line1, line2, dest)
  * ":copy"
  */
     void
-ex_copy(line1, line2, n)
-    linenr_T	line1;
-    linenr_T	line2;
-    linenr_T	n;
+ex_copy(linenr_T line1, linenr_T line2, linenr_T n)
+    //linenr_T	line1;
+    //linenr_T	line2;
+    //linenr_T	n;
 {
     linenr_T	count;
     char_u	*p;
@@ -915,11 +915,16 @@ free_prev_shellcmd()
  * Remember the argument.
  */
     void
-do_bang(addr_count, eap, forceit, do_in, do_out)
-    int		addr_count;
-    exarg_T	*eap;
-    int		forceit;
-    int		do_in, do_out;
+do_bang(
+        int addr_count, 
+        exarg_T* eap, 
+        int forceit, 
+        int do_in, 
+        int do_out)
+    //int		addr_count;
+    //exarg_T	*eap;
+    //int		forceit;
+    //int		do_in, do_out;
 {
     char_u		*arg = eap->arg;	/* command */
     linenr_T		line1 = eap->line1;	/* start of range */
@@ -1070,11 +1075,12 @@ do_bang(addr_count, eap, forceit, do_in, do_out)
  * We use output redirection if do_out is TRUE.
  */
     static void
-do_filter(line1, line2, eap, cmd, do_in, do_out)
-    linenr_T	line1, line2;
-    exarg_T	*eap;		/* for forced 'ff' and 'fenc' */
-    char_u	*cmd;
-    int		do_in, do_out;
+do_filter(linenr_T line1, linenr_T line2, exarg_T* eap, char_u* cmd, 
+        int do_in, int do_out)
+    //linenr_T	line1, line2;
+    //exarg_T	*eap;		/* for forced 'ff' and 'fenc' */
+    //char_u	*cmd;
+    //int		do_in, do_out;
 {
     char_u	*itmp = NULL;
     char_u	*otmp = NULL;
@@ -1350,9 +1356,9 @@ filterend:
  * When "cmd" is NULL start an interactive shell.
  */
     void
-do_shell(cmd, flags)
-    char_u	*cmd;
-    int		flags;	/* may be SHELL_DOOUT when output is redirected */
+do_shell(char_u* cmd, int flags)
+    //char_u	*cmd;
+    //int	flags;	/* may be SHELL_DOOUT when output is redirected */
 {
     buf_T	*buf;
 #ifndef FEAT_GUI_MSWIN
@@ -1533,10 +1539,10 @@ do_shell(cmd, flags)
  * Returns an allocated string with the shell command, or NULL for failure.
  */
     char_u *
-make_filter_cmd(cmd, itmp, otmp)
-    char_u	*cmd;		/* command */
-    char_u	*itmp;		/* NULL or name of input file */
-    char_u	*otmp;		/* NULL or name of output file */
+make_filter_cmd(char_u* cmd, char_u* itmp, char_u* otmp)
+    //char_u	*cmd;		/* command */
+    //char_u	*itmp;		/* NULL or name of input file */
+    //char_u	*otmp;		/* NULL or name of output file */
 {
     char_u	*buf;
     long_u	len;
@@ -1612,11 +1618,11 @@ make_filter_cmd(cmd, itmp, otmp)
  *	STRLEN(opt) + STRLEN(fname) + 3
  */
     void
-append_redir(buf, buflen, opt, fname)
-    char_u	*buf;
-    int		buflen;
-    char_u	*opt;
-    char_u	*fname;
+append_redir(char_u* buf, int buflen, char_u* opt, char_u* fname)
+    //char_u	*buf;
+    //int		buflen;
+    //char_u	*opt;
+    //char_u	*fname;
 {
     char_u	*p;
     char_u	*end;
@@ -1663,10 +1669,10 @@ no_viminfo()
  * Count the number of errors.	When there are more than 10, return TRUE.
  */
     int
-viminfo_error(errnum, message, line)
-    char    *errnum;
-    char    *message;
-    char_u  *line;
+viminfo_error(char* errnum, char*message, char_u*line)
+    //char    *errnum;
+    //char    *message;
+    //char_u  *line;
 {
     vim_snprintf((char *)IObuff, IOSIZE, _("%sviminfo: %s in line: "),
 							     errnum, message);
@@ -1687,9 +1693,9 @@ viminfo_error(errnum, message, line)
  * set are not over-written unless "flags" includes VIF_FORCEIT. -- webb
  */
     int
-read_viminfo(file, flags)
-    char_u	*file;	    /* file name or NULL to use default name */
-    int		flags;	    /* VIF_WANT_INFO et al. */
+read_viminfo(char_u* file, int flags)
+    //char_u	*file;	    /* file name or NULL to use default name */
+    //int		flags;	    /* VIF_WANT_INFO et al. */
 {
     FILE	*fp;
     char_u	*fname;
@@ -1733,9 +1739,9 @@ read_viminfo(file, flags)
  * info is written to the file.
  */
     void
-write_viminfo(file, forceit)
-    char_u	*file;
-    int		forceit;
+write_viminfo(char_u* file, int forceit)
+    //char_u	*file;
+    //int		forceit;
 {
     char_u	*fname;
     FILE	*fp_in = NULL;	/* input viminfo file, if any */
@@ -2005,8 +2011,8 @@ end:
  * Returns an allocated string.  NULL when out of memory.
  */
     static char_u *
-viminfo_filename(file)
-    char_u	*file;
+viminfo_filename(char_u* file)
+    //char_u	*file;
 {
     if (file == NULL || *file == NUL)
     {
@@ -2043,10 +2049,10 @@ viminfo_filename(file)
  * do_viminfo() -- Should only be called from read_viminfo() & write_viminfo().
  */
     static void
-do_viminfo(fp_in, fp_out, flags)
-    FILE	*fp_in;
-    FILE	*fp_out;
-    int		flags;
+do_viminfo(FILE* fp_in, FILE* fp_out, int flags)
+    //FILE	*fp_in;
+    //FILE	*fp_out;
+    //int		flags;
 {
     int		count = 0;
     int		eof = FALSE;
@@ -2114,10 +2120,10 @@ do_viminfo(fp_in, fp_out, flags)
  * are local to a file.  Returns TRUE when end-of-file is reached. -- webb
  */
     static int
-read_viminfo_up_to_marks(virp, forceit, writing)
-    vir_T	*virp;
-    int		forceit;
-    int		writing;
+read_viminfo_up_to_marks(vir_T* virp, int forceit, int writing)
+    //vir_T	*virp;
+    //int		forceit;
+    //int		writing;
 {
     int		eof;
     buf_T	*buf;
@@ -2209,8 +2215,8 @@ read_viminfo_up_to_marks(virp, forceit, writing)
  * conversion of text with iconv() in viminfo_readstring().
  */
     static int
-viminfo_encoding(virp)
-    vir_T	*virp;
+viminfo_encoding(vir_T* virp)
+    //vir_T	*virp;
 {
 #ifdef FEAT_MBYTE
     char_u	*p;
@@ -2239,8 +2245,8 @@ viminfo_encoding(virp)
  * Returns TRUE for end-of-file;
  */
     int
-viminfo_readline(virp)
-    vir_T	*virp;
+viminfo_readline(vir_T* virp)
+    //vir_T	*virp;
 {
     return vim_fgets(virp->vir_line, LSIZE, virp->vir_fd);
 }
@@ -2256,10 +2262,10 @@ viminfo_readline(virp)
  * Return the string in allocated memory (NULL when out of memory).
  */
     char_u *
-viminfo_readstring(virp, off, convert)
-    vir_T	*virp;
-    int		off;		    /* offset for virp->vir_line */
-    int		convert UNUSED;	    /* convert the string */
+viminfo_readstring(vir_T* virp, int off, int convert)
+    //vir_T	*virp;
+    //int		off;		    /* offset for virp->vir_line */
+    //int		convert UNUSED;	    /* convert the string */
 {
     char_u	*retval;
     char_u	*s, *d;
@@ -2329,9 +2335,9 @@ viminfo_readstring(virp, off, convert)
  * - write " < <string> \n "	  in second line
  */
     void
-viminfo_writestring(fd, p)
-    FILE	*fd;
-    char_u	*p;
+viminfo_writestring(FILE* fd, char_u* p)
+    //FILE	*fd;
+    //char_u	*p;
 {
     int		c;
     char_u	*s;
@@ -2372,8 +2378,8 @@ viminfo_writestring(fd, p)
  * not ^?	^?
  */
     void
-do_fixdel(eap)
-    exarg_T	*eap UNUSED;
+do_fixdel(exarg_T* eap)
+    //exarg_T	*eap UNUSED;
 {
     char_u  *p;
 
@@ -2383,10 +2389,10 @@ do_fixdel(eap)
 }
 
     void
-print_line_no_prefix(lnum, use_number, list)
-    linenr_T	lnum;
-    int		use_number;
-    int		list;
+print_line_no_prefix(linenr_T lnum, int use_number, int list)
+    //linenr_T	lnum;
+    //int		use_number;
+    //int		list;
 {
     char_u	numbuf[30];
 
@@ -2403,10 +2409,10 @@ print_line_no_prefix(lnum, use_number, list)
  * Print a text line.  Also in silent mode ("ex -s").
  */
     void
-print_line(lnum, use_number, list)
-    linenr_T	lnum;
-    int		use_number;
-    int		list;
+print_line(linenr_T lnum, int use_number, int list)
+    //linenr_T	lnum;
+    //int		use_number;
+    //int		list;
 {
     int		save_silent = silent_mode;
 
@@ -2425,8 +2431,8 @@ print_line(lnum, use_number, list)
 }
 
     int
-rename_buffer(new_fname)
-    char_u	*new_fname;
+rename_buffer(char_u* new_fname)
+    //char_u	*new_fname;
 {
     char_u	*fname, *sfname, *xfname;
     buf_T	*buf;
@@ -2481,8 +2487,8 @@ rename_buffer(new_fname)
  * ":file[!] [fname]".
  */
     void
-ex_file(eap)
-    exarg_T	*eap;
+ex_file(exarg_T* eap)
+    //exarg_T	*eap;
 {
     /* ":0file" removes the file name.  Check for illegal uses ":3file",
      * "0file name", etc. */
@@ -2508,8 +2514,8 @@ ex_file(eap)
  * ":update".
  */
     void
-ex_update(eap)
-    exarg_T	*eap;
+ex_update(exarg_T* eap)
+    //exarg_T	*eap;
 {
     if (curbufIsChanged())
 	(void)do_write(eap);
@@ -2519,8 +2525,8 @@ ex_update(eap)
  * ":write" and ":saveas".
  */
     void
-ex_write(eap)
-    exarg_T	*eap;
+ex_write(exarg_T* eap)
+    //exarg_T	*eap;
 {
     if (eap->usefilter)		/* input lines to shell command */
 	do_bang(1, eap, FALSE, TRUE, FALSE);
@@ -2537,8 +2543,8 @@ ex_write(eap)
  * return FAIL for failure, OK otherwise
  */
     int
-do_write(eap)
-    exarg_T	*eap;
+do_write(exarg_T* eap)
+    //exarg_T	*eap;
 {
     int		other;
     char_u	*fname = NULL;		/* init to shut up gcc */
@@ -2749,13 +2755,18 @@ theend:
  * Return OK if it's OK, FAIL if it is not.
  */
     int
-check_overwrite(eap, buf, fname, ffname, other)
-    exarg_T	*eap;
-    buf_T	*buf;
-    char_u	*fname;	    /* file name to be used (can differ from
-			       buf->ffname) */
-    char_u	*ffname;    /* full path version of fname */
-    int		other;	    /* writing under other name */
+check_overwrite(
+        exarg_T* eap, 
+        buf_T* buf, 
+        char_u* fname, 
+        char_u* ffname, 
+        int other)
+    //exarg_T	*eap;
+    //buf_T	*buf;
+    //char_u	*fname;	    /* file name to be used (can differ from
+			       //buf->ffname) */
+    //char_u	*ffname;    /* full path version of fname */
+    //int		other;	    /* writing under other name */
 {
     /*
      * write to other file or b_flags set or not writing the whole file:
@@ -2868,8 +2879,8 @@ check_overwrite(eap, buf, fname, ffname, other)
  * Handle ":wnext", ":wNext" and ":wprevious" commands.
  */
     void
-ex_wnext(eap)
-    exarg_T	*eap;
+ex_wnext(exarg_T* eap)
+    //exarg_T	*eap;
 {
     int		i;
 
@@ -2887,8 +2898,8 @@ ex_wnext(eap)
  * ":wall", ":wqall" and ":xall": Write all changed files (and exit).
  */
     void
-do_wqall(eap)
-    exarg_T	*eap;
+do_wqall(exarg_T* eap)
+    //exarg_T	*eap;
 {
     buf_T	*buf;
     int		error = 0;
@@ -2969,9 +2980,9 @@ not_writing()
  * message when the buffer is readonly.
  */
     static int
-check_readonly(forceit, buf)
-    int		*forceit;
-    buf_T	*buf;
+check_readonly(int* forceit, buf_T* buf)
+    //int		*forceit;
+    //buf_T	*buf;
 {
     struct stat	st;
 
@@ -3026,13 +3037,19 @@ check_readonly(forceit, buf)
  * 'lnum' is the line number for the cursor in the new file (if non-zero).
  */
     int
-getfile(fnum, ffname, sfname, setpm, lnum, forceit)
-    int		fnum;
-    char_u	*ffname;
-    char_u	*sfname;
-    int		setpm;
-    linenr_T	lnum;
-    int		forceit;
+getfile(
+        int fnum, 
+        char_u* ffname, 
+        char_u* sfname, 
+        int setpm, 
+        linenr_T lnum, 
+        int forceit)
+    //int		fnum;
+    //char_u	*ffname;
+    //char_u	*sfname;
+    //int		setpm;
+    //linenr_T	lnum;
+    //int		forceit;
 {
     int		other;
     int		retval;
@@ -3127,14 +3144,15 @@ theend:
  * return FAIL for failure, OK otherwise
  */
     int
-do_ecmd(fnum, ffname, sfname, eap, newlnum, flags, oldwin)
-    int		fnum;
-    char_u	*ffname;
-    char_u	*sfname;
-    exarg_T	*eap;			/* can be NULL! */
-    linenr_T	newlnum;
-    int		flags;
-    win_T	*oldwin;
+do_ecmd(int fnum, char_u* ffname, char_u* sfname, exarg_T* eap, 
+        linenr_T newlnum, int flags, win_T* oldwin)
+    //int		fnum;
+    //char_u	*ffname;
+    //char_u	*sfname;
+    //exarg_T	*eap;			/* can be NULL! */
+    //linenr_T	newlnum;
+    //int		flags;
+    //win_T	*oldwin;
 {
     int		other_file;		/* TRUE if editing another file */
     int		oldbuf;			/* TRUE if using existing buffer */
@@ -3899,8 +3917,8 @@ theend:
 
 #ifdef FEAT_AUTOCMD
     static void
-delbuf_msg(name)
-    char_u	*name;
+delbuf_msg(char_u* name)
+    //char_u	*name;
 {
     EMSG2(_("E143: Autocommands unexpectedly deleted new buffer %s"),
 	    name == NULL ? (char_u *)"" : name);
@@ -3915,8 +3933,8 @@ static int append_indent = 0;	    /* autoindent for first line */
  * ":insert" and ":append", also used by ":change"
  */
     void
-ex_append(eap)
-    exarg_T	*eap;
+ex_append(exarg_T* eap)
+    //exarg_T	*eap;
 {
     char_u	*theline;
     int		did_undo = FALSE;
@@ -4052,8 +4070,8 @@ ex_append(eap)
  * ":change"
  */
     void
-ex_change(eap)
-    exarg_T	*eap;
+ex_change(exarg_T* eap)
+    //exarg_T	*eap;
 {
     linenr_T	lnum;
 
@@ -4082,8 +4100,8 @@ ex_change(eap)
 }
 
     void
-ex_z(eap)
-    exarg_T	*eap;
+ex_z(exarg_T* eap)
+    //exarg_T	*eap;
 {
     char_u	*x;
     int		bigness;
@@ -4264,8 +4282,8 @@ static int	global_need_beginline;	/* call beginline() after ":g" */
  * The usual escapes are supported as described in the regexp docs.
  */
     void
-do_sub(eap)
-    exarg_T	*eap;
+do_sub(exarg_T* eap)
+    //exarg_T	*eap;
 {
     linenr_T	lnum;
     long	i = 0;
@@ -5284,8 +5302,8 @@ outofmem:
  * Return TRUE if a message was given.
  */
     int
-do_sub_msg(count_only)
-    int	    count_only;		/* used 'n' flag for ":s" */
+do_sub_msg(int count_only)
+    //int	    count_only;		/* used 'n' flag for ":s" */
 {
     /*
      * Only report substitutions when:
@@ -5344,8 +5362,8 @@ do_sub_msg(count_only)
  * lines we do not know where to search for the next match.
  */
     void
-ex_global(eap)
-    exarg_T	*eap;
+ex_global(exarg_T* eap)
+    //exarg_T	*eap;
 {
     linenr_T	lnum;		/* line number according to old situation */
     int		ndone = 0;
@@ -5457,8 +5475,8 @@ ex_global(eap)
  * Execute "cmd" on lines marked with ml_setmarked().
  */
     void
-global_exe(cmd)
-    char_u	*cmd;
+global_exe(char_u* cmd)
+    //char_u	*cmd;
 {
     linenr_T old_lcount;	/* b_ml.ml_line_count before the command */
     buf_T    *old_buf = curbuf;	/* remember what buffer we started in */
@@ -5515,9 +5533,9 @@ global_exe(cmd)
 
 #ifdef FEAT_VIMINFO
     int
-read_viminfo_sub_string(virp, force)
-    vir_T	*virp;
-    int		force;
+read_viminfo_sub_string(vir_T* virp, int force)
+    //vir_T	*virp;
+    //int		force;
 {
     if (force)
 	vim_free(old_sub);
@@ -5527,8 +5545,8 @@ read_viminfo_sub_string(virp, force)
 }
 
     void
-write_viminfo_sub_string(fp)
-    FILE    *fp;
+write_viminfo_sub_string(FILE* fp)
+    //FILE    *fp;
 {
     if (get_viminfo_parameter('/') != 0 && old_sub != NULL)
     {
@@ -5552,8 +5570,8 @@ free_old_sub()
  * Return TRUE when it was created.
  */
     int
-prepare_tagpreview(undo_sync)
-    int		undo_sync;	/* sync undo when leaving the window */
+prepare_tagpreview(int undo_sync)
+    //int		undo_sync;	/* sync undo when leaving the window */
 {
     win_T	*wp;
 
@@ -5602,8 +5620,8 @@ prepare_tagpreview(undo_sync)
  * ":help": open a read-only window on a help file
  */
     void
-ex_help(eap)
-    exarg_T	*eap;
+ex_help(exarg_T* eap)
+    //exarg_T	*eap;
 {
     char_u	*arg;
     char_u	*tag;
@@ -5824,8 +5842,8 @@ erret:
  * Returns NULL if not found.
  */
     char_u *
-check_help_lang(arg)
-    char_u *arg;
+check_help_lang(char_u* arg)
+    //char_u *arg;
 {
     int len = (int)STRLEN(arg);
 
@@ -5851,10 +5869,10 @@ check_help_lang(arg)
  * match some string for which help is requested.  webb.
  */
     int
-help_heuristic(matched_string, offset, wrong_case)
-    char_u	*matched_string;
-    int		offset;			/* offset for match */
-    int		wrong_case;		/* no matching case */
+help_heuristic(char_u* matched_string, int offset, int wrong_case)
+    //char_u	*matched_string;
+    //int		offset;			/* offset for match */
+    //int		wrong_case;		/* no matching case */
 {
     int		num_letters;
     char_u	*p;
@@ -5895,9 +5913,9 @@ help_heuristic(matched_string, offset, wrong_case)
 #ifdef __BORLANDC__
 _RTLENTRYF
 #endif
-help_compare(s1, s2)
-    const void	*s1;
-    const void	*s2;
+help_compare(const void* s1, const void* s2)
+    //const void	*s1;
+    //const void	*s2;
 {
     char    *p1;
     char    *p2;
@@ -5914,11 +5932,12 @@ help_compare(s1, s2)
  * When "keep_lang" is TRUE try keeping the language of the current buffer.
  */
     int
-find_help_tags(arg, num_matches, matches, keep_lang)
-    char_u	*arg;
-    int		*num_matches;
-    char_u	***matches;
-    int		keep_lang;
+find_help_tags(char_u* arg, int* num_matches, 
+        char_u*** matches, int keep_lang)
+    //char_u	*arg;
+    //int		*num_matches;
+    //char_u	***matches;
+    //int		keep_lang;
 {
     char_u	*s, *d;
     int		i;
@@ -6361,8 +6380,8 @@ fix_help_buffer()
  * ":exusage"
  */
     void
-ex_exusage(eap)
-    exarg_T	*eap UNUSED;
+ex_exusage(exarg_T* eap)
+    //exarg_T	*eap UNUSED;
 {
     do_cmdline_cmd((char_u *)"help ex-cmd-index");
 }
@@ -6371,8 +6390,8 @@ ex_exusage(eap)
  * ":viusage"
  */
     void
-ex_viusage(eap)
-    exarg_T	*eap UNUSED;
+ex_viusage(exarg_T* eap)
+    //exarg_T	*eap UNUSED;
 {
     do_cmdline_cmd((char_u *)"help normal-index");
 }
@@ -6384,8 +6403,8 @@ static void helptags_one __ARGS((char_u *dir, char_u *ext, char_u *lang, int add
  * ":helptags"
  */
     void
-ex_helptags(eap)
-    exarg_T	*eap;
+ex_helptags(exarg_T* eap)
+    //exarg_T	*eap;
 {
     garray_T	ga;
     int		i, j;
@@ -6508,11 +6527,11 @@ ex_helptags(eap)
 }
 
     static void
-helptags_one(dir, ext, tagfname, add_help_tags)
-    char_u	*dir;		/* doc directory */
-    char_u	*ext;		/* suffix, ".txt", ".itx", ".frx", etc. */
-    char_u	*tagfname;	/* "tags" for English, "tags-fr" for French. */
-    int		add_help_tags;	/* add "help-tags" tag */
+helptags_one(char_u* dir, char_u* ext, char_u* tagfname, int add_help_tags)
+    //char_u	*dir;		/* doc directory */
+    //char_u	*ext;		/* suffix, ".txt", ".itx", ".frx", etc. */
+    //char_u	*tagfname;	/* "tags" for English, "tags-fr" for French. */
+    //int		add_help_tags;	/* add "help-tags" tag */
 {
     FILE	*fd_tags;
     FILE	*fd;
@@ -6813,9 +6832,9 @@ static char *cmds[] = {
  * "*end_cmd" must be writable.
  */
     static int
-sign_cmd_idx(begin_cmd, end_cmd)
-    char_u	*begin_cmd;	/* begin of sign subcmd */
-    char_u	*end_cmd;	/* just after sign subcmd */
+sign_cmd_idx(char_u* begin_cmd, char_u* end_cmd)
+    //char_u	*begin_cmd;	/* begin of sign subcmd */
+    //char_u	*end_cmd;	/* just after sign subcmd */
 {
     int		idx;
     char	save = *end_cmd;
@@ -6832,8 +6851,8 @@ sign_cmd_idx(begin_cmd, end_cmd)
  * ":sign" command
  */
     void
-ex_sign(eap)
-    exarg_T	*eap;
+ex_sign(exarg_T* eap)
+    //exarg_T	*eap;
 {
     char_u	*arg = eap->arg;
     char_u	*p;
@@ -7250,8 +7269,8 @@ sign_gui_started()
  * List one sign.
  */
     static void
-sign_list_defined(sp)
-    sign_T	*sp;
+sign_list_defined(sign_T* sp)
+    //sign_T	*sp;
 {
     char_u	*p;
 
@@ -7296,9 +7315,9 @@ sign_list_defined(sp)
  * Undefine a sign and free its memory.
  */
     static void
-sign_undefine(sp, sp_prev)
-    sign_T	*sp;
-    sign_T	*sp_prev;
+sign_undefine(sign_T* sp, sign_T* sp_prev)
+    //sign_T	*sp;
+    //sign_T	*sp_prev;
 {
     vim_free(sp->sn_name);
     vim_free(sp->sn_icon);
@@ -7322,9 +7341,9 @@ sign_undefine(sp, sp_prev)
  * If "line" is TRUE: line highl, if FALSE: text highl.
  */
     int
-sign_get_attr(typenr, line)
-    int		typenr;
-    int		line;
+sign_get_attr(int typenr, int line)
+    //int		typenr;
+    //int		line;
 {
     sign_T	*sp;
 
@@ -7351,8 +7370,8 @@ sign_get_attr(typenr, line)
  * Returns NULL if there isn't one.
  */
     char_u *
-sign_get_text(typenr)
-    int		typenr;
+sign_get_text(int typenr)
+    //int		typenr;
 {
     sign_T	*sp;
 
@@ -7364,8 +7383,8 @@ sign_get_text(typenr)
 
 #if defined(FEAT_SIGN_ICONS) || defined(PROTO)
     void *
-sign_get_image(typenr)
-    int		typenr;		/* the attribute which may have a sign */
+sign_get_image(int typenr)
+    //int	typenr;		/* the attribute which may have a sign */
 {
     sign_T	*sp;
 
@@ -7380,8 +7399,8 @@ sign_get_image(typenr)
  * Get the name of a sign by its typenr.
  */
     char_u *
-sign_typenr2name(typenr)
-    int		typenr;
+sign_typenr2name(int typenr)
+    //int		typenr;
 {
     sign_T	*sp;
 
@@ -7418,9 +7437,9 @@ static enum
  * expansion.
  */
     char_u *
-get_sign_name(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_sign_name(expand_T* xp, int idx)
+    //expand_T	*xp UNUSED;
+    //int		idx;
 {
     sign_T	*sp;
     int		current_idx;
@@ -7466,9 +7485,9 @@ get_sign_name(xp, idx)
  * Handle command line completion for :sign command.
  */
     void
-set_context_in_sign_cmd(xp, arg)
-    expand_T	*xp;
-    char_u	*arg;
+set_context_in_sign_cmd(expand_T* xp, char_u* arg)
+    //expand_T	*xp;
+    //char_u	*arg;
 {
     char_u	*p;
     char_u	*end_subcmd;
@@ -7591,8 +7610,8 @@ set_context_in_sign_cmd(xp, arg)
  * the argument list is redefined.
  */
     void
-ex_drop(eap)
-    exarg_T	*eap;
+ex_drop(exarg_T* eap)
+    //exarg_T	*eap;
 {
     int		split = FALSE;
     win_T	*wp;

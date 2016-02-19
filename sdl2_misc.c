@@ -20,6 +20,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "adapter_sdl2.h"
+#include <pthread.h>
 //#include "globals.h"
 #include "vim.h"
 
@@ -30,6 +31,8 @@ typedef struct tex_font
     SDL_Rect rect[256];
     int char_w, char_h;
 } tex_font_t;
+
+static pthread_t thread_vim;
 
 static SDL_Window *gInfo=NULL;
 static SDL_Renderer *gInfoRenderer=NULL;
@@ -46,7 +49,8 @@ static SDL_Color color_black={0,0,0,0},
                  color_red={0xff, 0, 0, 0xff};
 
 
-static SDL_Window* gDisplay=NULL;
+//static SDL_Window* gDisplay=NULL;
+//static SDL_Renderer* gDisplayRenderer=NULL;
 static int gDisplay_width = 600,
            gDisplay_height = 410;
 static int gDisplay_cell_w= 0,
@@ -55,7 +59,6 @@ static int gDisplay_columns = -1,
     gDisplay_rows = -1;
 #define DISPLAY_W gDisplay_width
 #define DISPLAY_H gDisplay_height
-static SDL_Renderer* gDisplayRenderer=NULL;
 static SDL_Surface 
     *gDisplayTarget0_surf = NULL,
     *gDisplayTarget1_surf = NULL,
@@ -253,19 +256,48 @@ for (i=0; i<slen; i++)
     }
 }
 
+static int
+myEventSourceWindowID(SDL_Event e)
+{
+switch (e.type)
+    {
+    case SDL_WINDOWEVENT:
+    case SDL_KEYUP:
+    case SDL_KEYDOWN:
+    case SDL_TEXTINPUT:
+    case SDL_TEXTEDITING:
+    case SDL_MOUSEMOTION:
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEWHEEL:
+    case SDL_USEREVENT:
+        return e.window.windowID;
+    default:
+        return 0;
+    }
+}
 static void myDisplay_init(int, int);
 static void myInfo_init(int, int);
 
 static void 
 mySDL_init(int w, int h)
 {
-int status=SDL_Init(SDL_INIT_VIDEO);
-if (status<0)
-    fnError2("sdl-init-video failed.", SDL_GetError());
+if (!SDL_WasInit(SDL_INIT_VIDEO))
+    {
+    int status=SDL_Init(SDL_INIT_VIDEO);
+    if (status<0)
+        fnError2("sdl-init-video failed.", SDL_GetError());
+    }
 
 
 // init ttf
-TTF_Init();
+if (!TTF_WasInit())
+    {
+    int status=TTF_Init();
+    if (status<0)
+        fnError2("TTF_Init failed.", SDL_GetError());
+    }
+    
 // FIXME the two following modern fonts do not work properly.
 //gFont=TTF_OpenFont("fonts/DroidSansMono.ttf", 12);
 //gFont=TTF_OpenFont("fonts/DejaVuSansMono.ttf", 12);
@@ -304,7 +336,7 @@ info_push_messagef("cell_pix_w=%d, h=%d", gDisplay_cell_w,
 */
 SDL_Color color={0xff,0xff, 0xff,0xff};
 init_font(&myInfoFont, gInfoRenderer, gFont, &color_black);
-init_font(&myDisplayFont, gDisplayRenderer, gFont, &color_black);
+//init_font(&myDisplayFont, gDisplayRenderer, gFont, &color_black);
 
 SDL_Color textColor={255, 255, 0, 0xff};
 static char buf[300]="hello##";
@@ -326,7 +358,7 @@ static void
 mySDL_show_info(SDL_Rect *dstRect)
 {
 #define ROWS 20
-#define COLUMNS 30
+#define COLUMNS 35
 static char buf[ROWS][COLUMNS];
 /*
 SDL_Surface *tmp_info_window=
@@ -367,26 +399,6 @@ for (i=0; i<ROWS; i++)
 
 }
 
-static int
-myEventSourceWindowID(SDL_Event e)
-{
-switch (e.type)
-    {
-    case SDL_WINDOWEVENT:
-    case SDL_KEYUP:
-    case SDL_KEYDOWN:
-    case SDL_TEXTINPUT:
-    case SDL_TEXTEDITING:
-    case SDL_MOUSEMOTION:
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-    case SDL_MOUSEWHEEL:
-    case SDL_USEREVENT:
-        return e.window.windowID;
-    default:
-        return 0;
-    }
-}
 
 static void
 myDisplay_clear()
@@ -402,6 +414,7 @@ myDisplay_init(int w, int h)
 {
 extern void send_setcellsize_to_adapter(int, int);
 
+/*
 gDisplay= 
     SDL_CreateWindow( "SDLdisplay", 
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -414,6 +427,7 @@ gDisplayRenderer=SDL_CreateRenderer(gDisplay, -1,
 if (gDisplayRenderer==NULL)
     fnError("error creating gDisplayRenderer");
 SDL_SetRenderDrawColor(gDisplayRenderer, 0, 20, 10, 0xff);
+*/
 myDisplayRunning=1;
 
 
@@ -432,8 +446,10 @@ send_textarea_resize_to_adapter(DISPLAY_W, DISPLAY_H);
 static void
 myDisplay_update()
 {
+/*
 if (myDisplayRunning==0)
     SDL_DestroyWindow(gDisplay);
+    */
 }
 
 static void
@@ -487,7 +503,7 @@ switch (e.type)
         break;
     }
 }
-
+#if 0
 #define display_save_color() \
      \
     SDL_Color color_save; \
@@ -504,6 +520,11 @@ switch (e.type)
     SDL_SetRenderDrawColor(gDisplayRenderer, cc.r, \
         cc.g, cc.b, cc.a);  \
     }
+#else
+#define display_save_color() ((void)0)
+#define display_restore_color() ((void)0)
+#define display_use_color(cc) ((void)0)
+#endif
 
 // assume the string fits into one line.
 static void
@@ -641,7 +662,7 @@ display_save_color();
 SDL_Rect rect;
 init_display_rect(rect, hollow->rect);
 display_use_color(gDisplayColorFG);
-SDL_RenderDrawRect(gDisplayRenderer, &rect);
+//SDL_RenderDrawRect(gDisplayRenderer, &rect);
 display_restore_color();
 
 // draw onto surface
@@ -658,7 +679,7 @@ display_save_color();
 display_use_color(gDisplayColorFG);
 SDL_Rect rect;
 init_display_rect(rect, part->rect);
-SDL_RenderFillRect(gDisplayRenderer, &rect);
+//SDL_RenderFillRect(gDisplayRenderer, &rect);
 display_restore_color();
 
 // draw onto surface.
@@ -732,7 +753,7 @@ info_push_messagef("clear w=%d h=%d color=%s", wcells, hcells,
         color2str(gDisplayColorBG));
 */
 
-SDL_RenderFillRect(gDisplayRenderer, &rect);
+//SDL_RenderFillRect(gDisplayRenderer, &rect);
 display_restore_color();
 
 // draw onto sdl
@@ -768,17 +789,21 @@ _on_disp_setcellsize(disp_task_setcellsize_t* setcellsize)
 
 int w=setcellsize->cell_width * Columns,
     h=setcellsize->cell_height * Rows;
+info_push_messagef("resz w=%d, h=%d", w, h);
+
 gDisplay_width=w;
 gDisplay_height=h;
 gDisplay_cell_w = setcellsize->cell_width;
 gDisplay_cell_h = setcellsize->cell_height;
+SDL_Rect clip={0,0,w,h};
+/*
 SDL_SetWindowSize(gDisplay, w, h);
 // clear colors to bg.
-SDL_Rect clip={0,0,w,h};
 // hope to restore render context,
 // because of the bug with d3dx9 window resizing.
 display_use_color(gDisplayColorBG);
 SDL_RenderClear(gDisplayRenderer);
+*/
 
 // resize surfaces.
 // do not clear them for now.
@@ -794,7 +819,7 @@ gDisplayTargetCur_surf = gDisplayTarget0_surf;
 static void
 _on_disp_quitvim()
 {
-SDL_DestroyWindow(gDisplay);
+//SDL_DestroyWindow(gDisplay);
 myDisplayRunning=0;
 mySDLrunning=0;
 }
@@ -934,12 +959,14 @@ myDisplay_draw()
             }
         }
 
-    SDL_Rect rect={0,0,DISPLAY_W, DISPLAY_H};
-    SDL_SetRenderTarget(gDisplayRenderer, NULL);
+    //SDL_Rect rect={0,0,DISPLAY_W, DISPLAY_H};
+    //SDL_SetRenderTarget(gDisplayRenderer, NULL);
+    //
     // the use of rect is necessary because the window and texture have
     // been resized. using NULL will cause the wrong clip rectangle to
     // be used (target rect as the rectangle at window creation, source
     // rect as the whole texture).
+    /*
     SDL_Texture *tt=
         SDL_CreateTextureFromSurface(gDisplayRenderer, gDisplayTargetCur_surf);
     SDL_RenderCopy(gDisplayRenderer, tt, &rect, &rect);
@@ -948,8 +975,10 @@ myDisplay_draw()
     SDL_RenderPresent(gDisplayRenderer);
 
     SDL_DestroyTexture(tt);
+    */
 }
 
+/*
 static void 
 myDisplay_present()
 {
@@ -957,6 +986,7 @@ if (!myDisplayRunning)
     return;
 SDL_RenderPresent(gDisplayRenderer);
 }
+*/
 
 static void
 myInfo_init(int w, int h)
@@ -1005,49 +1035,8 @@ if (e.type==SDL_QUIT)
 }
 
 
-static void 
-mySDL_main_loop()
-{
-SDL_Event evnt;
 
-//SDL_RenderSetLogicalSize(gInfoRenderer, 1000, 1000);
 /*
-SDL_RenderSetScale(gInfoRenderer, 0.5, 1.5);
-SDL_Rect vpRect={100, 0, 250,250};
-SDL_RenderSetViewport(gInfoRenderer, &vpRect);
-*/
-for (;;)
-    {
-    if (!mySDLrunning) break;
-    if (myDisplayRunning)
-        myDisplay_clear();
-    myInfo_clear();
-    while(SDL_PollEvent(&evnt))
-        {
-        if (evnt.type==SDL_QUIT) 
-            mySDLrunning=0;
-        if (myEventSourceWindowID(evnt)==SDL_GetWindowID(gDisplay))
-            {
-            if (myDisplayRunning)
-                myDisplay_on_event(evnt);
-            }
-        else
-            {
-            myInfo_on_event(evnt);
-            }
-        }
-
-    myInfo_draw();
-    if (myDisplayRunning)
-        myDisplay_draw();
-
-    SDL_Delay(50);
-    if (myDisplayRunning)
-        myDisplay_present();
-    myInfo_present();
-    }
-}
-
 void 
 mySDL_dosomething()
 {
@@ -1055,4 +1044,80 @@ mySDL_init(500, 500);
 mySDL_main_loop();
 SDL_DestroyWindow(gInfo);
 }
+*/
 
+void * fn_vim_thread(void *ud)
+{
+
+#ifdef DYNAMIC_GETTEXT
+//#error dynamic_gettext
+    /* Initialize gettext library */
+    dyn_libintl_init(NULL);
+#endif
+
+    extern int VimMain(int argc, char** argv);
+    int sdl_argc=1;
+    char* sdl_argv[]={"gvim", NULL};
+
+    VimMain(sdl_argc, sdl_argv);
+
+    disp_task_quitvim_t quitvim = {DISP_TASK_QUITVIM};
+    display_push_task(&quitvim);
+
+    return 0;
+}
+
+int iVim_init(int w, int h, int argc, char** argv)
+{
+// vim thread mainloop is started.
+pthread_create(&thread_vim, 0, &fn_vim_thread, (void*)0);
+mySDL_init(w,h);
+return 0;
+}
+
+void iVim_onEvent(SDL_Event evnt)
+{
+// i need to be sure that this event should be processed by vim,
+// which is to say, its source window is the vim display window,
+// or the specific adjusted area within the window.
+myDisplay_on_event(evnt);
+}
+
+const SDL_Surface* iVim_getDisplaySurface()
+{
+return gDisplayTargetCur_surf;
+}
+
+void iVim_getDisplaySize(int* pw, int* ph)
+{
+if (pw!=NULL)
+    *pw=DISPLAY_W;
+if (ph!=NULL)
+    *ph=DISPLAY_H;
+}
+
+int iVim_quit()
+{
+SDL_Event evnt;
+evnt.type=SDL_QUIT;
+iVim_onEvent(evnt);
+pthread_join(thread_vim, NULL);
+return 0;
+}
+
+void iVim_flush()
+{
+myDisplay_draw();
+
+// don't redraw info if no message pending there.
+if (info_message_number()==0)
+    return;
+myInfo_clear();
+myInfo_draw();
+myInfo_present();
+}
+
+int iVim_running()
+{
+return mySDLrunning;
+}

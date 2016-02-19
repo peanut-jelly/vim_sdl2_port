@@ -515,7 +515,8 @@ endif
 
 LIB = -lkernel32 -luser32 -lgdi32 -ladvapi32 -lcomdlg32 -lcomctl32 -lversion \
 	  -lpthread -lstdc++ -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf #-latomic 
-GUIOBJ =  $(OUTDIR)/gui.o $(OUTDIR)/gui_w32.o $(OUTDIR)/gui_beval.o $(OUTDIR)/os_w32exe.o
+GUIOBJ =  $(OUTDIR)/gui.o $(OUTDIR)/gui_w32.o $(OUTDIR)/gui_beval.o 
+
 OBJ = \
 	$(OUTDIR)/blowfish.o \
 	$(OUTDIR)/buffer.o \
@@ -534,7 +535,7 @@ OBJ = \
 	$(OUTDIR)/getchar.o \
 	$(OUTDIR)/hardcopy.o \
 	$(OUTDIR)/hashtab.o \
-	$(OUTDIR)/main.o \
+	$(OUTDIR)/vim_main.o \
 	$(OUTDIR)/mark.o \
 	$(OUTDIR)/memfile.o \
 	$(OUTDIR)/memline.o \
@@ -566,6 +567,7 @@ OBJ = \
 	$(OUTDIR)/version.o \
 	$(OUTDIR)/window.o \
 	$(OUTDIR)/adapter_sdl2.o $(OUTDIR)/sdl2_misc.o $(OUTDIR)/sdl2_misc2.o \
+	$(OUTDIR)/main.o
 	#$(OUTDIR)/vimrc.o \
 
 
@@ -743,7 +745,7 @@ INCL = vim.h feature.h os_win32.h os_dos.h ascii.h keymap.h term.h macros.h \
 	structs.h regexp.h option.h ex_cmds.h proto.h globals.h farsi.h \
 	gui.h
 
-$(OUTDIR)/sdl2_misc.o: sdl2_misc.c adapter_sdl2.h
+$(OUTDIR)/sdl2_misc.o: sdl2_misc.c adapter_sdl2.h iVim.h
 	$(CC) -c $(CFLAGS) sdl2_misc.c -o $@
 
 $(OUTDIR)/sdl2_misc2.o: sdl2_misc2.c adapter_sdl2.h
@@ -761,6 +763,14 @@ $(OUTDIR)/gui.o: gui.c adapter_sdl2.h
 
 $(OUTDIR)/os_mswin.o: os_mswin.c adapter_sdl2.h
 	$(CC) -c $(CFLAGS) os_mswin.c -o $@
+
+$(OUTDIR)/vim_main.o:    vim_main.c farsi.c arabic.c 
+	$(CC) -c $(CFLAGS) vim_main.c -o $@
+
+$(OUTDIR)/main.o: main.c iVim.h
+	$(CC) -c $(CFLAGS) main.c -o $@
+
+
 
 
 
@@ -788,9 +798,6 @@ $(OUTDIR)/ex_docmd.o:	ex_docmd.c $(INCL) ex_cmds.h
 $(OUTDIR)/ex_eval.o:	ex_eval.c $(INCL) ex_cmds.h
 	$(CC) -c $(CFLAGS) ex_eval.c -o $(OUTDIR)/ex_eval.o
 
-
-$(OUTDIR)/main.o:    main.c farsi.c arabic.c
-	$(CC) -c $(CFLAGS) main.c -o $(OUTDIR)/main.o
 
 $(OUTDIR)/if_cscope.o:	if_cscope.c $(INCL) if_cscope.h
 	$(CC) -c $(CFLAGS) if_cscope.c -o $(OUTDIR)/if_cscope.o

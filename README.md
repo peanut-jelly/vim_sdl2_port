@@ -6,6 +6,8 @@ Licensed under Vim License (see uganda.txt for details).
 
 For information of vim, see README_vim.txt
 
+For embedding, see main.c for details.
+
 In this port, vim is run in a separate thread so it will not block the whole 
 application. Many features relying on gui widgets are removed to make it easier
 to do this. And some important SDL-side things are hard coded for now (like 

@@ -15,6 +15,8 @@
  * 1) a freshly started sdl2 cannot get the status of capslock and numlock
  *      correctly. In fact, it just thinks they are off at start up regardless
  *      of the led lights on my keyboard.
+ * 2) sdl2 window may not display properly after resizing because of dirextx9
+ *      problem.
  */
 #include <math.h>
 #include <SDL2/SDL.h>

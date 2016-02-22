@@ -1,6 +1,5 @@
 # vim_sdl2_port
-A port of vim7.4 to run on Simple DirectMedia Layer version 2(SDL2), and to be
-embeded into SDL2 applications.
+A port of vim7.4 to be embeded into SDL2 (Simple DirectMedia Layer 2) applications.
 
 Licensed under Vim License (see uganda.txt for details).
 

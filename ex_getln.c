@@ -156,10 +156,10 @@ sort_func_compare __ARGS((const void *s1, const void *s2));
  * otherwise.
  */
     char_u *
-getcmdline(firstc, count, indent)
-    int		firstc;
-    long	count UNUSED;	/* only used for incremental search */
-    int		indent;		/* indent for inside conditionals */
+getcmdline(int firstc, long count, int indent)
+    //int		firstc;
+    //long	count UNUSED;	/* only used for incremental search */
+    //int		indent;		/* indent for inside conditionals */
 {
     int		c;
     int		i;
@@ -1978,12 +1978,17 @@ returncmd:
  * Returns the command line in allocated memory, or NULL.
  */
     char_u *
-getcmdline_prompt(firstc, prompt, attr, xp_context, xp_arg)
-    int		firstc;
-    char_u	*prompt;	/* command line prompt */
-    int		attr;		/* attributes for prompt */
-    int		xp_context;	/* type of expansion */
-    char_u	*xp_arg;	/* user-defined expansion argument */
+getcmdline_prompt(
+        int firstc, 
+        char_u* prompt, 
+        int attr, 
+        int xp_context, 
+        char_u* xp_arg)
+    //int		firstc;
+    //char_u	*prompt;	/* command line prompt */
+    //int		attr;		/* attributes for prompt */
+    //int		xp_context;	/* type of expansion */
+    //char_u	*xp_arg;	/* user-defined expansion argument */
 {
     char_u		*s;
     struct cmdline_info	save_ccline;
@@ -2073,8 +2078,8 @@ allbuf_locked()
 #endif
 
     static int
-cmdline_charsize(idx)
-    int		idx;
+cmdline_charsize(int idx)
+    //int		idx;
 {
 #if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
     if (cmdline_star > 0)	    /* showing '*', always 1 position */
@@ -2141,9 +2146,9 @@ set_cmdspos_cursor()
  * character that doesn't fit, so that a ">" must be displayed.
  */
     static void
-correct_cmdspos(idx, cells)
-    int		idx;
-    int		cells;
+correct_cmdspos(int idx, int cells)
+    //int		idx;
+    //int		cells;
 {
     if ((*mb_ptr2len)(ccline.cmdbuff + idx) > 1
 		&& (*mb_ptr2cells)(ccline.cmdbuff + idx) > 1
@@ -2156,10 +2161,10 @@ correct_cmdspos(idx, cells)
  * Get an Ex command line for the ":" command.
  */
     char_u *
-getexline(c, cookie, indent)
-    int		c;		/* normally ':', NUL for ":append" */
-    void	*cookie UNUSED;
-    int		indent;		/* indent for inside conditionals */
+getexline(int c, void* cookie, int indent)
+    //int		c;		/* normally ':', NUL for ":append" */
+    //void	*cookie UNUSED;
+    //int		indent;		/* indent for inside conditionals */
 {
     /* When executing a register, remove ':' that's in front of each line. */
     if (exec_from_reg && vpeekc() == ':')
@@ -2174,11 +2179,10 @@ getexline(c, cookie, indent)
  * Returns a string in allocated memory or NULL.
  */
     char_u *
-getexmodeline(promptc, cookie, indent)
-    int		promptc;	/* normally ':', NUL for ":append" and '?' for
-				   :s prompt */
-    void	*cookie UNUSED;
-    int		indent;		/* indent for inside conditionals */
+getexmodeline(int promptc, void* cookie, int indent)
+    //int promptc;/* normally ':', NUL for ":append" and '?' for :s prompt */
+    //void	*cookie UNUSED;
+    //int		indent;		/* indent for inside conditionals */
 {
     garray_T	line_ga;
     char_u	*pend;
@@ -2556,8 +2560,8 @@ redrawcmd_preedit()
  * Returns the new value of ccline.cmdbuff and ccline.cmdbufflen.
  */
     static void
-alloc_cmdbuff(len)
-    int	    len;
+alloc_cmdbuff(int len)
+    //int	    len;
 {
     /*
      * give some extra space to avoid having to allocate all the time
@@ -2576,8 +2580,8 @@ alloc_cmdbuff(len)
  * return FAIL for failure, OK otherwise
  */
     static int
-realloc_cmdbuff(len)
-    int	    len;
+realloc_cmdbuff(int len)
+    //int	    len;
 {
     char_u	*p;
 
@@ -2630,9 +2634,9 @@ free_cmdline_buf()
  * when cmdline_star is TRUE.
  */
     static void
-draw_cmdline(start, len)
-    int		start;
-    int		len;
+draw_cmdline(int start, int len)
+    //int		start;
+    //int		len;
 {
 #if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
     int		i;
@@ -2753,9 +2757,9 @@ draw_cmdline(start, len)
  * "c" must be printable (fit in one display cell)!
  */
     void
-putcmdline(c, shift)
-    int		c;
-    int		shift;
+putcmdline(int c, int shift)
+    //int		c;
+    //int		shift;
 {
     if (cmd_silent)
 	return;
@@ -2798,10 +2802,10 @@ unputcmdline()
  * called afterwards.
  */
     int
-put_on_cmdline(str, len, redraw)
-    char_u	*str;
-    int		len;
-    int		redraw;
+put_on_cmdline(char_u* str, int len, int redraw)
+    //char_u	*str;
+    //int		len;
+    //int		redraw;
 {
     int		retval;
     int		i;
@@ -2971,8 +2975,8 @@ static int		    prev_ccline_used = FALSE;
  * available globally in prev_ccline.
  */
     static void
-save_cmdline(ccp)
-    struct cmdline_info *ccp;
+save_cmdline(struct cmdline_info* ccp)
+    //struct cmdline_info *ccp;
 {
     if (!prev_ccline_used)
     {
@@ -2990,8 +2994,8 @@ save_cmdline(ccp)
  * Restore ccline after it has been saved with save_cmdline().
  */
     static void
-restore_cmdline(ccp)
-    struct cmdline_info *ccp;
+restore_cmdline(struct cmdline_info* ccp)
+    //struct cmdline_info *ccp;
 {
     ccline = prev_ccline;
     prev_ccline = *ccp;
@@ -3018,8 +3022,8 @@ save_cmdline_alloc()
  * Restore the command line from the return value of save_cmdline_alloc().
  */
     void
-restore_cmdline_alloc(p)
-    char_u  *p;
+restore_cmdline_alloc(char_u* p)
+    //char_u  *p;
 {
     if (p != NULL)
     {
@@ -3038,10 +3042,10 @@ restore_cmdline_alloc(p)
  * return FAIL for failure, OK otherwise
  */
     static int
-cmdline_paste(regname, literally, remcr)
-    int regname;
-    int literally;	/* Insert text literally instead of "as typed" */
-    int remcr;		/* remove trailing CR */
+cmdline_paste(int regname, int literally, int remcr)
+    //int regname;
+    //int literally;	/* Insert text literally instead of "as typed" */
+    //int remcr;		/* remove trailing CR */
 {
     long		i;
     char_u		*arg;
@@ -3127,9 +3131,9 @@ cmdline_paste(regname, literally, remcr)
  * line.
  */
     void
-cmdline_paste_str(s, literally)
-    char_u	*s;
-    int		literally;
+cmdline_paste_str(char_u* s, int literally)
+    //char_u	*s;
+    //int		literally;
 {
     int		c, cv;
 
@@ -3164,8 +3168,8 @@ cmdline_paste_str(s, literally)
  * position.
  */
     static void
-cmdline_del(from)
-    int from;
+cmdline_del(int from)
+    //int from;
 {
     mch_memmove(ccline.cmdbuff + from, ccline.cmdbuff + ccline.cmdpos,
 	    (size_t)(ccline.cmdlen - ccline.cmdpos + 1));
@@ -3293,8 +3297,8 @@ cursorcmd()
 }
 
     void
-gotocmdline(clr)
-    int		    clr;
+gotocmdline(int clr)
+    //int		    clr;
 {
     msg_start();
 #ifdef FEAT_RIGHTLEFT
@@ -3315,8 +3319,8 @@ gotocmdline(clr)
  * backspaces and the replacement string is inserted, followed by "c".
  */
     static int
-ccheck_abbr(c)
-    int c;
+ccheck_abbr(int c)
+    //int c;
 {
     if (p_paste || no_abbr)	    /* no abbreviations or in paste mode */
 	return FALSE;
@@ -3329,9 +3333,9 @@ ccheck_abbr(c)
 #ifdef __BORLANDC__
 _RTLENTRYF
 #endif
-sort_func_compare(s1, s2)
-    const void *s1;
-    const void *s2;
+sort_func_compare(const void* s1, const void* s2)
+    //const void *s1;
+    //const void *s2;
 {
     char_u *p1 = *(char_u **)s1;
     char_u *p2 = *(char_u **)s2;
@@ -3349,11 +3353,11 @@ sort_func_compare(s1, s2)
  * normal character (instead of being expanded).  This allows :s/^I^D etc.
  */
     static int
-nextwild(xp, type, options, escape)
-    expand_T	*xp;
-    int		type;
-    int		options;	/* extra options for ExpandOne() */
-    int		escape;		/* if TRUE, escape the returned matches */
+nextwild(expand_T* xp, int type, int options, int escape)
+    //expand_T	*xp;
+    //int		type;
+    //int		options;	/* extra options for ExpandOne() */
+    //int		escape;	/* if TRUE, escape the returned matches */
 {
     int		i, j;
     char_u	*p1;
@@ -3502,12 +3506,17 @@ nextwild(xp, type, options, escape)
  * The variables xp->xp_context and xp->xp_backslash must have been set!
  */
     char_u *
-ExpandOne(xp, str, orig, options, mode)
-    expand_T	*xp;
-    char_u	*str;
-    char_u	*orig;	    /* allocated copy of original of expanded string */
-    int		options;
-    int		mode;
+ExpandOne(
+        expand_T* xp, 
+        char_u* str, 
+        char_u* orig, 
+        int options, 
+        int mode)
+    //expand_T	*xp;
+    //char_u	*str;
+    //char_u	*orig;	    /* allocated copy of original of expanded string */
+    //int		options;
+    //int		mode;
 {
     char_u	*ss = NULL;
     static int	findex;
@@ -3715,8 +3724,8 @@ ExpandOne(xp, str, orig, options, mode)
  * Prepare an expand structure for use.
  */
     void
-ExpandInit(xp)
-    expand_T	*xp;
+ExpandInit(expand_T* xp)
+    //expand_T	*xp;
 {
     xp->xp_pattern = NULL;
     xp->xp_pattern_len = 0;
@@ -3736,8 +3745,8 @@ ExpandInit(xp)
  * Cleanup an expand structure after use.
  */
     void
-ExpandCleanup(xp)
-    expand_T	*xp;
+ExpandCleanup(expand_T* xp)
+    //expand_T	*xp;
 {
     if (xp->xp_numfiles >= 0)
     {
@@ -3747,12 +3756,17 @@ ExpandCleanup(xp)
 }
 
     void
-ExpandEscape(xp, str, numfiles, files, options)
-    expand_T	*xp;
-    char_u	*str;
-    int		numfiles;
-    char_u	**files;
-    int		options;
+ExpandEscape(
+        expand_T* xp, 
+        char_u* str, 
+        int numfiles, 
+        char_u** files, 
+        int options)
+    //expand_T	*xp;
+    //char_u	*str;
+    //int		numfiles;
+    //char_u	**files;
+    //int		options;
 {
     int		i;
     char_u	*p;
@@ -3843,9 +3857,9 @@ ExpandEscape(xp, str, numfiles, files, options)
  * Returns the result in allocated memory.
  */
     char_u *
-vim_strsave_fnameescape(fname, shell)
-    char_u *fname;
-    int    shell;
+vim_strsave_fnameescape(char_u* fname, int shell)
+    //char_u *fname;
+    //int    shell;
 {
     char_u	*p;
 #ifdef BACKSLASH_IN_FILENAME
@@ -3884,8 +3898,8 @@ vim_strsave_fnameescape(fname, shell)
  * Put a backslash before the file name in "pp", which is in allocated memory.
  */
     static void
-escape_fname(pp)
-    char_u **pp;
+escape_fname(char_u** pp)
+    //char_u **pp;
 {
     char_u	*p;
 
@@ -3904,10 +3918,10 @@ escape_fname(pp)
  * If 'orig_pat' starts with "~/", replace the home directory with "~".
  */
     void
-tilde_replace(orig_pat, num_files, files)
-    char_u  *orig_pat;
-    int	    num_files;
-    char_u  **files;
+tilde_replace(char_u* orig_pat, int num_files, char_u** files)
+    //char_u  *orig_pat;
+    //int	    num_files;
+    //char_u  **files;
 {
     int	    i;
     char_u  *p;
@@ -3932,9 +3946,9 @@ tilde_replace(orig_pat, num_files, files)
  * be inserted like a normal character.
  */
     static int
-showmatches(xp, wildmenu)
-    expand_T	*xp;
-    int		wildmenu UNUSED;
+showmatches(expand_T* xp, int wildmenu)
+    //expand_T	*xp;
+    //int		wildmenu UNUSED;
 {
 #define L_SHOWFILE(m) (showtail ? sm_gettail(files_found[m]) : files_found[m])
     int		num_files;
@@ -4116,8 +4130,8 @@ showmatches(xp, wildmenu)
  * Find tail of file name path, but ignore trailing "/".
  */
     char_u *
-sm_gettail(s)
-    char_u	*s;
+sm_gettail(char_u* s)
+    //char_u	*s;
 {
     char_u	*p;
     char_u	*t = s;
@@ -4147,8 +4161,8 @@ sm_gettail(s)
  * returned.
  */
     static int
-expand_showtail(xp)
-    expand_T	*xp;
+expand_showtail(expand_T* xp)
+    //expand_T	*xp;
 {
     char_u	*s;
     char_u	*end;
@@ -4183,10 +4197,10 @@ expand_showtail(xp)
  * the name into allocated memory and prepend "^".
  */
     char_u *
-addstar(fname, len, context)
-    char_u	*fname;
-    int		len;
-    int		context;	/* EXPAND_FILES etc. */
+addstar(char_u*fname, int len, int context)
+    //char_u	*fname;
+    //int		len;
+    //int		context;	/* EXPAND_FILES etc. */
 {
     char_u	*retval;
     int		i, j;
@@ -4352,8 +4366,8 @@ addstar(fname, len, context)
  *  EXPAND_USER		    Complete user names
  */
     static void
-set_expand_context(xp)
-    expand_T	*xp;
+set_expand_context(expand_T* xp)
+    //expand_T	*xp;
 {
     /* only expansion for ':', '>' and '=' command-lines */
     if (ccline.cmdfirstc != ':'
@@ -4370,11 +4384,11 @@ set_expand_context(xp)
 }
 
     void
-set_cmd_context(xp, str, len, col)
-    expand_T	*xp;
-    char_u	*str;	    /* start of command line */
-    int		len;	    /* length of command line (excl. NUL) */
-    int		col;	    /* position of cursor */
+set_cmd_context(expand_T* xp, char_u* str, int len, int col)
+    //expand_T	*xp;
+    //char_u	*str;	    /* start of command line */
+    //int		len;	    /* length of command line (excl. NUL) */
+    //int		col;	    /* position of cursor */
 {
     int		old_char = NUL;
     char_u	*nextcomm;
@@ -4429,12 +4443,17 @@ set_cmd_context(xp, str, len, col)
  * Returns EXPAND_OK otherwise.
  */
     int
-expand_cmdline(xp, str, col, matchcount, matches)
-    expand_T	*xp;
-    char_u	*str;		/* start of command line */
-    int		col;		/* position of cursor */
-    int		*matchcount;	/* return: nr of matches */
-    char_u	***matches;	/* return: array of pointers to matches */
+expand_cmdline(
+        expand_T* xp, 
+        char_u* str, 
+        int col, 
+        int* matchcount, 
+        char_u*** matches)
+    //expand_T	*xp;
+    //char_u	*str;		/* start of command line */
+    //int		col;		/* position of cursor */
+    //int		*matchcount;	/* return: nr of matches */
+    //char_u	***matches;	/* return: array of pointers to matches */
 {
     char_u	*file_str = NULL;
     int		options = WILD_ADD_SLASH|WILD_SILENT;
@@ -4477,9 +4496,9 @@ expand_cmdline(xp, str, col, matchcount, matches)
 static void	cleanup_help_tags __ARGS((int num_file, char_u **file));
 
     static void
-cleanup_help_tags(num_file, file)
-    int		num_file;
-    char_u	**file;
+cleanup_help_tags(int num_file, char_u** file)
+    //int		num_file;
+    //char_u	**file;
 {
     int		i, j;
     int		len;
@@ -4507,12 +4526,17 @@ cleanup_help_tags(num_file, file)
  * Do the expansion based on xp->xp_context and "pat".
  */
     static int
-ExpandFromContext(xp, pat, num_file, file, options)
-    expand_T	*xp;
-    char_u	*pat;
-    int		*num_file;
-    char_u	***file;
-    int		options;  /* EW_ flags */
+ExpandFromContext(
+        expand_T* xp, 
+        char_u* pat, 
+        int* num_file, 
+        char_u*** file, 
+        int options)
+    //expand_T	*xp;
+    //char_u	*pat;
+    //int		*num_file;
+    //char_u	***file;
+    //int		options;  /* EW_ flags */
 {
 #ifdef FEAT_CMDL_COMPL
     regmatch_T	regmatch;
@@ -4740,14 +4764,20 @@ ExpandFromContext(xp, pat, num_file, file, options)
  * Returns OK when no problems encountered, FAIL for error (out of memory).
  */
     int
-ExpandGeneric(xp, regmatch, num_file, file, func, escaped)
-    expand_T	*xp;
-    regmatch_T	*regmatch;
-    int		*num_file;
-    char_u	***file;
-    char_u	*((*func)__ARGS((expand_T *, int)));
+ExpandGeneric(
+        expand_T* xp, 
+        regmatch_T* regmatch, 
+        int* num_file, 
+        char_u*** file, 
+        char_u* (*func)__ARGS((expand_T*,int)), 
+        int escaped)
+    //expand_T	*xp;
+    //regmatch_T	*regmatch;
+    //int		*num_file;
+    //char_u	***file;
+    //char_u	*((*func)__ARGS((expand_T *, int)));
 					  /* returns a string from the list */
-    int		escaped;
+    //int		escaped;
 {
     int		i;
     int		count = 0;
@@ -4832,11 +4862,15 @@ ExpandGeneric(xp, regmatch, num_file, file, func, escaped)
  * Returns FAIL or OK;
  */
     static int
-expand_shellcmd(filepat, num_file, file, flagsarg)
-    char_u	*filepat;	/* pattern to match with command names */
-    int		*num_file;	/* return: number of matches */
-    char_u	***file;	/* return: array with matches */
-    int		flagsarg;	/* EW_ flags */
+expand_shellcmd(
+        char_u* filepat, 
+        int* num_file, 
+        char_u*** file, 
+        int flagsarg)
+    //char_u	*filepat;	/* pattern to match with command names */
+    //int		*num_file;	/* return: number of matches */
+    //char_u	***file;	/* return: array with matches */
+    //int		flagsarg;	/* EW_ flags */
 {
     char_u	*pat;
     int		i;
@@ -4945,11 +4979,15 @@ static void * call_user_expand_func __ARGS((void *(*user_expand_func) __ARGS((ch
  * the result (either a string or a List).
  */
     static void *
-call_user_expand_func(user_expand_func, xp, num_file, file)
-    void	*(*user_expand_func) __ARGS((char_u *, int, char_u **, int));
-    expand_T	*xp;
-    int		*num_file;
-    char_u	***file;
+call_user_expand_func(
+        void* (*user_expand_func)__ARGS((char_u*, int, char_u**, int)), 
+        expand_T* xp, 
+        int* num_file, 
+        char_u*** file)
+    //void	*(*user_expand_func) __ARGS((char_u *, int, char_u **, int));
+    //expand_T	*xp;
+    //int		*num_file;
+    //char_u	***file;
 {
     int		keep = 0;
     char_u	num[50];
@@ -4995,11 +5033,15 @@ call_user_expand_func(user_expand_func, xp, num_file, file)
  * Expand names with a function defined by the user.
  */
     static int
-ExpandUserDefined(xp, regmatch, num_file, file)
-    expand_T	*xp;
-    regmatch_T	*regmatch;
-    int		*num_file;
-    char_u	***file;
+ExpandUserDefined(
+        expand_T* xp, 
+        regmatch_T* regmatch, 
+        int* num_file, 
+        char_u*** file)
+    //expand_T	*xp;
+    //regmatch_T	*regmatch;
+    //int		*num_file;
+    //char_u	***file;
 {
     char_u	*retstr;
     char_u	*s;
@@ -5048,10 +5090,10 @@ ExpandUserDefined(xp, regmatch, num_file, file)
  * Expand names with a list returned by a function defined by the user.
  */
     static int
-ExpandUserList(xp, num_file, file)
-    expand_T	*xp;
-    int		*num_file;
-    char_u	***file;
+ExpandUserList(expand_T* xp, int* num_file, char_u*** file)
+    //expand_T	*xp;
+    //int		*num_file;
+    //char_u	***file;
 {
     list_T      *retlist;
     listitem_T	*li;
@@ -5089,11 +5131,11 @@ ExpandUserList(xp, num_file, file)
  * "dirnames" is an array with one or more directory names.
  */
     static int
-ExpandRTDir(pat, num_file, file, dirnames)
-    char_u	*pat;
-    int		*num_file;
-    char_u	***file;
-    char	*dirnames[];
+ExpandRTDir(char_u* pat, int* num_file, char_u*** file, char*dirnames[])
+    //char_u	*pat;
+    //int		*num_file;
+    //char_u	***file;
+    //char	*dirnames[];
 {
     char_u	*matches;
     char_u	*s;
@@ -5164,10 +5206,10 @@ ExpandRTDir(pat, num_file, file, dirnames)
  * newlines.  Returns NULL for an error or no matches.
  */
     char_u *
-globpath(path, file, expand_options)
-    char_u	*path;
-    char_u	*file;
-    int		expand_options;
+globpath(char_u* path, char_u* file, int expand_options)
+    //char_u	*path;
+    //char_u	*file;
+    //int		expand_options;
 {
     expand_T	xpc;
     char_u	*buf;
@@ -5245,8 +5287,8 @@ globpath(path, file, expand_options)
  * Translate a history character to the associated type number.
  */
     static int
-hist_char2type(c)
-    int	    c;
+hist_char2type(int c)
+    //int	    c;
 {
     if (c == ':')
 	return HIST_CMD;
@@ -5281,9 +5323,9 @@ static char *(history_names[]) =
  * arguments of the ":history command.
  */
     static char_u *
-get_history_arg(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_history_arg(expand_T* xp, int idx)
+    //expand_T	*xp UNUSED;
+    //int		idx;
 {
     static char_u compl[2] = { NUL, NUL };
     char *short_names = ":=@>?/";
@@ -5386,8 +5428,8 @@ init_history()
 }
 
     static void
-clear_hist_entry(hisptr)
-    histentry_T	*hisptr;
+clear_hist_entry(histentry_T* hisptr)
+    //histentry_T	*hisptr;
 {
     hisptr->hisnum = 0;
     hisptr->viminfo = FALSE;
@@ -5399,12 +5441,17 @@ clear_hist_entry(hisptr)
  * If 'move_to_front' is TRUE, matching entry is moved to end of history.
  */
     static int
-in_history(type, str, move_to_front, sep, writing)
-    int	    type;
-    char_u  *str;
-    int	    move_to_front;	/* Move the entry to the front if it exists */
-    int	    sep;
-    int	    writing;		/* ignore entries read from viminfo */
+in_history(
+        int type, 
+        char_u* str, 
+        int move_to_front, 
+        int sep, 
+        int writing)
+    //int	    type;
+    //char_u  *str;
+    //int   move_to_front;	/* Move the entry to the front if it exists */
+    //int	    sep;
+    //int	    writing;		/* ignore entries read from viminfo */
 {
     int	    i;
     int	    last_i = -1;
@@ -5458,8 +5505,8 @@ in_history(type, str, move_to_front, sep, writing)
  * Returns -1 for unknown history name.
  */
     int
-get_histtype(name)
-    char_u	*name;
+get_histtype(char_u* name)
+    //char_u	*name;
 {
     int		i;
     int		len = (int)STRLEN(name);
@@ -5486,11 +5533,11 @@ static int	last_maptick = -1;	/* last seen maptick */
  * values.
  */
     void
-add_to_history(histype, new_entry, in_map, sep)
-    int		histype;
-    char_u	*new_entry;
-    int		in_map;		/* consider maptick when inside a mapping */
-    int		sep;		/* separator character used (search hist) */
+add_to_history(int histype, char_u* new_entry, int in_map, int sep)
+    //int		histype;
+    //char_u	*new_entry;
+    //int in_map;		/* consider maptick when inside a mapping */
+    //int sep;		/* separator character used (search hist) */
 {
     histentry_T	*hisptr;
     int		len;
@@ -5544,8 +5591,8 @@ add_to_history(histype, new_entry, in_map, sep)
  * "histype" may be one of the HIST_ values.
  */
     int
-get_history_idx(histype)
-    int	    histype;
+get_history_idx(int histype)
+    //int	    histype;
 {
     if (hislen == 0 || histype < 0 || histype >= HIST_COUNT
 		    || hisidx[histype] < 0)
@@ -5609,8 +5656,8 @@ get_cmdline_pos()
  * Returns 1 when failed, 0 when OK.
  */
     int
-set_cmdline_pos(pos)
-    int		pos;
+set_cmdline_pos(int pos)
+    //int		pos;
 {
     struct cmdline_info *p = get_ccline_ptr();
 
@@ -5651,9 +5698,9 @@ get_cmdline_type()
  * "histype" may be one of the HIST_ values.
  */
     static int
-calc_hist_idx(histype, num)
-    int		histype;
-    int		num;
+calc_hist_idx(int histype, int num)
+    //int		histype;
+    //int		num;
 {
     int		i;
     histentry_T	*hist;
@@ -5693,9 +5740,9 @@ calc_hist_idx(histype, num)
  * "histype" may be one of the HIST_ values.
  */
     char_u *
-get_history_entry(histype, idx)
-    int	    histype;
-    int	    idx;
+get_history_entry(int histype, int idx)
+    //int	    histype;
+    //int	    idx;
 {
     idx = calc_hist_idx(histype, idx);
     if (idx >= 0)
@@ -5709,8 +5756,8 @@ get_history_entry(histype, idx)
  * "histype" may be one of the HIST_ values.
  */
     int
-clr_history(histype)
-    int		histype;
+clr_history(int histype)
+    //int		histype;
 {
     int		i;
     histentry_T	*hisptr;
@@ -5735,9 +5782,9 @@ clr_history(histype)
  * "histype" may be one of the HIST_ values.
  */
     int
-del_history_entry(histype, str)
-    int		histype;
-    char_u	*str;
+del_history_entry(int histype, char_u* str)
+    //int		histype;
+    //char_u	*str;
 {
     regmatch_T	regmatch;
     histentry_T	*hisptr;
@@ -5793,9 +5840,9 @@ del_history_entry(histype, str)
  * "histype" may be one of the HIST_ values.
  */
     int
-del_history_idx(histype, idx)
-    int	    histype;
-    int	    idx;
+del_history_idx(int histype, int idx)
+    //int	    histype;
+    //int	    idx;
 {
     int	    i, j;
 
@@ -5867,10 +5914,10 @@ remove_key_from_history()
  * Returns OK if parsed successfully, otherwise FAIL.
  */
     int
-get_list_range(str, num1, num2)
-    char_u	**str;
-    int		*num1;
-    int		*num2;
+get_list_range(char_u** str, int* num1, int* num2)
+    //char_u	**str;
+    //int		*num1;
+    //int		*num2;
 {
     int		len;
     int		first = FALSE;
@@ -5908,8 +5955,8 @@ get_list_range(str, num1, num2)
  * :history command - print a history
  */
     void
-ex_history(eap)
-    exarg_T	*eap;
+ex_history(exarg_T* eap)
+    //exarg_T	*eap;
 {
     histentry_T	*hist;
     int		histype1 = HIST_CMD;
@@ -6016,9 +6063,9 @@ static int	hist_type2char __ARGS((int type, int use_question));
  * Translate a history type number to the associated character.
  */
     static int
-hist_type2char(type, use_question)
-    int	    type;
-    int	    use_question;	    /* use '?' instead of '/' */
+hist_type2char(int type, int use_question)
+    //int	    type;
+    //int	    use_question;	    /* use '?' instead of '/' */
 {
     if (type == HIST_CMD)
 	return ':';
@@ -6039,9 +6086,9 @@ hist_type2char(type, use_question)
  * This allocates history arrays to store the read history lines.
  */
     void
-prepare_viminfo_history(asklen, writing)
-    int	    asklen;
-    int	    writing;
+prepare_viminfo_history(int asklen, int writing)
+    //int	    asklen;
+    //int	    writing;
 {
     int	    i;
     int	    num;
@@ -6081,9 +6128,9 @@ prepare_viminfo_history(asklen, writing)
  * new.
  */
     int
-read_viminfo_history(virp, writing)
-    vir_T	*virp;
-    int		writing;
+read_viminfo_history(vir_T* virp, int writing)
+    //vir_T	*virp;
+    //int		writing;
 {
     int		type;
     long_u	len;
@@ -6193,9 +6240,9 @@ finish_viminfo_history()
  * When "merge" is FALSE just write all history lines.  Used for ":wviminfo!".
  */
     void
-write_viminfo_history(fp, merge)
-    FILE    *fp;
-    int	    merge;
+write_viminfo_history(FILE* fp, int merge)
+    //FILE    *fp;
+    //int	    merge;
 {
     int	    i;
     int	    type;
@@ -6292,8 +6339,8 @@ write_viminfo_history(fp, merge)
  * It is directly written into the command buffer block.
  */
     void
-cmd_pchar(c, offset)
-    int	    c, offset;
+cmd_pchar(int c, int offset)
+    //int	    c, offset;
 {
     if (ccline.cmdpos + offset >= ccline.cmdlen || ccline.cmdpos + offset < 0)
     {
@@ -6305,8 +6352,8 @@ cmd_pchar(c, offset)
 }
 
     int
-cmd_gchar(offset)
-    int	    offset;
+cmd_gchar(int offset)
+    //int	    offset;
 {
     if (ccline.cmdpos + offset >= ccline.cmdlen || ccline.cmdpos + offset < 0)
     {
@@ -6600,9 +6647,9 @@ ex_window()
  * Returns a pointer to allocated memory with {script} or NULL.
  */
     char_u *
-script_get(eap, cmd)
-    exarg_T	*eap;
-    char_u	*cmd;
+script_get(exarg_T* eap, char_u* cmd)
+    //exarg_T	*eap;
+    //char_u	*cmd;
 {
     char_u	*theline;
     char	*end_pattern = NULL;

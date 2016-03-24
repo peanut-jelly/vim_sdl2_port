@@ -1,4 +1,4 @@
-# vim_sdl2_port
+# `vim_sdl2_port`
 A port of vim7.4 to be embeded into SDL2 (Simple DirectMedia Layer 2) applications.
 
 Licensed under Vim License (see `uganda.txt` for details).
@@ -33,10 +33,10 @@ Note that text mode tabline and dialog still works.
 Currently compiles and runs in win32 MINGW.
 
 build:
-  make -f Make_ming.mak
+  `make -f Make_ming.mak`
 
 run:
-  ./gvim
+  `./gvim`
 
 ##Requirements
 

@@ -1,9 +1,9 @@
 # vim_sdl2_port
 A port of vim7.4 to be embeded into SDL2 (Simple DirectMedia Layer 2) applications.
 
-Licensed under Vim License (see uganda.txt for details).
+Licensed under Vim License (see `uganda.txt` for details).
 
-For information of vim, see README_vim.txt
+For information of vim, see `README_vim.txt`
 
 For embedding, see main.c for details.
 

@@ -13,6 +13,7 @@ to do this. And some important SDL-side things are hard coded for now (like
 fonts).
 
 Features removed are:
+```
     FEAT_PRINTER
     FEAT_MENU
     FEAT_TEAROFF
@@ -24,10 +25,10 @@ Features removed are:
     FEAT_MOUSESHAPE
     FEAT_SIGN_ICONS
     FEAT_BEVAL
-
+```
 Note that text mode tabline and dialog still works.
 
-Building
+##Building
 
 Currently compiles and runs in win32 MINGW.
 
@@ -37,7 +38,7 @@ build:
 run:
   ./gvim
 
-Requirements
+##Requirements
 
 You need to run the command "set encoding=utf-8", by hand or via a .vimrc file.
 

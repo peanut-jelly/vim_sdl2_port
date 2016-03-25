@@ -39,8 +39,10 @@ get_indent()
  * Count the size (in window cells) of the indent in line "lnum".
  */
     int
-get_indent_lnum(lnum)
-    linenr_T	lnum;
+get_indent_lnum /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     return get_indent_str(ml_get(lnum), (int)curbuf->b_p_ts);
 }
@@ -51,9 +53,11 @@ get_indent_lnum(lnum)
  * "buf".
  */
     int
-get_indent_buf(buf, lnum)
-    buf_T	*buf;
-    linenr_T	lnum;
+get_indent_buf /*(buf, lnum)*/
+    (
+    buf_T	*buf,
+    linenr_T	lnum
+    )
 {
     return get_indent_str(ml_get_buf(buf, lnum, FALSE), (int)buf->b_p_ts);
 }
@@ -64,9 +68,11 @@ get_indent_buf(buf, lnum)
  * 'tabstop' at "ts"
  */
     int
-get_indent_str(ptr, ts)
-    char_u	*ptr;
-    int		ts;
+get_indent_str /*(ptr, ts)*/
+    (
+    char_u	*ptr,
+    int		ts
+    )
 {
     int		count = 0;
 
@@ -93,9 +99,11 @@ get_indent_str(ptr, ts)
  * Returns TRUE if the line was changed.
  */
     int
-set_indent(size, flags)
-    int		size;		    /* measured in spaces */
-    int		flags;
+set_indent /*(size, flags)*/
+    (
+    int		size,		    /* measured in spaces */
+    int		flags
+    )
 {
     char_u	*p;
     char_u	*newline;
@@ -322,9 +330,11 @@ set_indent(size, flags)
  * Returns TRUE if the line was changed.
  */
     static int
-copy_indent(size, src)
-    int		size;
-    char_u	*src;
+copy_indent /*(size, src)*/
+    (
+    int		size,
+    char_u	*src
+    )
 {
     char_u	*p = NULL;
     char_u	*line = NULL;
@@ -426,8 +436,10 @@ copy_indent(size, src)
  * Since a pattern is used it can actually handle more than numbers.
  */
     int
-get_number_indent(lnum)
-    linenr_T	lnum;
+get_number_indent /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     colnr_T	col;
     pos_T	pos;
@@ -476,8 +488,10 @@ static int cin_is_cinword __ARGS((char_u *line));
  * Return TRUE if the string "line" starts with a word from 'cinwords'.
  */
     static int
-cin_is_cinword(line)
-    char_u	*line;
+cin_is_cinword /*(line)*/
+    (
+    char_u	*line
+    )
 {
     char_u	*cinw;
     char_u	*cinw_buf;
@@ -527,10 +541,12 @@ cin_is_cinword(line)
  * Return TRUE for success, FALSE for failure
  */
     int
-open_line(dir, flags, second_line_indent)
-    int		dir;		/* FORWARD or BACKWARD */
-    int		flags;
-    int		second_line_indent;
+open_line /*(dir, flags, second_line_indent)*/
+    (
+    int		dir,		/* FORWARD or BACKWARD */
+    int		flags,
+    int		second_line_indent
+    )
 {
     char_u	*saved_line;		/* copy of the original line */
     char_u	*next_line = NULL;	/* copy of the next line */
@@ -1591,11 +1607,13 @@ theend:
  * length.
  */
     int
-get_leader_len(line, flags, backward, include_space)
-    char_u	*line;
-    char_u	**flags;
-    int		backward;
-    int		include_space;
+get_leader_len /*(line, flags, backward, include_space)*/
+    (
+    char_u	*line,
+    char_u	**flags,
+    int		backward,
+    int		include_space
+    )
 {
     int		i, j;
     int		result;
@@ -1736,9 +1754,11 @@ get_leader_len(line, flags, backward, include_space)
  * recognized comment leader.
  */
     int
-get_last_leader_offset(line, flags)
-    char_u	*line;
-    char_u	**flags;
+get_last_leader_offset /*(line, flags)*/
+    (
+    char_u	*line,
+    char_u	**flags
+    )
 {
     int		result = -1;
     int		i, j;
@@ -1879,17 +1899,21 @@ get_last_leader_offset(line, flags)
  * Return the number of window lines occupied by buffer line "lnum".
  */
     int
-plines(lnum)
-    linenr_T	lnum;
+plines /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     return plines_win(curwin, lnum, TRUE);
 }
 
     int
-plines_win(wp, lnum, winheight)
-    win_T	*wp;
-    linenr_T	lnum;
-    int		winheight;	/* when TRUE limit to window height */
+plines_win /*(wp, lnum, winheight)*/
+    (
+    win_T	*wp,
+    linenr_T	lnum,
+    int		winheight
+    )/* when TRUE limit to window height */
 {
 #if defined(FEAT_DIFF) || defined(PROTO)
     /* Check for filler lines above this buffer line.  When folded the result
@@ -1898,17 +1922,21 @@ plines_win(wp, lnum, winheight)
 }
 
     int
-plines_nofill(lnum)
-    linenr_T	lnum;
+plines_nofill /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     return plines_win_nofill(curwin, lnum, TRUE);
 }
 
     int
-plines_win_nofill(wp, lnum, winheight)
-    win_T	*wp;
-    linenr_T	lnum;
-    int		winheight;	/* when TRUE limit to window height */
+plines_win_nofill /*(wp, lnum, winheight)*/
+    (
+    win_T	*wp,
+    linenr_T	lnum,
+    int		winheight
+    )/* when TRUE limit to window height */
 {
 #endif
     int		lines;
@@ -1939,9 +1967,11 @@ plines_win_nofill(wp, lnum, winheight)
  * "wp".  Does not care about folding, 'wrap' or 'diff'.
  */
     int
-plines_win_nofold(wp, lnum)
-    win_T	*wp;
-    linenr_T	lnum;
+plines_win_nofold /*(wp, lnum)*/
+    (
+    win_T	*wp,
+    linenr_T	lnum
+    )
 {
     char_u	*s;
     long	col;
@@ -1977,10 +2007,12 @@ plines_win_nofold(wp, lnum)
  * used from the start of the line to the given column number.
  */
     int
-plines_win_col(wp, lnum, column)
-    win_T	*wp;
-    linenr_T	lnum;
-    long	column;
+plines_win_col /*(wp, lnum, column)*/
+    (
+    win_T	*wp,
+    linenr_T	lnum,
+    long	column
+    )
 {
     long	col;
     char_u	*s;
@@ -2034,9 +2066,12 @@ plines_win_col(wp, lnum, column)
 }
 
     int
-plines_m_win(wp, first, last)
-    win_T	*wp;
-    linenr_T	first, last;
+plines_m_win /*(wp, first, last)*/
+    (
+    win_T	*wp,
+    linenr_T	first, 
+    linenr_T    last
+    )
 {
     int		count = 0;
 
@@ -2074,8 +2109,10 @@ plines_m_win(wp, first, last)
  * Handles Replace mode and multi-byte characters.
  */
     void
-ins_bytes(p)
-    char_u	*p;
+ins_bytes /*(p)*/
+    (
+    char_u	*p
+    )
 {
     ins_bytes_len(p, (int)STRLEN(p));
 }
@@ -2088,9 +2125,11 @@ ins_bytes(p)
  * Handles Replace mode and multi-byte characters.
  */
     void
-ins_bytes_len(p, len)
-    char_u	*p;
-    int		len;
+ins_bytes_len /*(p, len)*/
+    (
+    char_u	*p,
+    int		len
+    )
 {
     int		i;
 # ifdef FEAT_MBYTE
@@ -2121,8 +2160,10 @@ ins_bytes_len(p, len)
  * convert bytes to a character.
  */
     void
-ins_char(c)
-    int		c;
+ins_char /*(c)*/
+    (
+    int		c
+    )
 {
 #if defined(FEAT_MBYTE) || defined(PROTO)
     char_u	buf[MB_MAXBYTES + 1];
@@ -2139,9 +2180,11 @@ ins_char(c)
 }
 
     void
-ins_char_bytes(buf, charlen)
-    char_u	*buf;
-    int		charlen;
+ins_char_bytes /*(buf, charlen)*/
+    (
+    char_u	*buf,
+    int		charlen
+    )
 {
     int		c = buf[0];
 #endif
@@ -2326,8 +2369,10 @@ ins_char_bytes(buf, charlen)
  * Caller must have prepared for undo.
  */
     void
-ins_str(s)
-    char_u	*s;
+ins_str /*(s)*/
+    (
+    char_u	*s
+    )
 {
     char_u	*oldp, *newp;
     int		newlen = (int)STRLEN(s);
@@ -2364,8 +2409,10 @@ ins_str(s)
  * return FAIL for failure, OK otherwise
  */
     int
-del_char(fixpos)
-    int		fixpos;
+del_char /*(fixpos)*/
+    (
+    int		fixpos
+    )
 {
 #ifdef FEAT_MBYTE
     if (has_mbyte)
@@ -2385,9 +2432,11 @@ del_char(fixpos)
  * Like del_bytes(), but delete characters instead of bytes.
  */
     int
-del_chars(count, fixpos)
-    long	count;
-    int		fixpos;
+del_chars /*(count, fixpos)*/
+    (
+    long	count,
+    int		fixpos
+    )
 {
     long	bytes = 0;
     long	i;
@@ -2413,10 +2462,12 @@ del_chars(count, fixpos)
  * return FAIL for failure, OK otherwise
  */
     int
-del_bytes(count, fixpos_arg, use_delcombine)
-    long	count;
-    int		fixpos_arg;
-    int		use_delcombine UNUSED;	    /* 'delcombine' option applies */
+del_bytes /*(count, fixpos_arg, use_delcombine)*/
+    (
+    long	count,
+    int		fixpos_arg,
+    int		use_delcombine UNUSED
+    )/* 'delcombine' option applies */
 {
     char_u	*oldp, *newp;
     colnr_T	oldlen;
@@ -2530,8 +2581,10 @@ del_bytes(count, fixpos_arg, use_delcombine)
  * return FAIL for failure, OK otherwise
  */
     int
-truncate_line(fixpos)
-    int		fixpos;	    /* if TRUE fix the cursor position when done */
+truncate_line /*(fixpos)*/
+    (
+    int		fixpos
+    )/* if TRUE fix the cursor position when done */
 {
     char_u	*newp;
     linenr_T	lnum = curwin->w_cursor.lnum;
@@ -2564,9 +2617,11 @@ truncate_line(fixpos)
  * Saves the lines for undo first if "undo" is TRUE.
  */
     void
-del_lines(nlines, undo)
-    long	nlines;		/* number of lines to delete */
-    int		undo;		/* if TRUE, prepare for undo */
+del_lines /*(nlines, undo)*/
+    (
+    long	nlines,		/* number of lines to delete */
+    int		undo		/* if TRUE, prepare for undo */
+    )
 {
     long	n;
     linenr_T	first = curwin->w_cursor.lnum;
@@ -2601,8 +2656,10 @@ del_lines(nlines, undo)
 }
 
     int
-gchar_pos(pos)
-    pos_T *pos;
+gchar_pos /*(pos)*/
+    (
+    pos_T *pos
+    )
 {
     char_u	*ptr = ml_get_pos(pos);
 
@@ -2628,8 +2685,10 @@ gchar_cursor()
  * It is directly written into the block.
  */
     void
-pchar_cursor(c)
-    int c;
+pchar_cursor /*(c)*/
+    (
+    int c
+    )
 {
     *(ml_get_buf(curbuf, curwin->w_cursor.lnum, TRUE)
 						  + curwin->w_cursor.col) = c;
@@ -2642,8 +2701,10 @@ pchar_cursor(c)
  *		    the line.
  */
     int
-inindent(extra)
-    int	    extra;
+inindent /*(extra)*/
+    (
+    int	    extra
+    )
 {
     char_u	*ptr;
     colnr_T	col;
@@ -2660,8 +2721,10 @@ inindent(extra)
  * Skip to next part of an option argument: Skip space and comma.
  */
     char_u *
-skip_to_option_part(p)
-    char_u  *p;
+skip_to_option_part /*(p)*/
+    (
+    char_u  *p
+    )
 {
     if (*p == ',')
 	++p;
@@ -2754,9 +2817,11 @@ static void changed_common __ARGS((linenr_T lnum, colnr_T col, linenr_T lnume, l
  * Careful: may trigger autocommands that reload the buffer.
  */
     void
-changed_bytes(lnum, col)
-    linenr_T	lnum;
-    colnr_T	col;
+changed_bytes /*(lnum, col)*/
+    (
+    linenr_T	lnum,
+    colnr_T	col
+    )
 {
     changedOneline(curbuf, lnum);
     changed_common(lnum, col, lnum + 1, 0L);
@@ -2781,9 +2846,11 @@ changed_bytes(lnum, col)
 }
 
     static void
-changedOneline(buf, lnum)
-    buf_T	*buf;
-    linenr_T	lnum;
+changedOneline /*(buf, lnum)*/
+    (
+    buf_T	*buf,
+    linenr_T	lnum
+    )
 {
     if (buf->b_mod_set)
     {
@@ -2809,9 +2876,11 @@ changedOneline(buf, lnum)
  * Takes care of marking the buffer to be redrawn and sets the changed flag.
  */
     void
-appended_lines(lnum, count)
-    linenr_T	lnum;
-    long	count;
+appended_lines /*(lnum, count)*/
+    (
+    linenr_T	lnum,
+    long	count
+    )
 {
     changed_lines(lnum + 1, 0, lnum + 1, count);
 }
@@ -2820,9 +2889,11 @@ appended_lines(lnum, count)
  * Like appended_lines(), but adjust marks first.
  */
     void
-appended_lines_mark(lnum, count)
-    linenr_T	lnum;
-    long	count;
+appended_lines_mark /*(lnum, count)*/
+    (
+    linenr_T	lnum,
+    long	count
+    )
 {
     mark_adjust(lnum + 1, (linenr_T)MAXLNUM, count, 0L);
     changed_lines(lnum + 1, 0, lnum + 1, count);
@@ -2834,9 +2905,11 @@ appended_lines_mark(lnum, count)
  * Takes care of marking the buffer to be redrawn and sets the changed flag.
  */
     void
-deleted_lines(lnum, count)
-    linenr_T	lnum;
-    long	count;
+deleted_lines /*(lnum, count)*/
+    (
+    linenr_T	lnum,
+    long	count
+    )
 {
     changed_lines(lnum, 0, lnum + count, -count);
 }
@@ -2847,9 +2920,11 @@ deleted_lines(lnum, count)
  * be triggered to display the cursor.
  */
     void
-deleted_lines_mark(lnum, count)
-    linenr_T	lnum;
-    long	count;
+deleted_lines_mark /*(lnum, count)*/
+    (
+    linenr_T	lnum,
+    long	count
+    )
 {
     mark_adjust(lnum, (linenr_T)(lnum + count - 1), (long)MAXLNUM, -count);
     changed_lines(lnum, 0, lnum + count, -count);
@@ -2868,11 +2943,13 @@ deleted_lines_mark(lnum, count)
  * Careful: may trigger autocommands that reload the buffer.
  */
     void
-changed_lines(lnum, col, lnume, xtra)
-    linenr_T	lnum;	    /* first line with change */
-    colnr_T	col;	    /* column in first line with change */
-    linenr_T	lnume;	    /* line below last changed line */
-    long	xtra;	    /* number of extra lines (negative when deleting) */
+changed_lines /*(lnum, col, lnume, xtra)*/
+    (
+    linenr_T	lnum,	    /* first line with change */
+    colnr_T	col,	    /* column in first line with change */
+    linenr_T	lnume,	    /* line below last changed line */
+    long	xtra
+    )/* number of extra lines (negative when deleting) */
 {
     changed_lines_buf(curbuf, lnum, lnume, xtra);
 
@@ -2901,11 +2978,13 @@ changed_lines(lnum, col, lnume, xtra)
 }
 
     static void
-changed_lines_buf(buf, lnum, lnume, xtra)
-    buf_T	*buf;
-    linenr_T	lnum;	    /* first line with change */
-    linenr_T	lnume;	    /* line below last changed line */
-    long	xtra;	    /* number of extra lines (negative when deleting) */
+changed_lines_buf /*(buf, lnum, lnume, xtra)*/
+    (
+    buf_T	*buf,
+    linenr_T	lnum,	    /* first line with change */
+    linenr_T	lnume,	    /* line below last changed line */
+    long	xtra
+    )/* number of extra lines (negative when deleting) */
 {
     if (buf->b_mod_set)
     {
@@ -2939,11 +3018,13 @@ changed_lines_buf(buf, lnum, lnume, xtra)
  * Careful: may trigger autocommands that reload the buffer.
  */
     static void
-changed_common(lnum, col, lnume, xtra)
-    linenr_T	lnum;
-    colnr_T	col;
-    linenr_T	lnume;
-    long	xtra;
+changed_common /*(lnum, col, lnume, xtra)*/
+    (
+    linenr_T	lnum,
+    colnr_T	col,
+    linenr_T	lnume,
+    long	xtra
+    )
 {
     win_T	*wp;
 #ifdef FEAT_WINDOWS
@@ -3137,9 +3218,11 @@ changed_common(lnum, col, lnume, xtra)
  * unchanged() is called when the changed flag must be reset for buffer 'buf'
  */
     void
-unchanged(buf, ff)
-    buf_T	*buf;
-    int		ff;	/* also reset 'fileformat' */
+unchanged /*(buf, ff)*/
+    (
+    buf_T	*buf,
+    int		ff
+    )/* also reset 'fileformat' */
 {
     if (buf->b_changed || (ff && file_ff_differs(buf, FALSE)))
     {
@@ -3167,8 +3250,10 @@ unchanged(buf, ff)
  *		 need to be updated
  */
     void
-check_status(buf)
-    buf_T	*buf;
+check_status /*(buf)*/
+    (
+    buf_T	*buf
+    )
 {
     win_T	*wp;
 
@@ -3191,8 +3276,10 @@ check_status(buf)
  * Careful: may trigger autocommands that reload the buffer.
  */
     void
-change_warning(col)
-    int	    col;		/* column for message; non-zero when in insert
+change_warning /*(col)*/
+    (
+    int	    col
+    )/* column for message; non-zero when in insert
 				   mode and 'showmode' is on */
 {
     static char *w_readonly = N_("W10: Warning: Changing a readonly file");
@@ -3247,9 +3334,11 @@ change_warning(col)
  * return the 'y' or 'n'
  */
     int
-ask_yesno(str, direct)
-    char_u  *str;
-    int	    direct;
+ask_yesno /*(str, direct)*/
+    (
+    char_u  *str,
+    int	    direct
+    )
 {
     int	    r = ' ';
     int	    save_State = State;
@@ -3296,8 +3385,10 @@ ask_yesno(str, direct)
  * Return TRUE if "c" is a mouse key.
  */
     int
-is_mouse_key(c)
-    int c;
+is_mouse_key /*(c)*/
+    (
+    int c
+    )
 {
     return c == K_LEFTMOUSE
 	|| c == K_LEFTMOUSE_NM
@@ -3452,9 +3543,11 @@ get_keystroke()
  * When "mouse_used" is not NULL allow using the mouse.
  */
     int
-get_number(colon, mouse_used)
-    int	    colon;			/* allow colon to abort */
-    int	    *mouse_used;
+get_number /*(colon, mouse_used)*/
+    (
+    int	    colon,			/* allow colon to abort */
+    int	    *mouse_used
+    )
 {
     int	n = 0;
     int	c;
@@ -3523,8 +3616,10 @@ get_number(colon, mouse_used)
  * the line number.
  */
     int
-prompt_for_number(mouse_used)
-    int		*mouse_used;
+prompt_for_number /*(mouse_used)*/
+    (
+    int		*mouse_used
+    )
 {
     int		i;
     int		save_cmdline_row;
@@ -3561,8 +3656,10 @@ prompt_for_number(mouse_used)
 }
 
     void
-msgmore(n)
-    long n;
+msgmore /*(n)*/
+    (
+    long n
+    )
 {
     long pn;
 
@@ -3823,8 +3920,10 @@ free_users()
  * again soon.
  */
     char_u *
-expand_env_save(src)
-    char_u	*src;
+expand_env_save /*(src)*/
+    (
+    char_u	*src
+    )
 {
     return expand_env_save_opt(src, FALSE);
 }
@@ -3834,9 +3933,11 @@ expand_env_save(src)
  * expand "~" at the start.
  */
     char_u *
-expand_env_save_opt(src, one)
-    char_u	*src;
-    int		one;
+expand_env_save_opt /*(src, one)*/
+    (
+    char_u	*src,
+    int		one
+    )
 {
     char_u	*p;
 
@@ -3853,22 +3954,26 @@ expand_env_save_opt(src, one)
  * If anything fails no expansion is done and dst equals src.
  */
     void
-expand_env(src, dst, dstlen)
-    char_u	*src;		/* input string e.g. "$HOME/vim.hlp" */
-    char_u	*dst;		/* where to put the result */
-    int		dstlen;		/* maximum length of the result */
+expand_env /*(src, dst, dstlen)*/
+    (
+    char_u	*src,		/* input string e.g. "$HOME/vim.hlp" */
+    char_u	*dst,		/* where to put the result */
+    int		dstlen
+    )/* maximum length of the result */
 {
     expand_env_esc(src, dst, dstlen, FALSE, FALSE, NULL);
 }
 
     void
-expand_env_esc(srcp, dst, dstlen, esc, one, startstr)
-    char_u	*srcp;		/* input string e.g. "$HOME/vim.hlp" */
-    char_u	*dst;		/* where to put the result */
-    int		dstlen;		/* maximum length of the result */
-    int		esc;		/* escape spaces in expanded variables */
-    int		one;		/* "srcp" is one file name */
-    char_u	*startstr;	/* start again after this (can be NULL) */
+expand_env_esc /*(srcp, dst, dstlen, esc, one, startstr)*/
+    (
+    char_u	*srcp,		/* input string e.g. "$HOME/vim.hlp" */
+    char_u	*dst,		/* where to put the result */
+    int		dstlen,		/* maximum length of the result */
+    int		esc,		/* escape spaces in expanded variables */
+    int		one,		/* "srcp" is one file name */
+    char_u	*startstr
+    )/* start again after this (can be NULL) */
 {
     char_u	*src;
     char_u	*tail;
@@ -4138,9 +4243,11 @@ expand_env_esc(srcp, dst, dstlen, esc, one, startstr)
  * initialized to FALSE by the caller.
  */
     char_u *
-vim_getenv(name, mustfree)
-    char_u	*name;
-    int		*mustfree;
+vim_getenv /*(name, mustfree)*/
+    (
+    char_u	*name,
+    int		*mustfree
+    )
 {
     char_u	*p;
     char_u	*pend;
@@ -4366,8 +4473,10 @@ vim_getenv(name, mustfree)
  * Return NULL if not, return its name in allocated memory otherwise.
  */
     static char_u *
-vim_version_dir(vimdir)
-    char_u	*vimdir;
+vim_version_dir /*(vimdir)*/
+    (
+    char_u	*vimdir
+    )
 {
     char_u	*p;
 
@@ -4389,10 +4498,12 @@ vim_version_dir(vimdir)
  * the length of "name/".  Otherwise return "pend".
  */
     static char_u *
-remove_tail(p, pend, name)
-    char_u	*p;
-    char_u	*pend;
-    char_u	*name;
+remove_tail /*(p, pend, name)*/
+    (
+    char_u	*p,
+    char_u	*pend,
+    char_u	*name
+    )
 {
     int		len = (int)STRLEN(name) + 1;
     char_u	*newend = pend - len;
@@ -4408,9 +4519,11 @@ remove_tail(p, pend, name)
  * Our portable version of setenv.
  */
     void
-vim_setenv(name, val)
-    char_u	*name;
-    char_u	*val;
+vim_setenv /*(name, val)*/
+    (
+    char_u	*name,
+    char_u	*val
+    )
 {
     char_u	*envbuf;
 
@@ -4448,9 +4561,11 @@ vim_setenv(name, val)
  * Function given to ExpandGeneric() to obtain an environment variable name.
  */
     char_u *
-get_env_name(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_env_name /*(xp, idx)*/
+    (
+    expand_T	*xp UNUSED,
+    int		idx
+    )
 {
 # if defined(AMIGA) || defined(__MRC__) || defined(__SC__)
     /*
@@ -4523,9 +4638,11 @@ init_users()
  * Function given to ExpandGeneric() to obtain an user names.
  */
     char_u*
-get_users(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_users /*(xp, idx)*/
+    (
+    expand_T	*xp UNUSED,
+    int		idx
+    )
 {
     init_users();
     if (idx < ga_users.ga_len)
@@ -4539,8 +4656,10 @@ get_users(xp, idx)
  * 1 if name partially matches the beginning of a user name.
  * 2 is name fully matches a user name.
  */
-int match_user(name)
-    char_u* name;
+int match_user /*(name)*/
+    (
+    char_u* name
+    )
 {
     int i;
     int n = (int)STRLEN(name);
@@ -4564,13 +4683,15 @@ int match_user(name)
  * If anything fails (except when out of space) dst equals src.
  */
     void
-home_replace(buf, src, dst, dstlen, one)
-    buf_T	*buf;	/* when not NULL, check for help files */
-    char_u	*src;	/* input file name */
-    char_u	*dst;	/* where to put the result */
-    int		dstlen;	/* maximum length of the result */
-    int		one;	/* if TRUE, only replace one file name, include
+home_replace/*(buf, src, dst, dstlen, one)*/
+    (
+    buf_T	*buf,	/* when not NULL, check for help files */
+    char_u	*src,	/* input file name */
+    char_u	*dst,	/* where to put the result */
+    int		dstlen,	/* maximum length of the result */
+    int		one	/* if TRUE, only replace one file name, include
 			   spaces and commas in the file name. */
+    )
 {
     size_t	dirlen = 0, envlen = 0;
     size_t	len;
@@ -4688,9 +4809,11 @@ home_replace(buf, src, dst, dstlen, one)
  * When something fails, NULL is returned.
  */
     char_u  *
-home_replace_save(buf, src)
-    buf_T	*buf;	/* when not NULL, check for help files */
-    char_u	*src;	/* input file name */
+home_replace_save /*(buf, src)*/
+    (
+    buf_T	*buf,	/* when not NULL, check for help files */
+    char_u	*src
+    )/* input file name */
 {
     char_u	*dst;
     unsigned	len;
@@ -4714,9 +4837,12 @@ home_replace_save(buf, src)
  * For the first name environment variables are expanded
  */
     int
-fullpathcmp(s1, s2, checkname)
-    char_u *s1, *s2;
-    int	    checkname;		/* when both don't exist, check file names */
+fullpathcmp /*(s1, s2, checkname)*/
+    (
+    char_u *s1, 
+    char_u *s2,
+    int	    checkname		/* when both don't exist, check file names */
+    )
 {
 #ifdef UNIX
     char_u	    exp1[MAXPATHL];
@@ -4790,8 +4916,10 @@ fullpathcmp(s1, s2, checkname)
  * Fail safe: never returns NULL.
  */
     char_u *
-gettail(fname)
-    char_u *fname;
+gettail /*(fname)*/
+    (
+    char_u *fname
+    )
 {
     char_u  *p1, *p2;
 
@@ -4816,8 +4944,10 @@ static char_u *gettail_dir __ARGS((char_u *fname));
  *	 ^	       ^	     ^	      ^
  */
     static char_u *
-gettail_dir(fname)
-    char_u *fname;
+gettail_dir /*(fname)*/
+    (
+    char_u *fname
+    )
 {
     char_u	*dir_end = fname;
     char_u	*next_dir_end = fname;
@@ -4852,8 +4982,10 @@ gettail_dir(fname)
  * Always returns a valid pointer.
  */
     char_u *
-gettail_sep(fname)
-    char_u	*fname;
+gettail_sep /*(fname)*/
+    (
+    char_u	*fname
+    )
 {
     char_u	*p;
     char_u	*t;
@@ -4873,8 +5005,10 @@ gettail_sep(fname)
  * get the next path component (just after the next path separator).
  */
     char_u *
-getnextcomp(fname)
-    char_u *fname;
+getnextcomp /*(fname)*/
+    (
+    char_u *fname
+    )
 {
     while (*fname && !vim_ispathsep(*fname))
 	mb_ptr_adv(fname);
@@ -4889,8 +5023,10 @@ getnextcomp(fname)
  * If there is no head, path is returned.
  */
     char_u *
-get_past_head(path)
-    char_u  *path;
+get_past_head /*(path)*/
+    (
+    char_u  *path
+    )
 {
     char_u  *retval;
 
@@ -4921,8 +5057,10 @@ get_past_head(path)
  * return TRUE if 'c' is a path separator.
  */
     int
-vim_ispathsep(c)
-    int c;
+vim_ispathsep /*(c)*/
+    (
+    int c
+    )
 {
 #ifdef UNIX
     return (c == '/');	    /* UNIX has ':' inside file names */
@@ -4946,8 +5084,10 @@ vim_ispathsep(c)
  * return TRUE if 'c' is a path list separator.
  */
     int
-vim_ispathlistsep(c)
-    int c;
+vim_ispathlistsep /*(c)*/
+    (
+    int c
+    )
 {
 #ifdef UNIX
     return (c == ':');
@@ -4964,8 +5104,10 @@ vim_ispathlistsep(c)
  * It's done in-place.
  */
     void
-shorten_dir(str)
-    char_u *str;
+shorten_dir /*(str)*/
+    (
+    char_u *str
+    )
 {
     char_u	*tail, *s, *d;
     int		skip = FALSE;
@@ -5010,8 +5152,10 @@ shorten_dir(str)
  * "fname" must be writable!.
  */
     int
-dir_of_file_exists(fname)
-    char_u	*fname;
+dir_of_file_exists /*(fname)*/
+    (
+    char_u	*fname
+    )
 {
     char_u	*p;
     int		c;
@@ -5032,8 +5176,11 @@ dir_of_file_exists(fname)
  * and deal with 'fileignorecase'.
  */
     int
-vim_fnamecmp(x, y)
-    char_u	*x, *y;
+vim_fnamecmp /*(x, y)*/
+    (
+    char_u	*x, 
+    char_u      *y
+    )
 {
 #ifdef BACKSLASH_IN_FILENAME
     return vim_fnamencmp(x, y, MAXPATHL);
@@ -5045,9 +5192,12 @@ vim_fnamecmp(x, y)
 }
 
     int
-vim_fnamencmp(x, y, len)
-    char_u	*x, *y;
-    size_t	len;
+vim_fnamencmp /*(x, y, len)*/
+    (
+    char_u	*x, 
+    char_u      *y,
+    size_t	len
+    )
 {
 #ifdef BACKSLASH_IN_FILENAME
     char_u	*px = x;
@@ -5083,10 +5233,12 @@ vim_fnamencmp(x, y, len)
  * Only add a '/' or '\\' when 'sep' is TRUE and it is necessary.
  */
     char_u  *
-concat_fnames(fname1, fname2, sep)
-    char_u  *fname1;
-    char_u  *fname2;
-    int	    sep;
+concat_fnames /*(fname1, fname2, sep)*/
+    (
+    char_u  *fname1,
+    char_u  *fname2,
+    int	    sep
+    )
 {
     char_u  *dest;
 
@@ -5106,9 +5258,11 @@ concat_fnames(fname1, fname2, sep)
  * Returns NULL when out of memory.
  */
     char_u  *
-concat_str(str1, str2)
-    char_u  *str1;
-    char_u  *str2;
+concat_str /*(str1, str2)*/
+    (
+    char_u  *str1,
+    char_u  *str2
+    )
 {
     char_u  *dest;
     size_t  l = STRLEN(str1);
@@ -5127,8 +5281,10 @@ concat_str(str1, str2)
  * separator.
  */
     void
-add_pathsep(p)
-    char_u	*p;
+add_pathsep /*(p)*/
+    (
+    char_u	*p
+    )
 {
     if (*p != NUL && !after_pathsep(p, p + STRLEN(p)))
 	STRCAT(p, PATHSEPSTR);
@@ -5139,10 +5295,12 @@ add_pathsep(p)
  * Returns NULL when out of memory.
  */
     char_u  *
-FullName_save(fname, force)
-    char_u	*fname;
-    int		force;		/* force expansion, even when it already looks
+FullName_save /*(fname, force)*/
+    (
+    char_u	*fname,
+    int		force		/* force expansion, even when it already looks
 				 * like a full path name */
+    )
 {
     char_u	*buf;
     char_u	*new_fname = NULL;
@@ -5171,8 +5329,10 @@ static char_u	*skip_string __ARGS((char_u *p));
  * Search starts at w_cursor.lnum and goes backwards.
  */
     pos_T *
-find_start_comment(ind_maxcomment)	    /* XXX */
-    int		ind_maxcomment;
+find_start_comment /*(ind_maxcomment)*/	    /* XXX */
+    (
+    int		ind_maxcomment
+    )
 {
     pos_T	*pos;
     char_u	*line;
@@ -5209,8 +5369,10 @@ find_start_comment(ind_maxcomment)	    /* XXX */
  * If there is no string or character, return argument unmodified.
  */
     static char_u *
-skip_string(p)
-    char_u  *p;
+skip_string /*(p)*/
+    (
+    char_u  *p
+    )
 {
     int	    i;
 
@@ -5323,8 +5485,10 @@ static int	ind_hash_comment = 0;   /* # starts a comment */
  * Also skip over Perl/shell comments if desired.
  */
     static char_u *
-cin_skipcomment(s)
-    char_u	*s;
+cin_skipcomment /*(s)*/
+    (
+    char_u	*s
+    )
 {
     while (*s)
     {
@@ -5364,8 +5528,10 @@ cin_skipcomment(s)
  * not considered code.
  */
     static int
-cin_nocode(s)
-    char_u	*s;
+cin_nocode /*(s)*/
+    (
+    char_u	*s
+    )
 {
     return *cin_skipcomment(s) == NUL;
 }
@@ -5400,8 +5566,10 @@ find_line_comment() /* XXX */
  * Check if string matches "label:"; move to character after ':' if true.
  */
     static int
-cin_islabel_skip(s)
-    char_u	**s;
+cin_islabel_skip /*(s)*/
+    (
+    char_u	**s
+    )
 {
     if (!vim_isIDc(**s))	    /* need at least one ID character */
 	return FALSE;
@@ -5420,8 +5588,10 @@ cin_islabel_skip(s)
  * Note: curwin->w_cursor must be where we are looking for the label.
  */
     int
-cin_islabel(ind_maxcomment)		/* XXX */
-    int		ind_maxcomment;
+cin_islabel /*(ind_maxcomment)*/		/* XXX */
+    (
+    int		ind_maxcomment
+    )
 {
     char_u	*s;
 
@@ -5525,9 +5695,11 @@ cin_isinit(void)
  * Recognize a switch label: "case .*:" or "default:".
  */
      int
-cin_iscase(s, strict)
-    char_u *s;
-    int strict; /* Allow relaxed check of case statement for JS */
+cin_iscase /*(s, strict)*/
+    (
+    char_u *s,
+    int strict
+    )/* Allow relaxed check of case statement for JS */
 {
     s = cin_skipcomment(s);
     if (cin_starts_with(s, "case"))
@@ -5567,8 +5739,10 @@ cin_iscase(s, strict)
  * Recognize a "default" switch label.
  */
     static int
-cin_isdefault(s)
-    char_u  *s;
+cin_isdefault /*(s)*/
+    (
+    char_u  *s
+    )
 {
     return (STRNCMP(s, "default", 7) == 0
 	    && *(s = cin_skipcomment(s + 7)) == ':'
@@ -5579,8 +5753,10 @@ cin_isdefault(s)
  * Recognize a "public/private/protected" scope declaration label.
  */
     int
-cin_isscopedecl(s)
-    char_u	*s;
+cin_isscopedecl /*(s)*/
+    (
+    char_u	*s
+    )
 {
     int		i;
 
@@ -5603,8 +5779,10 @@ cin_isscopedecl(s)
  * Recognize a "namespace" scope declaration.
  */
     static int
-cin_is_cpp_namespace(s)
-    char_u	*s;
+cin_is_cpp_namespace /*(s)*/
+    (
+    char_u	*s
+    )
 {
     char_u	*p;
     int		has_name = FALSE;
@@ -5647,8 +5825,10 @@ cin_is_cpp_namespace(s)
  *		       ^
  */
     static char_u *
-after_label(l)
-    char_u  *l;
+after_label /*(l)*/
+    (
+    char_u  *l
+    )
 {
     for ( ; *l; ++l)
     {
@@ -5675,8 +5855,10 @@ after_label(l)
  * Return 0 if there is nothing after the label.
  */
     static int
-get_indent_nolabel(lnum)		/* XXX */
-    linenr_T	lnum;
+get_indent_nolabel /*(lnum)*/		/* XXX */
+    (
+    linenr_T	lnum
+    )
 {
     char_u	*l;
     pos_T	fp;
@@ -5701,10 +5883,12 @@ get_indent_nolabel(lnum)		/* XXX */
  *		^
  */
     static int
-skip_label(lnum, pp, ind_maxcomment)
-    linenr_T	lnum;
-    char_u	**pp;
-    int		ind_maxcomment;
+skip_label /*(lnum, pp, ind_maxcomment)*/
+    (
+    linenr_T	lnum,
+    char_u	**pp,
+    int		ind_maxcomment
+    )
 {
     char_u	*l;
     int		amount;
@@ -5792,8 +5976,10 @@ cin_first_id_amount()
  *	       here";
  */
     static int
-cin_get_equal_amount(lnum)
-    linenr_T	lnum;
+cin_get_equal_amount /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     char_u	*line;
     char_u	*s;
@@ -5835,8 +6021,10 @@ cin_get_equal_amount(lnum)
  * Recognize a preprocessor statement: Any line that starts with '#'.
  */
     static int
-cin_ispreproc(s)
-    char_u *s;
+cin_ispreproc /*(s)*/
+    (
+    char_u *s
+    )
 {
     if (*skipwhite(s) == '#')
 	return TRUE;
@@ -5849,9 +6037,11 @@ cin_ispreproc(s)
  * start and return the line in "*pp".
  */
     static int
-cin_ispreproc_cont(pp, lnump)
-    char_u	**pp;
-    linenr_T	*lnump;
+cin_ispreproc_cont /*(pp, lnump)*/
+    (
+    char_u	**pp,
+    linenr_T	*lnump
+    )
 {
     char_u	*line = *pp;
     linenr_T	lnum = *lnump;
@@ -5881,8 +6071,10 @@ cin_ispreproc_cont(pp, lnump)
  * Recognize the start of a C or C++ comment.
  */
     static int
-cin_iscomment(p)
-    char_u  *p;
+cin_iscomment /*(p)*/
+    (
+    char_u  *p
+    )
 {
     return (p[0] == '/' && (p[1] == '*' || p[1] == '/'));
 }
@@ -5891,8 +6083,10 @@ cin_iscomment(p)
  * Recognize the start of a "//" comment.
  */
     static int
-cin_islinecomment(p)
-    char_u *p;
+cin_islinecomment /*(p)*/
+    (
+    char_u *p
+    )
 {
     return (p[0] == '/' && p[1] == '/');
 }
@@ -5907,10 +6101,12 @@ cin_islinecomment(p)
  * both apply in order to determine initializations).
  */
     static int
-cin_isterminated(s, incl_open, incl_comma)
-    char_u	*s;
-    int		incl_open;	/* include '{' at the end as terminator */
-    int		incl_comma;	/* recognize a trailing comma */
+cin_isterminated /*(s, incl_open, incl_comma)*/
+    (
+    char_u	*s,
+    int		incl_open,	/* include '{' at the end as terminator */
+    int		incl_comma
+    )/* recognize a trailing comma */
 {
     char_u	found_start = 0;
     unsigned	n_open = 0;
@@ -5959,12 +6155,14 @@ cin_isterminated(s, incl_open, incl_comma)
  * "min_lnum" is the line before which we will not be looking.
  */
     static int
-cin_isfuncdecl(sp, first_lnum, min_lnum, ind_maxparen, ind_maxcomment)
-    char_u	**sp;
-    linenr_T	first_lnum;
-    linenr_T	min_lnum;
-    int		ind_maxparen;
-    int		ind_maxcomment;
+cin_isfuncdecl /*(sp, first_lnum, min_lnum, ind_maxparen, ind_maxcomment)*/
+    (
+    char_u	**sp,
+    linenr_T	first_lnum,
+    linenr_T	min_lnum,
+    int		ind_maxparen,
+    int		ind_maxcomment
+    )
 {
     char_u	*s;
     linenr_T	lnum = first_lnum;
@@ -6058,15 +6256,19 @@ done:
 }
 
     static int
-cin_isif(p)
-    char_u  *p;
+cin_isif /*(p)*/
+    (
+    char_u  *p
+    )
 {
     return (STRNCMP(p, "if", 2) == 0 && !vim_isIDc(p[2]));
 }
 
     static int
-cin_iselse(p)
-    char_u  *p;
+cin_iselse /*(p)*/
+    (
+    char_u  *p
+    )
 {
     if (*p == '}')	    /* accept "} else" */
 	p = cin_skipcomment(p + 1);
@@ -6074,8 +6276,10 @@ cin_iselse(p)
 }
 
     static int
-cin_isdo(p)
-    char_u  *p;
+cin_isdo /*(p)*/
+    (
+    char_u  *p
+    )
 {
     return (STRNCMP(p, "do", 2) == 0 && !vim_isIDc(p[2]));
 }
@@ -6086,10 +6290,12 @@ cin_isdo(p)
  * ')' and ';'. The condition may be spread over several lines.
  */
     static int
-cin_iswhileofdo(p, lnum, ind_maxparen)	    /* XXX */
-    char_u	*p;
-    linenr_T	lnum;
-    int		ind_maxparen;
+cin_iswhileofdo /*(p, lnum, ind_maxparen)*/	    /* XXX */
+    (
+    char_u	*p,
+    linenr_T	lnum,
+    int		ind_maxparen
+    )
 {
     pos_T	cursor_save;
     pos_T	*trypos;
@@ -6124,9 +6330,11 @@ cin_iswhileofdo(p, lnum, ind_maxparen)	    /* XXX */
  * string was found.
  */
     static int
-cin_is_if_for_while_before_offset(line, poffset)
-    char_u *line;
-    int    *poffset;
+cin_is_if_for_while_before_offset /*(line, poffset)*/
+    (
+    char_u *line,
+    int    *poffset
+    )
 {
     int offset = *poffset;
 
@@ -6172,10 +6380,12 @@ probablyFound:
  * Adjust the cursor to the line with "while".
  */
     static int
-cin_iswhileofdo_end(terminated, ind_maxparen, ind_maxcomment)
-    int	    terminated;
-    int	    ind_maxparen;
-    int	    ind_maxcomment;
+cin_iswhileofdo_end /*(terminated, ind_maxparen, ind_maxcomment)*/
+    (
+    int	    terminated,
+    int	    ind_maxparen,
+    int	    ind_maxcomment
+    )
 {
     char_u	*line;
     char_u	*p;
@@ -6224,8 +6434,10 @@ cin_iswhileofdo_end(terminated, ind_maxparen, ind_maxcomment)
 }
 
     static int
-cin_isbreak(p)
-    char_u  *p;
+cin_isbreak /*(p)*/
+    (
+    char_u  *p
+    )
 {
     return (STRNCMP(p, "break", 5) == 0 && !vim_isIDc(p[5]));
 }
@@ -6244,8 +6456,10 @@ cin_isbreak(p)
  * This is a lot of guessing.  Watch out for "cond ? func() : foo".
  */
     static int
-cin_is_cpp_baseclass(col)
-    colnr_T	*col;	    /* return: column to align with */
+cin_is_cpp_baseclass /*(col)*/
+    (
+    colnr_T	*col
+    )/* return: column to align with */
 {
     char_u	*s;
     int		class_or_struct, lookfor_ctor_init, cpp_base_class;
@@ -6391,11 +6605,13 @@ cin_is_cpp_baseclass(col)
 }
 
     static int
-get_baseclass_amount(col, ind_maxparen, ind_maxcomment, ind_cpp_baseclass)
-    int		col;
-    int		ind_maxparen;
-    int		ind_maxcomment;
-    int		ind_cpp_baseclass;
+get_baseclass_amount /*(col, ind_maxparen, ind_maxcomment, ind_cpp_baseclass)*/
+    (
+    int		col,
+    int		ind_maxparen,
+    int		ind_maxcomment,
+    int		ind_cpp_baseclass
+    )
 {
     int		amount;
     colnr_T	vcol;
@@ -6428,10 +6644,12 @@ get_baseclass_amount(col, ind_maxparen, ind_maxcomment, ind_cpp_baseclass)
  * Ignore "ignore" after "find" if it's not NULL.
  */
     static int
-cin_ends_in(s, find, ignore)
-    char_u	*s;
-    char_u	*find;
-    char_u	*ignore;
+cin_ends_in /*(s, find, ignore)*/
+    (
+    char_u	*s,
+    char_u	*find,
+    char_u	*ignore
+    )
 {
     char_u	*p = s;
     char_u	*r;
@@ -6458,9 +6676,11 @@ cin_ends_in(s, find, ignore)
  * Return TRUE when "s" starts with "word" and then a non-ID character.
  */
     static int
-cin_starts_with(s, word)
-    char_u *s;
-    char *word;
+cin_starts_with /*(s, word)*/
+    (
+    char_u *s,
+    char *word
+    )
 {
     int l = (int)STRLEN(word);
 
@@ -6472,8 +6692,10 @@ cin_starts_with(s, word)
  * Return the column found.
  */
     static int
-cin_skip2pos(trypos)
-    pos_T	*trypos;
+cin_skip2pos /*(trypos)*/
+    (
+    pos_T	*trypos
+    )
 {
     char_u	*line;
     char_u	*p;
@@ -6502,8 +6724,10 @@ cin_skip2pos(trypos)
 /* }	    */
 
     static pos_T *
-find_start_brace(ind_maxcomment)	    /* XXX */
-    int		ind_maxcomment;
+find_start_brace /*(ind_maxcomment)*/	    /* XXX */
+    (
+    int		ind_maxcomment
+    )
 {
     pos_T	cursor_save;
     pos_T	*trypos;
@@ -6533,9 +6757,11 @@ find_start_brace(ind_maxcomment)	    /* XXX */
  * Return NULL if no match found.
  */
     static pos_T *
-find_match_paren(ind_maxparen, ind_maxcomment)	    /* XXX */
-    int		ind_maxparen;
-    int		ind_maxcomment;
+find_match_paren /*(ind_maxparen, ind_maxcomment)*/	    /* XXX */
+    (
+    int		ind_maxparen,
+    int		ind_maxcomment
+    )
 {
     pos_T	cursor_save;
     pos_T	*trypos;
@@ -6567,9 +6793,11 @@ find_match_paren(ind_maxparen, ind_maxcomment)	    /* XXX */
  * looking a few lines further.
  */
     static int
-corr_ind_maxparen(ind_maxparen, startpos)
-    int		ind_maxparen;
-    pos_T	*startpos;
+corr_ind_maxparen /*(ind_maxparen, startpos)*/
+    (
+    int		ind_maxparen,
+    pos_T	*startpos
+    )
 {
     long	n = (long)startpos->lnum - (long)curwin->w_cursor.lnum;
 
@@ -6583,9 +6811,12 @@ corr_ind_maxparen(ind_maxparen, startpos)
  * line "l".  "l" must point to the start of the line.
  */
     static int
-find_last_paren(l, start, end)
-    char_u	*l;
-    int		start, end;
+find_last_paren /*(l, start, end)*/
+    (
+    char_u	*l,
+    int		start, 
+    int end
+    )
 {
     int		i;
     int		retval = FALSE;
@@ -8748,11 +8979,13 @@ theend:
 }
 
     static int
-find_match(lookfor, ourscope, ind_maxparen, ind_maxcomment)
-    int		lookfor;
-    linenr_T	ourscope;
-    int		ind_maxparen;
-    int		ind_maxcomment;
+find_match /*(lookfor, ourscope, ind_maxparen, ind_maxcomment)*/
+    (
+    int		lookfor,
+    linenr_T	ourscope,
+    int		ind_maxparen,
+    int		ind_maxcomment
+    )
 {
     char_u	*look;
     pos_T	*theirscope;
@@ -8918,8 +9151,10 @@ get_expr_indent()
 static int lisp_match __ARGS((char_u *p));
 
     static int
-lisp_match(p)
-    char_u	*p;
+lisp_match /*(p)*/
+    (
+    char_u	*p
+    )
 {
     char_u	buf[LSIZE];
     int		len;
@@ -9212,8 +9447,10 @@ preserve_exit()
  * return TRUE if "fname" exists.
  */
     int
-vim_fexists(fname)
-    char_u  *fname;
+vim_fexists /*(fname)*/
+    (
+    char_u  *fname
+    )
 {
     struct stat st;
 
@@ -9268,11 +9505,13 @@ fast_breakcheck()
  * Returns OK or FAIL.
  */
     int
-expand_wildcards_eval(pat, num_file, file, flags)
-    char_u	 **pat;		/* pointer to input pattern */
-    int		  *num_file;	/* resulting number of files */
-    char_u	***file;	/* array of resulting files */
-    int		   flags;	/* EW_DIR, etc. */
+expand_wildcards_eval /*(pat, num_file, file, flags)*/
+    (
+    char_u	 **pat,		/* pointer to input pattern */
+    int		  *num_file,	/* resulting number of files */
+    char_u	***file,	/* array of resulting files */
+    int		   flags
+    )/* EW_DIR , etc. */
 {
     int		ret = FAIL;
     char_u	*eval_pat = NULL;
@@ -9308,12 +9547,14 @@ expand_wildcards_eval(pat, num_file, file, flags)
  * Returns OK or FAIL.  When FAIL then "num_file" won't be set.
  */
     int
-expand_wildcards(num_pat, pat, num_file, file, flags)
-    int		   num_pat;	/* number of input patterns */
-    char_u	 **pat;		/* array of input patterns */
-    int		  *num_file;	/* resulting number of files */
-    char_u	***file;	/* array of resulting files */
-    int		   flags;	/* EW_DIR, etc. */
+expand_wildcards /*(num_pat, pat, num_file, file, flags)*/
+    (
+    int		   num_pat,	/* number of input patterns */
+    char_u	 **pat,		/* array of input patterns */
+    int		  *num_file,	/* resulting number of files */
+    char_u	***file,	/* array of resulting files */
+    int		   flags
+    )/* EW_DIR , etc. */
 {
     int		retval;
     int		i, j;
@@ -9386,8 +9627,10 @@ expand_wildcards(num_pat, pat, num_file, file, flags)
  * Return TRUE if "fname" matches with an entry in 'suffixes'.
  */
     int
-match_suffix(fname)
-    char_u	*fname;
+match_suffix /*(fname)*/
+    (
+    char_u	*fname
+    )
 {
     int		fnamelen, setsuflen;
     char_u	*setsuf;
@@ -9781,8 +10024,10 @@ mch_expandpath(
 static int	pstrcmp __ARGS((const void *, const void *));
 
     static int
-pstrcmp(a, b)
-    const void *a, *b;
+pstrcmp /*(a, b)*/
+    (
+    const void *a, *b
+    )
 {
     return (pathcmp(*(char **)a, *(char **)b, -1));
 }
@@ -9796,12 +10041,14 @@ pstrcmp(a, b)
  * NOTE: much of this is identical to dos_expandpath(), keep in sync!
  */
     int
-unix_expandpath(gap, path, wildoff, flags, didstar)
-    garray_T	*gap;
-    char_u	*path;
-    int		wildoff;
-    int		flags;		/* EW_* flags */
-    int		didstar;	/* expanded "**" once already */
+unix_expandpath /*(gap, path, wildoff, flags, didstar)*/
+    (
+    garray_T	*gap,
+    char_u	*path,
+    int		wildoff,
+    int		flags,		/* EW_* flags */
+    int		didstar
+    )/* expanded "**" once already */
 {
     char_u	*buf;
     char_u	*path_end;
@@ -10017,9 +10264,11 @@ static int expand_in_path __ARGS((garray_T *gap, char_u	*pattern, int flags));
  * Returns FAIL is "*psep" ends up at the beginning of "path".
  */
     static int
-find_previous_pathsep(path, psep)
-    char_u *path;
-    char_u **psep;
+find_previous_pathsep /*(path, psep)*/
+    (
+    char_u *path,
+    char_u **psep
+    )
 {
     /* skip the current separator */
     if (*psep > path && vim_ispathsep(**psep))
@@ -10041,10 +10290,12 @@ find_previous_pathsep(path, psep)
  * "maybe_unique" is the end portion of "((char_u **)gap->ga_data)[i]".
  */
     static int
-is_unique(maybe_unique, gap, i)
-    char_u	*maybe_unique;
-    garray_T	*gap;
-    int		i;
+is_unique /*(maybe_unique, gap, i)*/
+    (
+    char_u	*maybe_unique,
+    garray_T	*gap,
+    int		i
+    )
 {
     int	    j;
     int	    candidate_len;
@@ -10081,9 +10332,11 @@ is_unique(maybe_unique, gap, i)
  * expanding each into their equivalent path(s).
  */
     static void
-expand_path_option(curdir, gap)
-    char_u	*curdir;
-    garray_T	*gap;
+expand_path_option /*(curdir, gap)*/
+    (
+    char_u	*curdir,
+    garray_T	*gap
+    )
 {
     char_u	*path_option = *curbuf->b_p_path == NUL
 						  ? p_path : curbuf->b_p_path;
@@ -10163,9 +10416,11 @@ expand_path_option(curdir, gap)
  * returns:		 ^this
  */
     static char_u *
-get_path_cutoff(fname, gap)
-    char_u *fname;
-    garray_T *gap;
+get_path_cutoff /*(fname, gap)*/
+    (
+    char_u *fname,
+    garray_T *gap
+    )
 {
     int	    i;
     int	    maxlen = 0;
@@ -10203,9 +10458,11 @@ get_path_cutoff(fname, gap)
  * that matches the pattern. Beware, this is at least O(n^2) wrt "gap->ga_len".
  */
     static void
-uniquefy_paths(gap, pattern)
-    garray_T	*gap;
-    char_u	*pattern;
+uniquefy_paths /*(gap, pattern)*/
+    (
+    garray_T	*gap,
+    char_u	*pattern
+    )
 {
     int		i;
     int		len;
@@ -10371,10 +10628,12 @@ theend:
  * Returns the total number of matches.
  */
     static int
-expand_in_path(gap, pattern, flags)
-    garray_T	*gap;
-    char_u	*pattern;
-    int		flags;		/* EW_* flags */
+expand_in_path /*(gap, pattern, flags)*/
+    (
+    garray_T	*gap,
+    char_u	*pattern,
+    int		flags
+    )/* EW_* flags */
 {
     char_u	*curdir;
     garray_T	path_ga;
@@ -10435,8 +10694,10 @@ expand_in_path(gap, pattern, flags)
  * list of file names in allocated memory.
  */
     void
-remove_duplicates(gap)
-    garray_T	*gap;
+remove_duplicates /*(gap)*/
+    (
+    garray_T	*gap
+    )
 {
     int	    i;
     int	    j;
@@ -10461,8 +10722,10 @@ static int has_env_var __ARGS((char_u *p));
  * Allowing for escaping.
  */
     static int
-has_env_var(p)
-    char_u *p;
+has_env_var /*(p)*/
+    (
+    char_u *p
+    )
 {
     for ( ; *p; mb_ptr_adv(p))
     {
@@ -10488,8 +10751,10 @@ static int has_special_wildchar __ARGS((char_u *p));
  * Allowing for escaping.
  */
     static int
-has_special_wildchar(p)
-    char_u  *p;
+has_special_wildchar /*(p)*/
+    (
+    char_u  *p
+    )
 {
     for ( ; *p; mb_ptr_adv(p))
     {
@@ -10514,12 +10779,14 @@ has_special_wildchar(p)
  * matches, "file" to the array of matches.  Call FreeWild() later.
  */
     int
-gen_expand_wildcards(num_pat, pat, num_file, file, flags)
-    int		num_pat;	/* number of input patterns */
-    char_u	**pat;		/* array of input patterns */
-    int		*num_file;	/* resulting number of files */
-    char_u	***file;	/* array of resulting files */
-    int		flags;		/* EW_* flags */
+gen_expand_wildcards /*(num_pat, pat, num_file, file, flags)*/
+    (
+    int		num_pat,	/* number of input patterns */
+    char_u	**pat,		/* array of input patterns */
+    int		*num_file,	/* resulting number of files */
+    char_u	***file,	/* array of resulting files */
+    int		flags
+    )/* EW_* flags */
 {
     int			i;
     garray_T		ga;
@@ -10673,8 +10940,10 @@ gen_expand_wildcards(num_pat, pat, num_file, file, flags)
  * Return TRUE if we can expand this backtick thing here.
  */
     static int
-vim_backtick(p)
-    char_u	*p;
+vim_backtick /*(p)*/
+    (
+    char_u	*p
+    )
 {
     return (*p == '`' && *(p + 1) != NUL && *(p + STRLEN(p) - 1) == '`');
 }
@@ -10685,10 +10954,12 @@ vim_backtick(p)
  * Returns number of file names found.
  */
     static int
-expand_backtick(gap, pat, flags)
-    garray_T	*gap;
-    char_u	*pat;
-    int		flags;	/* EW_* flags */
+expand_backtick /*(gap, pat, flags)*/
+    (
+    garray_T	*gap,
+    char_u	*pat,
+    int		flags
+    )/* EW_* flags */
 {
     char_u	*p;
     char_u	*cmd;
@@ -10747,10 +11018,12 @@ expand_backtick(gap, pat, flags)
  * EW_ADDSLASH	add slash after directory name
  */
     void
-addfile(gap, f, flags)
-    garray_T	*gap;
-    char_u	*f;	/* filename */
-    int		flags;
+addfile /*(gap, f, flags)*/
+    (
+    garray_T	*gap,
+    char_u	*f,	/* filename */
+    int		flags
+    )
 {
     char_u	*p;
     int		isdir;
@@ -10810,10 +11083,12 @@ addfile(gap, f, flags)
  * Returns an allocated string, or NULL for error.
  */
     char_u *
-get_cmd_output(cmd, infile, flags)
-    char_u	*cmd;
-    char_u	*infile;	/* optional input file name */
-    int		flags;		/* can be SHELL_SILENT */
+get_cmd_output /*(cmd, infile, flags)*/
+    (
+    char_u	*cmd,
+    char_u	*infile,	/* optional input file name */
+    int		flags
+    )/* can be SHELL_SILENT */
 {
     char_u	*tempname;
     char_u	*command;
@@ -10904,9 +11179,11 @@ done:
  * functions.
  */
     void
-FreeWild(count, files)
-    int	    count;
-    char_u  **files;
+FreeWild /*(count, files)*/
+    (
+    int	    count,
+    char_u  **files
+    )
 {
     if (count <= 0 || files == NULL)
 	return;

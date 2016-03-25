@@ -424,8 +424,10 @@ mch_isFullName(char_u *fname)
  * When 'shellslash' set do it the other way around.
  */
     void
-slash_adjust(p)
-    char_u  *p;
+slash_adjust /*(p)*/
+    (
+    char_u  *p
+    )
 {
     while (*p)
     {

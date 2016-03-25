@@ -25,9 +25,11 @@
 #endif
 
     void
-ui_write(s, len)
-    char_u  *s;
-    int	    len;
+ui_write /*(s, len)*/
+    (
+    char_u  *s,
+    int	    len
+    )
 {
 #ifdef FEAT_GUI
     if (gui.in_use && !gui.dying && !gui.starting)
@@ -75,9 +77,11 @@ static int ta_off;	/* offset for next char to use when ta_str != NULL */
 static int ta_len;	/* length of ta_str when it's not NULL*/
 
     void
-ui_inchar_undo(s, len)
-    char_u	*s;
-    int		len;
+ui_inchar_undo /*(s, len)*/
+    (
+    char_u	*s,
+    int		len
+    )
 {
     char_u  *new;
     int	    newlen;
@@ -117,11 +121,13 @@ ui_inchar_undo(s, len)
  * otherwise.
  */
     int
-ui_inchar(buf, maxlen, wtime, tb_change_cnt)
-    char_u	*buf;
-    int		maxlen;
-    long	wtime;	    /* don't use "time", MIPS cannot handle it */
-    int		tb_change_cnt;
+ui_inchar /*(buf, maxlen, wtime, tb_change_cnt)*/
+                    (
+    char_u	*buf,
+    int		maxlen,
+    long	wtime,	    /* don't use "time", MIPS cannot handle it */
+    int		tb_change_cnt
+    )
 {
     int		retval = 0;
 
@@ -213,9 +219,11 @@ ui_char_avail()
  * cancel the delay if a key is hit.
  */
     void
-ui_delay(msec, ignoreinput)
-    long	msec;
-    int		ignoreinput;
+ui_delay /*(msec, ignoreinput)*/
+    (
+    long	msec,
+    int		ignoreinput
+    )
 {
 #ifdef FEAT_GUI
     if (gui.in_use && !ignoreinput)
@@ -295,8 +303,10 @@ ui_get_shellsize()
  * new size.  If this is not possible, it will adjust Rows and Columns.
  */
     void
-ui_set_shellsize(mustset)
-    int		mustset UNUSED;	/* set by the user */
+ui_set_shellsize /*(mustset)*/
+    (
+    int		mustset UNUSED
+    )/* set by the user */
 {
 #ifdef FEAT_GUI
     if (gui.in_use)
@@ -363,8 +373,10 @@ static void clip_copy_selection __ARGS((VimClipboard *clip));
  * the GUI starts.
  */
     void
-clip_init(can_use)
-    int	    can_use;
+clip_init /*(can_use)*/
+    (
+    int	    can_use
+    )
 {
     VimClipboard *cb;
 
@@ -393,8 +405,10 @@ clip_init(can_use)
  * this is called whenever VIsual mode is ended.
  */
     void
-clip_update_selection(clip)
-    VimClipboard    *clip;
+clip_update_selection /*(clip)*/
+    (
+    VimClipboard    *clip
+    )
 {
     pos_T	    start, end;
 
@@ -431,8 +445,10 @@ clip_update_selection(clip)
 }
 
     void
-clip_own_selection(cbd)
-    VimClipboard	*cbd;
+clip_own_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
     /*
      * Also want to check somehow that we are reading from the keyboard rather
@@ -468,8 +484,10 @@ clip_own_selection(cbd)
 }
 
     void
-clip_lose_selection(cbd)
-    VimClipboard	*cbd;
+clip_lose_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
 #ifdef FEAT_X11
     int	    was_owned = cbd->owned;
@@ -511,8 +529,10 @@ clip_lose_selection(cbd)
 }
 
     static void
-clip_copy_selection(clip)
-    VimClipboard	*clip;
+clip_copy_selection /*(clip)*/
+    (
+    VimClipboard	*clip
+    )
 {
     if (VIsual_active && (State & NORMAL) && clip->available)
     {
@@ -588,10 +608,12 @@ static void clip_update_modeless_selection __ARGS((VimClipboard *, int, int,
  * command-line and in the cmdline window.
  */
     void
-clip_modeless(button, is_click, is_drag)
-    int		button;
-    int		is_click;
-    int		is_drag;
+clip_modeless /*(button, is_click, is_drag)*/
+    (
+    int		button,
+    int		is_click,
+    int		is_drag
+    )
 {
     int		repeat;
 
@@ -625,11 +647,13 @@ clip_modeless(button, is_click, is_drag)
  * Compare two screen positions ala strcmp()
  */
     static int
-clip_compare_pos(row1, col1, row2, col2)
-    int		row1;
-    int		col1;
-    int		row2;
-    int		col2;
+clip_compare_pos /*(row1, col1, row2, col2)*/
+    (
+    int		row1,
+    int		col1,
+    int		row2,
+    int		col2
+    )
 {
     if (row1 > row2) return(1);
     if (row1 < row2) return(-1);
@@ -642,10 +666,12 @@ clip_compare_pos(row1, col1, row2, col2)
  * Start the selection
  */
     void
-clip_start_selection(col, row, repeated_click)
-    int		col;
-    int		row;
-    int		repeated_click;
+clip_start_selection /*(col, row, repeated_click)*/
+    (
+    int		col,
+    int		row,
+    int		repeated_click
+    )
 {
     VimClipboard	*cb = &clip_star;
 
@@ -715,11 +741,13 @@ clip_start_selection(col, row, repeated_click)
  * Continue processing the selection
  */
     void
-clip_process_selection(button, col, row, repeated_click)
-    int		button;
-    int		col;
-    int		row;
-    int_u	repeated_click;
+clip_process_selection /*(button, col, row, repeated_click)*/
+    (
+    int		button,
+    int		col,
+    int		row,
+    int_u	repeated_click
+    )
 {
     VimClipboard	*cb = &clip_star;
     int			diff;
@@ -900,9 +928,12 @@ clip_process_selection(button, col, row, repeated_click)
  * Only used for the GUI.
  */
     void
-clip_may_redraw_selection(row, col, len)
-    int		row, col;
-    int		len;
+clip_may_redraw_selection /*(row, col, len)*/
+    (
+    int		row, 
+    int         col,
+    int		len
+    )
 {
     int		start = col;
     int		end = col + len;
@@ -925,8 +956,10 @@ clip_may_redraw_selection(row, col, len)
  * Called from outside to clear selected region from the display
  */
     void
-clip_clear_selection(cbd)
-    VimClipboard    *cbd;
+clip_clear_selection /*(cbd)*/
+    (
+    VimClipboard    *cbd
+    )
 {
 
     if (cbd->state == SELECT_CLEARED)
@@ -941,8 +974,11 @@ clip_clear_selection(cbd)
  * Clear the selection if any lines from "row1" to "row2" are inside of it.
  */
     void
-clip_may_clear_selection(row1, row2)
-    int	row1, row2;
+clip_may_clear_selection /*(row1, row2)*/
+    (
+    int	row1, 
+    int row2
+    )
 {
     if (clip_star.state == SELECT_DONE
 	    && row2 >= clip_star.start.lnum
@@ -955,8 +991,10 @@ clip_may_clear_selection(row1, row2)
  * of the selection.  Call with big number when clearing the screen.
  */
     void
-clip_scroll_selection(rows)
-    int	    rows;		/* negative for scroll down */
+clip_scroll_selection /*(rows)*/
+    (
+    int	    rows
+    )/* negative for scroll down */
 {
     int	    lnum;
 
@@ -989,12 +1027,14 @@ clip_scroll_selection(rows)
  * 0: invert (GUI only).
  */
     static void
-clip_invert_area(row1, col1, row2, col2, how)
-    int		row1;
-    int		col1;
-    int		row2;
-    int		col2;
-    int		how;
+clip_invert_area /*(row1, col1, row2, col2, how)*/
+    (
+    int		row1,
+    int		col1,
+    int		row2,
+    int		col2,
+    int		how
+    )
 {
     int		invert = FALSE;
 
@@ -1049,12 +1089,14 @@ clip_invert_area(row1, col1, row2, col2, how)
  * "invert" is true if the result is inverted.
  */
     static void
-clip_invert_rectangle(row, col, height, width, invert)
-    int		row;
-    int		col;
-    int		height;
-    int		width;
-    int		invert;
+clip_invert_rectangle /*(row, col, height, width, invert)*/
+    (
+    int		row,
+    int		col,
+    int		height,
+    int		width,
+    int		invert
+    )
 {
 #ifdef FEAT_GUI
     if (gui.in_use)
@@ -1070,8 +1112,10 @@ clip_invert_rectangle(row, col, height, width, invert)
  * When "both" is TRUE also copy to the '+' register.
  */
     void
-clip_copy_modeless_selection(both)
-    int		both UNUSED;
+clip_copy_modeless_selection /*(both)*/
+    (
+    int		both UNUSED
+    )
 {
     char_u	*buffer;
     char_u	*bufp;
@@ -1254,10 +1298,12 @@ clip_copy_modeless_selection(both)
 #define CHAR_CLASS(c)	(c <= ' ' ? ' ' : vim_iswordc(c))
 
     static void
-clip_get_word_boundaries(cb, row, col)
-    VimClipboard	*cb;
-    int			row;
-    int			col;
+clip_get_word_boundaries /*(cb, row, col)*/
+    (
+    VimClipboard	*cb,
+    int			row,
+    int			col
+    )
 {
     int		start_class;
     int		temp_col;
@@ -1316,8 +1362,10 @@ clip_get_word_boundaries(cb, row, col)
  * line.
  */
     static int
-clip_get_line_end(row)
-    int		row;
+clip_get_line_end /*(row)*/
+    (
+    int		row
+    )
 {
     int	    i;
 
@@ -1334,12 +1382,14 @@ clip_get_line_end(row)
  * beginning or end and inverting the changed area(s).
  */
     static void
-clip_update_modeless_selection(cb, row1, col1, row2, col2)
-    VimClipboard    *cb;
-    int		    row1;
-    int		    col1;
-    int		    row2;
-    int		    col2;
+clip_update_modeless_selection /*(cb, row1, col1, row2, col2)*/
+    (
+    VimClipboard    *cb,
+    int		    row1,
+    int		    col1,
+    int		    row2,
+    int		    col2
+    )
 {
     /* See if we changed at the beginning of the selection */
     if (row1 != cb->start.lnum || col1 != (int)cb->start.col)
@@ -1361,8 +1411,10 @@ clip_update_modeless_selection(cb, row1, col1, row2, col2)
 }
 
     int
-clip_gen_own_selection(cbd)
-    VimClipboard	*cbd;
+clip_gen_own_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
 #ifdef FEAT_XCLIPBOARD
 # ifdef FEAT_GUI
@@ -1377,8 +1429,10 @@ clip_gen_own_selection(cbd)
 }
 
     void
-clip_gen_lose_selection(cbd)
-    VimClipboard	*cbd;
+clip_gen_lose_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
 #ifdef FEAT_XCLIPBOARD
 # ifdef FEAT_GUI
@@ -1393,8 +1447,10 @@ clip_gen_lose_selection(cbd)
 }
 
     void
-clip_gen_set_selection(cbd)
-    VimClipboard	*cbd;
+clip_gen_set_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
 #ifdef FEAT_XCLIPBOARD
 # ifdef FEAT_GUI
@@ -1409,8 +1465,10 @@ clip_gen_set_selection(cbd)
 }
 
     void
-clip_gen_request_selection(cbd)
-    VimClipboard	*cbd;
+clip_gen_request_selection /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
 #ifdef FEAT_XCLIPBOARD
 # ifdef FEAT_GUI
@@ -1425,8 +1483,10 @@ clip_gen_request_selection(cbd)
 }
 
     int
-clip_gen_owner_exists(cbd)
-    VimClipboard	*cbd UNUSED;
+clip_gen_owner_exists /*(cbd)*/
+    (
+    VimClipboard	*cbd UNUSED
+    )
 {
 #ifdef FEAT_XCLIPBOARD
 # ifdef FEAT_GUI_GTK
@@ -1539,8 +1599,10 @@ get_input_buf()
  * The allocated memory is freed, this only works once!
  */
     void
-set_input_buf(p)
-    char_u	*p;
+set_input_buf /*(p)*/
+    (
+    char_u	*p
+    )
 {
     garray_T	*gap = (garray_T *)p;
 
@@ -1568,9 +1630,11 @@ set_input_buf(p)
  * CSI KS_EXTRA KE_CSI.  K_SPECIAL doesn't require translation.
  */
     void
-add_to_input_buf(s, len)
-    char_u  *s;
-    int	    len;
+add_to_input_buf /*(s, len)*/
+    (
+    char_u  *s,
+    int	    len
+    )
 {
     if (inbufcount + len > INBUFLEN + MAX_KEY_CODE_LEN)
 	return;	    /* Shouldn't ever happen! */
@@ -1618,9 +1682,11 @@ add_to_input_buf_csi(char_u *str, int len)
 
 #if defined(FEAT_HANGULIN) || defined(PROTO)
     void
-push_raw_key(s, len)
-    char_u  *s;
-    int	    len;
+push_raw_key /*(s, len)*/
+    (
+    char_u  *s,
+    int	    len
+    )
 {
     while (len--)
 	inbuf[inbufcount++] = *s++;
@@ -1643,9 +1709,11 @@ trash_input_buf()
  * Note: this function used to be Read() in unix.c
  */
     int
-read_from_input_buf(buf, maxlen)
-    char_u  *buf;
-    long    maxlen;
+read_from_input_buf /*(buf, maxlen)*/
+    (
+    char_u  *buf,
+    long    maxlen
+    )
 {
     if (inbufcount == 0)	/* if the buffer is empty, fill it */
 	fill_input_buf(TRUE);
@@ -1659,8 +1727,10 @@ read_from_input_buf(buf, maxlen)
 }
 
     void
-fill_input_buf(exit_on_error)
-    int	exit_on_error UNUSED;
+fill_input_buf /*(exit_on_error)*/
+    (
+    int	exit_on_error UNUSED
+    )
 {
 #if defined(UNIX) || defined(OS2) || defined(VMS) || defined(MACOS_X_UNIX)
     int		len;
@@ -1876,8 +1946,10 @@ ui_cursor_shape()
  * Check bounds for column number
  */
     int
-check_col(col)
-    int	    col;
+check_col /*(col)*/
+    (
+    int	    col
+    )
 {
     if (col < 0)
 	return 0;
@@ -1890,8 +1962,10 @@ check_col(col)
  * Check bounds for row number
  */
     int
-check_row(row)
-    int	    row;
+check_row /*(row)*/
+    (
+    int	    row
+    )
 {
     if (row < 0)
 	return 0;
@@ -1934,8 +2008,10 @@ static Atom	targets_atom;
 static Atom	timestamp_atom;	/* Used to get a timestamp */
 
     void
-x11_setup_atoms(dpy)
-    Display	*dpy;
+x11_setup_atoms /*(dpy)*/
+    (
+    Display	*dpy
+    )
 {
     vim_atom	       = XInternAtom(dpy, VIM_ATOM_NAME,   False);
 #ifdef FEAT_MBYTE
@@ -1963,11 +2039,13 @@ static void  clip_x11_request_selection_cb __ARGS((Widget, XtPointer, Atom *, At
  * Property callback to get a timestamp for XtOwnSelection.
  */
     static void
-clip_x11_timestamp_cb(w, n, event, cont)
-    Widget	w;
-    XtPointer	n UNUSED;
-    XEvent	*event;
-    Boolean	*cont UNUSED;
+clip_x11_timestamp_cb /*(w, n, event, cont)*/
+    (
+    Widget	w,
+    XtPointer	n UNUSED,
+    XEvent	*event,
+    Boolean	*cont UNUSED
+    )
 {
     Atom	    actual_type;
     int		    format;
@@ -2009,23 +2087,27 @@ clip_x11_timestamp_cb(w, n, event, cont)
 }
 
     void
-x11_setup_selection(w)
-    Widget	w;
+x11_setup_selection /*(w)*/
+    (
+    Widget	w
+    )
 {
     XtAddEventHandler(w, PropertyChangeMask, False,
 	    /*(XtEventHandler)*/clip_x11_timestamp_cb, (XtPointer)NULL);
 }
 
     static void
-clip_x11_request_selection_cb(w, success, sel_atom, type, value, length,
-			      format)
-    Widget	w UNUSED;
-    XtPointer	success;
-    Atom	*sel_atom;
-    Atom	*type;
-    XtPointer	value;
-    long_u	*length;
-    int		*format;
+clip_x11_request_selection_cb /*(w, success, sel_atom, type, value, length,
+			      format)*/
+    (
+    Widget	w UNUSED,
+    XtPointer	success,
+    Atom	*sel_atom,
+    Atom	*type,
+    XtPointer	value,
+    long_u	*length,
+    int		*format
+    )
 {
     int		motion_type = MAUTO;
     long_u	len;
@@ -2131,10 +2213,12 @@ clip_x11_request_selection_cb(w, success, sel_atom, type, value, length,
 }
 
     void
-clip_x11_request_selection(myShell, dpy, cbd)
-    Widget	myShell;
-    Display	*dpy;
-    VimClipboard	*cbd;
+clip_x11_request_selection /*(myShell, dpy, cbd)*/
+    (
+    Widget	myShell,
+    Display	*dpy,
+    VimClipboard	*cbd
+    )
 {
     XEvent	event;
     Atom	type;
@@ -2236,14 +2320,16 @@ clip_x11_request_selection(myShell, dpy, cbd)
 }
 
     static Boolean
-clip_x11_convert_selection_cb(w, sel_atom, target, type, value, length, format)
-    Widget	w UNUSED;
-    Atom	*sel_atom;
-    Atom	*target;
-    Atom	*type;
-    XtPointer	*value;
-    long_u	*length;
-    int		*format;
+clip_x11_convert_selection_cb /*(w, sel_atom, target, type, value, length, format)*/
+    (
+    Widget	w UNUSED,
+    Atom	*sel_atom,
+    Atom	*target,
+    Atom	*type,
+    XtPointer	*value,
+    long_u	*length,
+    int		*format
+    )
 {
     char_u	*string;
     char_u	*result;
@@ -2378,9 +2464,11 @@ clip_x11_convert_selection_cb(w, sel_atom, target, type, value, length, format)
 }
 
     static void
-clip_x11_lose_ownership_cb(w, sel_atom)
-    Widget  w UNUSED;
-    Atom    *sel_atom;
+clip_x11_lose_ownership_cb /*(w, sel_atom)*/
+    (
+    Widget  w UNUSED,
+    Atom    *sel_atom
+    )
 {
     if (*sel_atom == clip_plus.sel_atom)
 	clip_lose_selection(&clip_plus);
@@ -2389,18 +2477,22 @@ clip_x11_lose_ownership_cb(w, sel_atom)
 }
 
     void
-clip_x11_lose_selection(myShell, cbd)
-    Widget		myShell;
-    VimClipboard	*cbd;
+clip_x11_lose_selection /*(myShell, cbd)*/
+    (
+    Widget		myShell,
+    VimClipboard	*cbd
+    )
 {
     XtDisownSelection(myShell, cbd->sel_atom,
 				XtLastTimestampProcessed(XtDisplay(myShell)));
 }
 
     int
-clip_x11_own_selection(myShell, cbd)
-    Widget		myShell;
-    VimClipboard	*cbd;
+clip_x11_own_selection /*(myShell, cbd)*/
+    (
+    Widget		myShell,
+    VimClipboard	*cbd
+    )
 {
     /* When using the GUI we have proper timestamps, use the one of the last
      * event.  When in the console we don't get events (the terminal gets
@@ -2432,14 +2524,18 @@ clip_x11_own_selection(myShell, cbd)
  * will fill in the selection only when requested by another app.
  */
     void
-clip_x11_set_selection(cbd)
-    VimClipboard *cbd UNUSED;
+clip_x11_set_selection /*(cbd)*/
+    (
+    VimClipboard *cbd UNUSED
+    )
 {
 }
 
     int
-clip_x11_owner_exists(cbd)
-    VimClipboard	*cbd;
+clip_x11_owner_exists /*(cbd)*/
+    (
+    VimClipboard	*cbd
+    )
 {
     return XGetSelectionOwner(X_DISPLAY, cbd->sel_atom) != None;
 }
@@ -2451,9 +2547,11 @@ clip_x11_owner_exists(cbd)
  * Get the contents of the X CUT_BUFFER0 and put it in "cbd".
  */
     void
-yank_cut_buffer0(dpy, cbd)
-    Display		*dpy;
-    VimClipboard	*cbd;
+yank_cut_buffer0 /*(dpy, cbd)*/
+    (
+    Display		*dpy,
+    VimClipboard	*cbd
+    )
 {
     int		nbytes = 0;
     char_u	*buffer = (char_u *)XFetchBuffer(dpy, &nbytes, 0);
@@ -2528,10 +2626,12 @@ yank_cut_buffer0(dpy, cbd)
  * remembered.
  */
     int
-jump_to_mouse(flags, inclusive, which_button)
-    int		flags;
-    int		*inclusive;	/* used for inclusive operator, can be NULL */
-    int		which_button;	/* MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE */
+jump_to_mouse /*(flags, inclusive, which_button)*/
+    (
+    int		flags,
+    int		*inclusive,	/* used for inclusive operator, can be NULL */
+    int		which_button	/* MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE */
+    )
 {
     static int	on_status_line = 0;	/* #lines below bottom of window */
 #ifdef FEAT_VERTSPLIT
@@ -2949,11 +3049,13 @@ retnomove:
  * Returns TRUE if the position is below the last line.
  */
     int
-mouse_comp_pos(win, rowp, colp, lnump)
-    win_T	*win;
-    int		*rowp;
-    int		*colp;
-    linenr_T	*lnump;
+mouse_comp_pos /*(win, rowp, colp, lnump)*/
+    (
+    win_T	*win,
+    int		*rowp,
+    int		*colp,
+    linenr_T	*lnump
+    )
 {
     int		col = *colp;
     int		row = *rowp;
@@ -3038,9 +3140,11 @@ mouse_comp_pos(win, rowp, colp, lnump)
  * updated to become relative to the top-left of the window.
  */
     win_T *
-mouse_find_win(rowp, colp)
-    int		*rowp;
-    int		*colp UNUSED;
+mouse_find_win /*(rowp, colp)*/
+    (
+    int		*rowp,
+    int		*colp UNUSED
+    )
 {
     frame_T	*fp;
 
@@ -3082,8 +3186,10 @@ mouse_find_win(rowp, colp)
  * Translate window coordinates to buffer position without any side effects
  */
     int
-get_fpos_of_mouse(mpos)
-    pos_T	*mpos;
+get_fpos_of_mouse /*(mpos)*/
+    (
+    pos_T	*mpos
+    )
 {
     win_T	*wp;
     int		row = mouse_row;
@@ -3130,10 +3236,12 @@ get_fpos_of_mouse(mpos)
  * The first column is one.
  */
     int
-vcol2col(wp, lnum, vcol)
-    win_T	*wp;
-    linenr_T	lnum;
-    int		vcol;
+vcol2col /*(wp, lnum, vcol)*/
+    (
+    win_T	*wp,
+    linenr_T	lnum,
+    int		vcol
+    )
 {
     /* try to advance to the specified column */
     int		count = 0;
@@ -3158,8 +3266,10 @@ vcol2col(wp, lnum, vcol)
  * be done in the console (Win32).
  */
     void
-ui_focus_change(in_focus)
-    int		in_focus;	/* TRUE if focus gained. */
+ui_focus_change /*(in_focus)*/
+    (
+    int		in_focus
+    )/* TRUE if focus gained. */
 {
     static time_t	last_time = (time_t)0;
     int			need_redraw = FALSE;
@@ -3227,8 +3337,10 @@ ui_focus_change(in_focus)
  * Save current Input Method status to specified place.
  */
     void
-im_save_status(psave)
-    long *psave;
+im_save_status /*(psave)*/
+    (
+    long *psave
+    )
 {
     /* Don't save when 'imdisable' is set or "xic" is NULL, IM is always
      * disabled then (but might start later).

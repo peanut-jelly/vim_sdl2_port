@@ -624,64 +624,6 @@ _OnSettingChange(UINT n)
     return 0;
 }
 
-#ifdef FEAT_NETBEANS_INTG
-    static void
-_OnWindowPosChanged(
-    HWND hwnd,
-    const LPWINDOWPOS lpwpos)
-{
-    static int x = 0, y = 0, cx = 0, cy = 0;
-
-    if (WSInitialized && (lpwpos->x != x || lpwpos->y != y
-				     || lpwpos->cx != cx || lpwpos->cy != cy))
-    {
-	x = lpwpos->x;
-	y = lpwpos->y;
-	cx = lpwpos->cx;
-	cy = lpwpos->cy;
-	netbeans_frame_moved(x, y);
-    }
-    /* Allow to send WM_SIZE and WM_MOVE */
-    FORWARD_WM_WINDOWPOSCHANGED(hwnd, lpwpos, MyWindowProc);
-}
-#endif
-
-    static int
-_DuringSizing(
-    UINT fwSide,
-    LPRECT lprc)
-{
-Warn("_DuringSizing called");
-return TRUE;
-
-#if 0
-    int	    w, h;
-    int	    valid_w, valid_h;
-    int	    w_offset, h_offset;
-
-    w = lprc->right - lprc->left;
-    h = lprc->bottom - lprc->top;
-    gui_mswin_get_valid_dimensions(w, h, &valid_w, &valid_h);
-    w_offset = w - valid_w;
-    h_offset = h - valid_h;
-
-    if (fwSide == WMSZ_LEFT || fwSide == WMSZ_TOPLEFT
-			    || fwSide == WMSZ_BOTTOMLEFT)
-	lprc->left += w_offset;
-    else if (fwSide == WMSZ_RIGHT || fwSide == WMSZ_TOPRIGHT
-			    || fwSide == WMSZ_BOTTOMRIGHT)
-	lprc->right -= w_offset;
-
-    if (fwSide == WMSZ_TOP || fwSide == WMSZ_TOPLEFT
-			    || fwSide == WMSZ_TOPRIGHT)
-	lprc->top += h_offset;
-    else if (fwSide == WMSZ_BOTTOM || fwSide == WMSZ_BOTTOMLEFT
-			    || fwSide == WMSZ_BOTTOMRIGHT)
-	lprc->bottom -= h_offset;
-    return TRUE;
-#endif // 0
-}
-
 
 
 /*

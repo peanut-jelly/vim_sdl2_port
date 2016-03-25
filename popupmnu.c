@@ -42,10 +42,12 @@ static int pum_set_selected __ARGS((int n, int repeat));
  * The menu appears above the screen line "row" or at "row" + "height" - 1.
  */
     void
-pum_display(array, size, selected)
-    pumitem_T	*array;
-    int		size;
-    int		selected;	/* index of initially selected item, none if
+pum_display /*(array, size, selected)*/
+    (
+    pumitem_T	*array,
+    int		size,
+    int		selected
+    )/* index of initially selected item , none if
 				   out of range */
 {
     int		w;
@@ -483,9 +485,11 @@ pum_redraw()
  * must be recomputed.
  */
     static int
-pum_set_selected(n, repeat)
-    int	    n;
-    int	    repeat;
+pum_set_selected /*(n, repeat)*/
+    (
+    int	    n,
+    int	    repeat
+    )
 {
     int	    resized = FALSE;
     int	    context = pum_height / 2;

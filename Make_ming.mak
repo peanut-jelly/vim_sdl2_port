@@ -67,6 +67,7 @@ CSCOPE=yes
 #NETBEANS=$(GUI)
 NETBEANS=no
 
+# I am not using xpm, and have removed `xpm_w32.c` and `xpm_w32.h` 
 XPM=no
 
 # Link against the shared version of libstdc++ by default.  Set
@@ -515,7 +516,8 @@ endif
 
 LIB = -lkernel32 -luser32 -lgdi32 -ladvapi32 -lcomdlg32 -lcomctl32 -lversion \
 	  -lpthread -lstdc++ -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf #-latomic 
-GUIOBJ =  $(OUTDIR)/gui.o $(OUTDIR)/gui_w32.o $(OUTDIR)/gui_beval.o 
+# I am not using FEAT_BEVAL so not need gui_beval.c
+GUIOBJ =  $(OUTDIR)/gui.o $(OUTDIR)/gui_w32.o #$(OUTDIR)/gui_beval.o 
 
 OBJ = \
 	$(OUTDIR)/blowfish.o \
@@ -533,7 +535,6 @@ OBJ = \
 	$(OUTDIR)/fileio.o \
 	$(OUTDIR)/fold.o \
 	$(OUTDIR)/getchar.o \
-	$(OUTDIR)/hardcopy.o \
 	$(OUTDIR)/hashtab.o \
 	$(OUTDIR)/vim_main.o \
 	$(OUTDIR)/mark.o \
@@ -569,6 +570,7 @@ OBJ = \
 	$(OUTDIR)/adapter_sdl2.o $(OUTDIR)/sdl2_misc.o $(OUTDIR)/sdl2_misc2.o \
 	$(OUTDIR)/main.o
 	#$(OUTDIR)/vimrc.o \
+	#$(OUTDIR)/hardcopy.o \
 
 
 ifdef PERL
@@ -603,6 +605,9 @@ endif
 ifeq ($(CSCOPE),yes)
 OBJ += $(OUTDIR)/if_cscope.o
 endif
+
+# I am not using netbeans, so `netbeans.c`, `nbdebug.c` and `nbdebug.h` are
+# not used. 
 ifeq ($(NETBEANS),yes)
 # Only allow NETBEANS for a GUI build.
 ifeq (yes, $(GUI))

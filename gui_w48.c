@@ -1603,26 +1603,6 @@ gui_mch_clear_all(void)
     clrect.rect=(Rect_f){ 0.0 , 0.0, 1.0, 1.0};
     display_push_task(&clrect);
 }
-
-    void
-gui_mch_enable_menu(int flag)
-{
-// do nothing
-}
-
-/*ARGSUSED*/
-    void
-gui_mch_set_menu_pos(
-    int	    x,
-    int	    y,
-    int	    w,
-    int	    h)
-{
-    /* It will be in the right place anyway */
-}
-
-
-
 /*
  * Return the myRGB value of a pixel as a long.
  */
@@ -1631,13 +1611,6 @@ gui_mch_get_rgb(guicolor_T pixel)
 {
     return (myGetRValue(pixel) << 16) + (myGetGValue(pixel) << 8)
 							   + myGetBValue(pixel);
-}
-
-
-void
-gui_mch_activate_window(void)
-{
-// do nothing
 }
 
 
@@ -1660,12 +1633,6 @@ ex_simalt(exarg_T *eap)
 	keys++;
     }
 #endif // 0
-}
-
-    static void
-set_window_title(HWND hwnd, char *title)
-{
-// do nothing
 }
 
     void
@@ -1860,8 +1827,9 @@ gui_mch_insert_lines(
 
 
 /*ARGSUSED*/
-// the actuall exit(..) is in os_mswin.c mch_exit
-// here is just some cleanning-up.
+/* the actuall exit(..) is in os_mswin.c mch_exit
+ here is just some cleanning-up code.
+ I am not making use of this function, so leave it empty. */
     void
 gui_mch_exit(int rc)
 {

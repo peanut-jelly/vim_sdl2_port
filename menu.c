@@ -86,8 +86,10 @@ static const char *toolbar_names[] =
  * Do the :menu command and relatives.
  */
     void
-ex_menu(eap)
-    exarg_T	*eap;		    /* Ex command arguments */
+ex_menu /*(eap)*/
+    (
+    exarg_T	*eap
+    )/* Ex command arguments */
 {
     char_u	*menu_path;
     int		modes;
@@ -410,18 +412,20 @@ theend:
  * Add the menu with the given name to the menu hierarchy
  */
     static int
-add_menu_path(menu_path, menuarg, pri_tab, call_data
+add_menu_path /*(menu_path, menuarg, pri_tab, call_data*/
 #ifdef FEAT_GUI_W32
-	, addtearoff
+	/*, addtearoff*/
 #endif
-	)
-    char_u	*menu_path;
-    vimmenu_T	*menuarg;	/* passes modes, iconfile, iconidx,
+	/*)*/
+    (
+    char_u	*menu_path,
+    vimmenu_T	*menuarg,	/* passes modes, iconfile, iconidx,
 				   icon_builtin, silent[0], noremap[0] */
-    int		*pri_tab;
-    char_u	*call_data;
+    int		*pri_tab,
+    char_u	*call_data
 #ifdef FEAT_GUI_W32
-    int		addtearoff;	/* may add tearoff item */
+    , int	addtearoff
+    )/* may add tearoff item */
 #endif
 {
     char_u	*path_name;
@@ -807,11 +811,13 @@ erret:
  * Called recursively.
  */
     static int
-menu_nable_recurse(menu, name, modes, enable)
-    vimmenu_T	*menu;
-    char_u	*name;
-    int		modes;
-    int		enable;
+menu_nable_recurse /*(menu, name, modes, enable)*/
+    (
+    vimmenu_T	*menu,
+    char_u	*name,
+    int		modes,
+    int		enable
+    )
 {
     char_u	*p;
 
@@ -872,11 +878,13 @@ menu_nable_recurse(menu, name, modes, enable)
  * Called recursively.
  */
     static int
-remove_menu(menup, name, modes, silent)
-    vimmenu_T	**menup;
-    char_u	*name;
-    int		modes;
-    int		silent;		/* don't give error messages */
+remove_menu /*(menup, name, modes, silent)*/
+    (
+    vimmenu_T	**menup,
+    char_u	*name,
+    int		modes,
+    int		silent
+    )/* don't give error messages */
 {
     vimmenu_T	*menu;
     vimmenu_T	*child;
@@ -992,8 +1000,10 @@ remove_menu(menup, name, modes, silent)
  * Free the given menu structure and remove it from the linked list.
  */
     static void
-free_menu(menup)
-    vimmenu_T	**menup;
+free_menu /*(menup)*/
+    (
+    vimmenu_T	**menup
+    )
 {
     int		i;
     vimmenu_T	*menu;
@@ -1037,9 +1047,11 @@ free_menu(menup)
  * Free the menu->string with the given index.
  */
     static void
-free_menu_string(menu, idx)
-    vimmenu_T	*menu;
-    int		idx;
+free_menu_string /*(menu, idx)*/
+    (
+    vimmenu_T	*menu,
+    int		idx
+    )
 {
     int		count = 0;
     int		i;
@@ -1056,9 +1068,11 @@ free_menu_string(menu, idx)
  * Show the mapping associated with a menu item or hierarchy in a sub-menu.
  */
     static int
-show_menus(path_name, modes)
-    char_u  *path_name;
-    int	    modes;
+show_menus /*(path_name, modes)*/
+    (
+    char_u  *path_name,
+    int	    modes
+    )
 {
     char_u	*p;
     char_u	*name;
@@ -1119,10 +1133,12 @@ show_menus(path_name, modes)
  * Recursively show the mappings associated with the menus under the given one
  */
     static void
-show_menus_recursive(menu, modes, depth)
-    vimmenu_T	*menu;
-    int		modes;
-    int		depth;
+show_menus_recursive /*(menu, modes, depth)*/
+    (
+    vimmenu_T	*menu,
+    int		modes,
+    int		depth
+    )
 {
     int		i;
     int		bit;
@@ -1208,11 +1224,13 @@ static int		expand_emenu;	/* TRUE for ":emenu" command */
  * Work out what to complete when doing command line completion of menu names.
  */
     char_u *
-set_context_in_menu_cmd(xp, cmd, arg, forceit)
-    expand_T	*xp;
-    char_u	*cmd;
-    char_u	*arg;
-    int		forceit;
+set_context_in_menu_cmd /*(xp, cmd, arg, forceit)*/
+    (
+    expand_T	*xp,
+    char_u	*cmd,
+    char_u	*arg,
+    int		forceit
+    )
 {
     char_u	*after_dot;
     char_u	*p;
@@ -1327,9 +1345,11 @@ set_context_in_menu_cmd(xp, cmd, arg, forceit)
  * entries).
  */
     char_u *
-get_menu_name(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_menu_name /*(xp, idx)*/
+    (
+    expand_T	*xp UNUSED,
+    int		idx
+    )
 {
     static vimmenu_T	*menu = NULL;
     char_u		*str;
@@ -1389,9 +1409,11 @@ get_menu_name(xp, idx)
  * entries.
  */
     char_u *
-get_menu_names(xp, idx)
-    expand_T	*xp UNUSED;
-    int		idx;
+get_menu_names /*(xp, idx)*/
+    (
+    expand_T	*xp UNUSED,
+    int		idx
+    )
 {
     static vimmenu_T	*menu = NULL;
 #define TBUFFER_LEN 256
@@ -1483,8 +1505,10 @@ get_menu_names(xp, idx)
  * "name" may be modified.
  */
     char_u *
-menu_name_skip(name)
-    char_u  *name;
+menu_name_skip /*(name)*/
+    (
+    char_u  *name
+    )
 {
     char_u  *p;
 
@@ -1507,9 +1531,11 @@ menu_name_skip(name)
  * two ways: raw menu name and menu name without '&'.  ignore part after a TAB.
  */
     static int
-menu_name_equal(name, menu)
-    char_u	*name;
-    vimmenu_T	*menu;
+menu_name_equal /*(name, menu)*/
+    (
+    char_u	*name,
+    vimmenu_T	*menu
+    )
 {
 #ifdef FEAT_MULTI_LANG
     if (menu->en_name != NULL
@@ -1521,9 +1547,11 @@ menu_name_equal(name, menu)
 }
 
     static int
-menu_namecmp(name, mname)
-    char_u	*name;
-    char_u	*mname;
+menu_namecmp /*(name, mname)*/
+    (
+    char_u	*name,
+    char_u	*mname
+    )
 {
     int		i;
 
@@ -1543,11 +1571,13 @@ menu_namecmp(name, mname)
  * whether the command is an "unmenu" command.
  */
     static int
-get_menu_cmd_modes(cmd, forceit, noremap, unmenu)
-    char_u  *cmd;
-    int	    forceit;	    /* Was there a "!" after the command? */
-    int	    *noremap;
-    int	    *unmenu;
+get_menu_cmd_modes /*(cmd, forceit, noremap, unmenu)*/
+    (
+    char_u  *cmd,
+    int	    forceit,	    /* Was there a "!" after the command? */
+    int	    *noremap,
+    int	    *unmenu
+    )
 {
     int	    modes;
 
@@ -1607,9 +1637,11 @@ get_menu_cmd_modes(cmd, forceit, noremap, unmenu)
  * Returns the name in allocated memory (NULL for failure).
  */
     static char_u *
-popup_mode_name(name, idx)
-    char_u	*name;
-    int		idx;
+popup_mode_name /*(name, idx)*/
+    (
+    char_u	*name,
+    int		idx
+    )
 {
     char_u	*p;
     int		len = (int)STRLEN(name);
@@ -1630,9 +1662,11 @@ popup_mode_name(name, idx)
  * given menu in the current mode.
  */
     int
-get_menu_index(menu, state)
-    vimmenu_T	*menu;
-    int		state;
+get_menu_index /*(menu, state)*/
+    (
+    vimmenu_T	*menu,
+    int		state
+    )
 {
     int		idx;
 
@@ -1672,10 +1706,12 @@ get_menu_index(menu, state)
  * If actext != NULL, *actext is set to the text after the first TAB.
  */
     static char_u *
-menu_text(str, mnemonic, actext)
-    char_u	*str;
-    int		*mnemonic;
-    char_u	**actext;
+menu_text /*(str, mnemonic, actext)*/
+    (
+    char_u	*str,
+    int		*mnemonic,
+    char_u	**actext
+    )
 {
     char_u	*p;
     char_u	*text;
@@ -1726,8 +1762,10 @@ menu_text(str, mnemonic, actext)
  * Return TRUE if "name" can be a menu in the MenuBar.
  */
     int
-menu_is_menubar(name)
-    char_u	*name;
+menu_is_menubar /*(name)*/
+    (
+    char_u	*name
+    )
 {
     return (!menu_is_popup(name)
 	    && !menu_is_toolbar(name)
@@ -1738,8 +1776,10 @@ menu_is_menubar(name)
  * Return TRUE if "name" is a popup menu name.
  */
     int
-menu_is_popup(name)
-    char_u	*name;
+menu_is_popup /*(name)*/
+    (
+    char_u	*name
+    )
 {
     return (STRNCMP(name, "PopUp", 5) == 0);
 }
@@ -1749,8 +1789,10 @@ menu_is_popup(name)
  * Return TRUE if "name" is part of a popup menu.
  */
     int
-menu_is_child_of_popup(menu)
-    vimmenu_T *menu;
+menu_is_child_of_popup /*(menu)*/
+    (
+    vimmenu_T *menu
+    )
 {
     while (menu->parent != NULL)
 	menu = menu->parent;
@@ -1762,8 +1804,10 @@ menu_is_child_of_popup(menu)
  * Return TRUE if "name" is a toolbar menu name.
  */
     int
-menu_is_toolbar(name)
-    char_u	*name;
+menu_is_toolbar /*(name)*/
+    (
+    char_u	*name
+    )
 {
     return (STRNCMP(name, "ToolBar", 7) == 0);
 }
@@ -1773,8 +1817,10 @@ menu_is_toolbar(name)
  * with '-'
  */
     int
-menu_is_separator(name)
-    char_u *name;
+menu_is_separator /*(name)*/
+    (
+    char_u *name
+    )
 {
     return (name[0] == '-' && name[STRLEN(name) - 1] == '-');
 }
@@ -1783,8 +1829,10 @@ menu_is_separator(name)
  * Return TRUE if the menu is hidden:  Starts with ']'
  */
     static int
-menu_is_hidden(name)
-    char_u *name;
+menu_is_hidden /*(name)*/
+    (
+    char_u *name
+    )
 {
     return (name[0] == ']') || (menu_is_popup(name) && name[5] != NUL);
 }
@@ -1795,8 +1843,10 @@ menu_is_hidden(name)
  * Return TRUE if the menu is the tearoff menu.
  */
     static int
-menu_is_tearoff(name)
-    char_u *name UNUSED;
+menu_is_tearoff /*(name)*/
+    (
+    char_u *name UNUSED
+    )
 {
 #ifdef FEAT_GUI
     return (STRCMP(name, TEAR_STRING) == 0);
@@ -1839,9 +1889,11 @@ get_menu_mode()
  * Return OK or FAIL.  Used recursively.
  */
     int
-check_menu_pointer(root, menu_to_check)
-    vimmenu_T *root;
-    vimmenu_T *menu_to_check;
+check_menu_pointer /*(root, menu_to_check)*/
+    (
+    vimmenu_T *root,
+    vimmenu_T *menu_to_check
+    )
 {
     vimmenu_T	*p;
 
@@ -1861,8 +1913,10 @@ check_menu_pointer(root, menu_to_check)
  * gui_create_initial_menus(root_menu, NULL);
  */
     void
-gui_create_initial_menus(menu)
-    vimmenu_T	*menu;
+gui_create_initial_menus /*(menu)*/
+    (
+    vimmenu_T	*menu
+    )
 {
     int		idx = 0;
 
@@ -1888,9 +1942,11 @@ gui_create_initial_menus(menu)
  * Used recursively by gui_update_menus (see below)
  */
     static void
-gui_update_menus_recurse(menu, mode)
-    vimmenu_T	*menu;
-    int		mode;
+gui_update_menus_recurse /*(menu, mode)*/
+    (
+    vimmenu_T	*menu,
+    int		mode
+    )
 {
     int		grey;
 
@@ -1930,8 +1986,10 @@ gui_update_menus_recurse(menu, mode)
  * since last time.  If "modes" is not 0, then we use these modes instead.
  */
     void
-gui_update_menus(modes)
-    int	    modes;
+gui_update_menus /*(modes)*/
+    (
+    int	    modes
+    )
 {
     static int	    prev_mode = -1;
     int		    mode = 0;
@@ -1968,8 +2026,10 @@ gui_update_menus(modes)
  * Case of the key is ignored.
  */
     int
-gui_is_menu_shortcut(key)
-    int		key;
+gui_is_menu_shortcut /*(key)*/
+    (
+    int		key
+    )
 {
     vimmenu_T	*menu;
 
@@ -2048,11 +2108,13 @@ gui_mch_toggle_tearoffs(int enable)
  * Recursively add tearoff items
  */
     static void
-gui_create_tearoffs_recurse(menu, pname, pri_tab, pri_idx)
-    vimmenu_T		*menu;
-    const char_u	*pname;
-    int			*pri_tab;
-    int			pri_idx;
+gui_create_tearoffs_recurse /*(menu, pname, pri_tab, pri_idx)*/
+    (
+    vimmenu_T		*menu,
+    const char_u	*pname,
+    int			*pri_tab,
+    int			pri_idx
+    )
 {
     char_u	*newpname = NULL;
     int		len;
@@ -2106,10 +2168,12 @@ gui_create_tearoffs_recurse(menu, pname, pri_tab, pri_idx)
  * "tearpath" is the menu path, and must have room to add TEAR_STRING.
  */
     static void
-gui_add_tearoff(tearpath, pri_tab, pri_idx)
-    char_u	*tearpath;
-    int		*pri_tab;
-    int		pri_idx;
+gui_add_tearoff /*(tearpath, pri_tab, pri_idx)*/
+    (
+    char_u	*tearpath,
+    int		*pri_tab,
+    int		pri_idx
+    )
 {
     char_u	*tbuf;
     int		t;
@@ -2155,8 +2219,10 @@ gui_add_tearoff(tearpath, pri_tab, pri_idx)
  * Recursively destroy tearoff items
  */
     static void
-gui_destroy_tearoffs_recurse(menu)
-    vimmenu_T	*menu;
+gui_destroy_tearoffs_recurse /*(menu)*/
+    (
+    vimmenu_T	*menu
+    )
 {
     while (menu)
     {
@@ -2182,8 +2248,10 @@ gui_destroy_tearoffs_recurse(menu)
  * execute it.
  */
     void
-ex_emenu(eap)
-    exarg_T	*eap;
+ex_emenu /*(eap)*/
+    (
+    exarg_T	*eap
+    )
 {
     vimmenu_T	*menu;
     char_u	*name;
@@ -2321,8 +2389,10 @@ ex_emenu(eap)
  * Given a menu descriptor, e.g. "File.New", find it in the menu hierarchy.
  */
     vimmenu_T *
-gui_find_menu(path_name)
-    char_u *path_name;
+gui_find_menu /*(path_name)*/
+    (
+    char_u *path_name
+    )
 {
     vimmenu_T	*menu = NULL;
     char_u	*name;
@@ -2398,8 +2468,10 @@ static garray_T menutrans_ga = {0, 0, 0, 0, NULL};
  * case the commands are ignored.
  */
     void
-ex_menutranslate(eap)
-    exarg_T	*eap UNUSED;
+ex_menutranslate /*(eap)*/
+    (
+    exarg_T	*eap UNUSED
+    )
 {
 #ifdef FEAT_MULTI_LANG
     char_u		*arg = eap->arg;
@@ -2477,8 +2549,10 @@ ex_menutranslate(eap)
  * Find the character just after one part of a menu name.
  */
     static char_u *
-menu_skip_part(p)
-    char_u	*p;
+menu_skip_part /*(p)*/
+    (
+    char_u	*p
+    )
 {
     while (*p != NUL && *p != '.' && !vim_iswhite(*p))
     {
@@ -2496,9 +2570,11 @@ menu_skip_part(p)
  * Return a pointer to the translation or NULL if not found.
  */
     static char_u *
-menutrans_lookup(name, len)
-    char_u	*name;
-    int		len;
+menutrans_lookup /*(name, len)*/
+    (
+    char_u	*name,
+    int		len
+    )
 {
     menutrans_T		*tp = (menutrans_T *)menutrans_ga.ga_data;
     int			i;
@@ -2531,8 +2607,10 @@ menutrans_lookup(name, len)
  * Unescape the name in the translate dictionary table.
  */
     static void
-menu_unescape_name(name)
-    char_u	*name;
+menu_unescape_name /*(name)*/
+    (
+    char_u	*name
+    )
 {
     char_u  *p;
 
@@ -2547,8 +2625,10 @@ menu_unescape_name(name)
  * Skip the menu name, and translate <Tab> into a real TAB.
  */
     static char_u *
-menu_translate_tab_and_shift(arg_start)
-    char_u	*arg_start;
+menu_translate_tab_and_shift /*(arg_start)*/
+    (
+    char_u	*arg_start
+    )
 {
     char_u	*arg = arg_start;
 

@@ -761,8 +761,10 @@ highest_patch()
  * Return TRUE if patch "n" has been included.
  */
     int
-has_patch(n)
-    int		n;
+has_patch /*(n)*/
+    (
+    int		n
+    )
 {
     int		i;
 
@@ -774,8 +776,10 @@ has_patch(n)
 #endif
 
     void
-ex_version(eap)
-    exarg_T	*eap;
+ex_version /*(eap)*/
+    (
+    exarg_T	*eap
+    )
 {
     /*
      * Ignore a ":version 9.99" command.
@@ -1151,8 +1155,10 @@ list_version()
  * newline, unless the message is too long to fit on the screen anyway.
  */
     static void
-version_msg(s)
-    char	*s;
+version_msg /*(s)*/
+    (
+    char	*s
+    )
 {
     int		len = (int)STRLEN(s);
 
@@ -1186,8 +1192,10 @@ maybe_intro_message()
  * Or with the ":intro" command (for Sven :-).
  */
     void
-intro_message(colon)
-    int		colon;		/* TRUE for ":intro" */
+intro_message /*(colon)*/
+    (
+    int		colon
+    )/* TRUE for ":intro" */
 {
     int		i;
     int		row;
@@ -1319,11 +1327,13 @@ intro_message(colon)
 }
 
     static void
-do_intro_line(row, mesg, add_version, attr)
-    int		row;
-    char_u	*mesg;
-    int		add_version;
-    int		attr;
+do_intro_line /*(row, mesg, add_version, attr)*/
+    (
+    int		row,
+    char_u	*mesg,
+    int		add_version,
+    int		attr
+    )
 {
     char_u	vers[20];
     int		col;
@@ -1396,8 +1406,10 @@ do_intro_line(row, mesg, add_version, attr)
  * ":intro": clear screen, display intro screen and wait for return.
  */
     void
-ex_intro(eap)
-    exarg_T	*eap UNUSED;
+ex_intro /*(eap)*/
+    (
+    exarg_T	*eap UNUSED
+    )
 {
     screenclear();
     intro_message(TRUE);

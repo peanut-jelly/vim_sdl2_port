@@ -43,8 +43,10 @@ static void sha256_process __ARGS((context_sha256_T *ctx, char_u data[64]));
 }
 
      void
-sha256_start(ctx)
-    context_sha256_T *ctx;
+sha256_start /*(ctx)*/
+    (
+    context_sha256_T *ctx
+    )
 {
     ctx->total[0] = 0;
     ctx->total[1] = 0;
@@ -60,9 +62,11 @@ sha256_start(ctx)
 }
 
     static void
-sha256_process(ctx, data)
-    context_sha256_T *ctx;
-    char_u	     data[64];
+sha256_process /*(ctx, data)*/
+    (
+    context_sha256_T *ctx,
+    char_u	     data[64]
+    )
 {
     UINT32_T temp1, temp2, W[64];
     UINT32_T A, B, C, D, E, F, G, H;
@@ -194,10 +198,12 @@ sha256_process(ctx, data)
 }
 
     void
-sha256_update(ctx, input, length)
-    context_sha256_T *ctx;
-    char_u	     *input;
-    UINT32_T	     length;
+sha256_update /*(ctx, input, length)*/
+    (
+    context_sha256_T *ctx,
+    char_u	     *input,
+    UINT32_T	     length
+    )
 {
     UINT32_T left, fill;
 
@@ -241,9 +247,11 @@ static char_u sha256_padding[64] = {
 };
 
     void
-sha256_finish(ctx, digest)
-    context_sha256_T *ctx;
-    char_u	     digest[32];
+sha256_finish /*(ctx, digest)*/
+    (
+    context_sha256_T *ctx,
+    char_u	     digest[32]
+    )
 {
     UINT32_T last, padn;
     UINT32_T high, low;
@@ -280,11 +288,13 @@ static unsigned int get_some_time __ARGS((void));
  * if "salt" is not NULL also do "salt[salt_len]".
  */
     char_u *
-sha256_bytes(buf, buf_len, salt, salt_len)
-    char_u *buf;
-    int    buf_len;
-    char_u *salt;
-    int    salt_len;
+sha256_bytes /*(buf, buf_len, salt, salt_len)*/
+    (
+    char_u *buf,
+    int    buf_len,
+    char_u *salt,
+    int    salt_len
+    )
 {
     char_u	     sha256sum[32];
     static char_u    hexit[65];
@@ -308,10 +318,12 @@ sha256_bytes(buf, buf_len, salt, salt_len)
  * Returns sha256(buf) as 64 hex chars in static array.
  */
     char_u *
-sha256_key(buf, salt, salt_len)
-    char_u *buf;
-    char_u *salt;
-    int    salt_len;
+sha256_key /*(buf, salt, salt_len)*/
+    (
+    char_u *buf,
+    char_u *salt,
+    int    salt_len
+    )
 {
     /* No passwd means don't encrypt */
     if (buf == NULL || *buf == NUL)
@@ -407,11 +419,13 @@ get_some_time()
  * Also "salt[salt_len]" when "salt" is not NULL.
  */
     void
-sha2_seed(header, header_len, salt, salt_len)
-    char_u *header;
-    int    header_len;
-    char_u *salt;
-    int    salt_len;
+sha2_seed /*(header, header_len, salt, salt_len)*/
+    (
+    char_u *header,
+    int    header_len,
+    char_u *salt,
+    int    salt_len
+    )
 {
     int		     i;
     static char_u    random_data[1000];

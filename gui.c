@@ -346,9 +346,11 @@ gui_read_child_pipe(int fd)
  * Call this when vim starts up, whether or not the GUI is started
  */
     void
-gui_prepare(argc, argv)
-    int	    *argc;
-    char    **argv;
+gui_prepare /*(argc, argv)*/
+    (
+    int	    *argc,
+    char    **argv
+    )
 {
     gui.in_use = FALSE;		    /* No GUI yet (maybe later) */
     gui.starting = FALSE;	    /* No GUI yet (maybe later) */
@@ -792,8 +794,10 @@ error:
 
 
     void
-gui_exit(rc)
-    int		rc;
+gui_exit /*(rc)*/
+    (
+    int		rc
+    )
 {
     /* don't free the fonts, it leads to a BUS error
      * richard@whitequeen.com Jul 99 */
@@ -846,9 +850,11 @@ gui_shell_closed()
  * the fonts are unchanged.
  */
     int
-gui_init_font(font_list, fontset)
-    char_u	*font_list;
-    int		fontset UNUSED;
+gui_init_font /*(font_list, fontset)*/
+    (
+    char_u	*font_list,
+    int		fontset UNUSED
+    )
 {
 #define FONTLEN 320
     char_u	font_name[FONTLEN];
@@ -929,8 +935,10 @@ gui_init_font(font_list, fontset)
  * Try setting 'guifontwide' to a font twice as wide as "name".
  */
     static void
-set_guifontwide(name)
-    char_u	*name;
+set_guifontwide /*(name)*/
+    (
+    char_u	*name
+    )
 {
     int		i = 0;
     char_u	wide_name[FONTLEN + 10]; /* room for 2 * width and '*' */
@@ -1027,9 +1035,11 @@ gui_get_wide_font()
 #endif
 
     void
-gui_set_cursor(row, col)
-    int	    row;
-    int	    col;
+gui_set_cursor /*(row, col)*/
+    (
+    int	    row,
+    int	    col
+    )
 {
     gui.row = row;
     gui.col = col;
@@ -1055,9 +1065,11 @@ gui_check_pos()
  * otherwise this goes wrong.  May need to call out_flush() first.
  */
     void
-gui_update_cursor(force, clear_selection)
-    int		force;		/* when TRUE, update even when not moved */
-    int		clear_selection;/* clear selection under cursor */
+gui_update_cursor /*(force, clear_selection)*/
+    (
+    int		force,		/* when TRUE, update even when not moved */
+    int		clear_selection
+    )/* clear selection under cursor */
 {
     int		cur_width = 0;
     int		cur_height = 0;
@@ -1466,10 +1478,12 @@ gui_get_shellsize()
  * on the screen.
  */
     void
-gui_set_shellsize(mustset, fit_to_display, direction)
-    int		mustset UNUSED;		/* set by the user */
-    int		fit_to_display;
-    int		direction;		/* RESIZE_HOR, RESIZE_VER */
+gui_set_shellsize /*(mustset, fit_to_display, direction)*/
+    (
+    int		mustset UNUSED,		/* set by the user */
+    int		fit_to_display,
+    int		direction		/* RESIZE_HOR RESIZE_VER */
+    )
 {
 
     int		base_width;
@@ -1604,8 +1618,10 @@ gui_reset_scroll_region()
 }
 
     void
-gui_start_highlight(mask)
-    int	    mask;
+gui_start_highlight /*(mask)*/
+    (
+    int	    mask
+    )
 {
     if (mask > HL_ALL)		    /* highlight code */
 	gui.highlight_mask = mask;
@@ -1614,8 +1630,10 @@ gui_start_highlight(mask)
 }
 
     void
-gui_stop_highlight(mask)
-    int	    mask;
+gui_stop_highlight /*(mask)*/
+    (
+    int	    mask
+    )
 {
     if (mask > HL_ALL)		    /* highlight code */
 	gui.highlight_mask = HL_NORMAL;
@@ -1628,11 +1646,13 @@ gui_stop_highlight(mask)
  * (row2, col2) inclusive.
  */
     void
-gui_clear_block(row1, col1, row2, col2)
-    int	    row1;
-    int	    col1;
-    int	    row2;
-    int	    col2;
+gui_clear_block /*(row1, col1, row2, col2)*/
+    (
+    int	    row1,
+    int	    col1,
+    int	    row2,
+    int	    col2
+    )
 {
     /* Clear the selection if we are about to write over it */
     clip_may_clear_selection(row1, row2);
@@ -1656,9 +1676,11 @@ gui_update_cursor_later()
 }
 
     void
-gui_write(s, len)
-    char_u	*s;
-    int		len;
+gui_write /*(s, len)*/
+    (
+    char_u	*s,
+    int		len
+    )
 {
     char_u	*p;
     int		arg1 = 0, arg2 = 0;
@@ -1908,9 +1930,11 @@ gui_can_update_cursor()
 }
 
     static void
-gui_outstr(s, len)
-    char_u  *s;
-    int	    len;
+gui_outstr /*(s, len)*/
+    (
+    char_u  *s,
+    int	    len
+    )
 {
     int	    this_len;
 #ifdef FEAT_MBYTE
@@ -1972,11 +1996,14 @@ gui_outstr(s, len)
  * Returns FAIL or OK, just like gui_outstr_nowrap().
  */
     static int
-gui_screenchar(off, flags, fg, bg, back)
-    int		off;	    /* Offset from start of screen */
-    int		flags;
-    guicolor_T	fg, bg;	    /* colors for cursor */
-    int		back;	    /* backup this many chars when using bold trick */
+gui_screenchar /*(off, flags, fg, bg, back)*/
+    (
+    int		off,	    /* Offset from start of screen */
+    int		flags,
+    guicolor_T	fg, 
+    guicolor_T  bg,	    /* colors for cursor */
+    int		back
+    )/* backup this many chars when using bold trick */
 {
 #ifdef FEAT_MBYTE
     char_u	buf[MB_MAXBYTES + 1];
@@ -2021,12 +2048,15 @@ gui_screenchar(off, flags, fg, bg, back)
  * FAIL (the caller should start drawing "back" chars back).
  */
     int
-gui_outstr_nowrap(s, len, flags, fg, bg, back)
-    char_u	*s;
-    int		len;
-    int		flags;
-    guicolor_T	fg, bg;	    /* colors for cursor */
-    int		back;	    /* backup this many chars when using bold trick */
+gui_outstr_nowrap /*(s, len, flags, fg, bg, back)*/
+    (
+    char_u	*s,
+    int		len,
+    int		flags,
+    guicolor_T	fg, 
+    guicolor_T  bg,	    /* colors for cursor */
+    int		back
+    )/* backup this many chars when using bold trick */
 {
 int fontFlags = 0;
     long_u	highlight_mask;
@@ -2410,11 +2440,13 @@ gui_undraw_cursor()
 }
 
     void
-gui_redraw(x, y, w, h)
-    int		x;
-    int		y;
-    int		w;
-    int		h;
+gui_redraw /*(x, y, w, h)*/
+    (
+    int		x,
+    int		y,
+    int		w,
+    int		h
+    )
 {
     int		row1, col1, row2, col2;
 
@@ -2443,12 +2475,14 @@ gui_redraw(x, y, w, h)
  * different attributes (may have to be redrawn too).
  */
     int
-gui_redraw_block(row1, col1, row2, col2, flags)
-    int		row1;
-    int		col1;
-    int		row2;
-    int		col2;
-    int		flags;	/* flags for gui_outstr_nowrap() */
+gui_redraw_block /*(row1, col1, row2, col2, flags)*/
+    (
+    int		row1,
+    int		col1,
+    int		row2,
+    int		col2,
+    int		flags
+    )/* flags for gui_outstr_nowrap */
 {
 /*
 if (!(row1==row2 && col1==col2))
@@ -2615,9 +2649,11 @@ if (!(row1==row2 && col1==col2))
 }
 
     static void
-gui_delete_lines(row, count)
-    int	    row;
-    int	    count;
+gui_delete_lines /*(row, count)*/
+    (
+    int	    row,
+    int	    count
+    )
 {
     if (count <= 0)
 	return;
@@ -2645,9 +2681,11 @@ gui_delete_lines(row, count)
 }
 
     static void
-gui_insert_lines(row, count)
-    int	    row;
-    int	    count;
+gui_insert_lines /*(row, count)*/
+    (
+    int	    row,
+    int	    count
+    )
 {
     if (count <= 0)
 	return;
@@ -2756,10 +2794,12 @@ gui_wait_for_chars(long wtime)
  * Fill p[4] with mouse coordinates encoded for check_termcode().
  */
     static void
-fill_mouse_coord(p, col, row)
-    char_u	*p;
-    int		col;
-    int		row;
+fill_mouse_coord /*(p, col, row)*/
+    (
+    char_u	*p,
+    int		col,
+    int		row
+    )
 {
     p[0] = (char_u)(col / 128 + ' ' + 1);
     p[1] = (char_u)(col % 128 + ' ' + 1);
@@ -2784,12 +2824,14 @@ fill_mouse_coord(p, col, row)
  * character.
  */
     void
-gui_send_mouse_event(button, x, y, repeated_click, modifiers)
-    int	    button;
-    int	    x;
-    int	    y;
-    int	    repeated_click;
-    int_u   modifiers;
+gui_send_mouse_event /*(button, x, y, repeated_click, modifiers)*/
+    (
+    int	    button,
+    int	    x,
+    int	    y,
+    int	    repeated_click,
+    int_u   modifiers
+    )
 {
     static int	    prev_row = 0, prev_col = 0;
     static int	    prev_button = -1;
@@ -3101,10 +3143,12 @@ button_set:
  * returns column in "*colp" and row as return value;
  */
     int
-gui_xy2colrow(x, y, colp)
-    int		x;
-    int		y;
-    int		*colp;
+gui_xy2colrow /*(x, y, colp)*/
+    (
+    int		x,
+    int		y,
+    int		*colp
+    )
 {
     int		col = check_col(X_2_COL(x));
     int		row = check_row(Y_2_ROW(y));
@@ -3122,8 +3166,10 @@ gui_xy2colrow(x, y, colp)
  * Callback function for when a menu entry has been selected.
  */
     void
-gui_menu_cb(menu)
-    vimmenu_T *menu;
+gui_menu_cb /*(menu)*/
+    (
+    vimmenu_T *menu
+    )
 {
     char_u  bytes[sizeof(long_u)];
 
@@ -3148,8 +3194,10 @@ static int	prev_which_scrollbars[3];
  * in p_go.
  */
     void
-gui_init_which_components(oldval)
-    char_u	*oldval UNUSED;
+gui_init_which_components /*(oldval)*/
+    (
+    char_u	*oldval UNUSED
+    )
 {
 #ifdef FEAT_MENU
     static int	prev_menu_is_active = -1;
@@ -3453,9 +3501,11 @@ gui_update_tabline()
  * Get the label or tooltip for tab page "tp" into NameBuff[].
  */
     void
-get_tabline_label(tp, tooltip)
-    tabpage_T	*tp;
-    int		tooltip;	/* TRUE: get tooltip */
+get_tabline_label /*(tp, tooltip)*/
+    (
+    tabpage_T	*tp,
+    int		tooltip
+    )/* TRUE: get tooltip */
 {
     int		modified = FALSE;
     char_u	buf[40];
@@ -3546,8 +3596,10 @@ get_tabline_label(tp, tooltip)
  * that tab page or the cmdline window is open.
  */
     int
-send_tabline_event(nr)
-    int	    nr;
+send_tabline_event /*(nr)*/
+    (
+    int	    nr
+    )
 {
     char_u string[3];
 
@@ -3579,9 +3631,11 @@ send_tabline_event(nr)
  * Send a tabline menu event
  */
     void
-send_tabline_menu_event(tabidx, event)
-    int	    tabidx;
-    int	    event;
+send_tabline_menu_event /*(tabidx, event)*/
+    (
+    int	    tabidx,
+    int	    event
+    )
 {
     char_u	    string[3];
 
@@ -3631,10 +3685,12 @@ gui_remove_scrollbars()
 #endif
 
     void
-gui_create_scrollbar(sb, type, wp)
-    scrollbar_T	*sb;
-    int		type;
-    win_T	*wp;
+gui_create_scrollbar /*(sb, type, wp)*/
+    (
+    scrollbar_T	*sb,
+    int		type,
+    win_T	*wp
+    )
 {
     static int	sbar_ident = 0;
 
@@ -3660,8 +3716,10 @@ gui_create_scrollbar(sb, type, wp)
  * Find the scrollbar with the given index.
  */
     scrollbar_T *
-gui_find_scrollbar(ident)
-    long	ident;
+gui_find_scrollbar /*(ident)*/
+    (
+    long	ident
+    )
 {
     win_T	*wp;
 
@@ -3693,10 +3751,12 @@ gui_find_scrollbar(ident)
  * are still characters to be processed.
  */
     void
-gui_drag_scrollbar(sb, value, still_dragging)
-    scrollbar_T	*sb;
-    long	value;
-    int		still_dragging;
+gui_drag_scrollbar /*(sb, value, still_dragging)*/
+    (
+    scrollbar_T	*sb,
+    long	value,
+    int		still_dragging
+    )
 {
 #ifdef FEAT_WINDOWS
     win_T	*wp;
@@ -3927,8 +3987,10 @@ gui_may_update_scrollbars()
 #endif
 
     void
-gui_update_scrollbars(force)
-    int		force;	    /* Force all scrollbars to get updated */
+gui_update_scrollbars /*(force)*/
+    (
+    int		force
+    )/* Force all scrollbars to get updated */
 {
 #if 0
 
@@ -4145,10 +4207,12 @@ gui_update_scrollbars(force)
  * sometimes.
  */
     static void
-gui_do_scrollbar(wp, which, enable)
-    win_T	*wp;
-    int		which;	    /* SBAR_LEFT or SBAR_RIGHT */
-    int		enable;	    /* TRUE to enable scrollbar */
+gui_do_scrollbar /*(wp, which, enable)*/
+    (
+    win_T	*wp,
+    int		which,	    /* SBAR_LEFT or SBAR_RIGHT */
+    int		enable
+    )/* TRUE to enable scrollbar */
 {
 #ifdef FEAT_VERTSPLIT
     int		midcol = curwin->w_wincol + curwin->w_width / 2;
@@ -4303,8 +4367,10 @@ gui_do_scroll()
  * Return length of line "lnum" for horizontal scrolling.
  */
     static colnr_T
-scroll_line_len(lnum)
-    linenr_T	lnum;
+scroll_line_len /*(lnum)*/
+    (
+    linenr_T	lnum
+    )
 {
     char_u	*p;
     colnr_T	col;
@@ -4374,8 +4440,10 @@ gui_find_longest_lnum()
 }
 
     static void
-gui_update_horiz_scrollbar(force)
-    int		force;
+gui_update_horiz_scrollbar /*(force)*/
+    (
+    int		force
+    )
 {
     long	value, size, max;	/* need 32 bit ints here */
 
@@ -4467,9 +4535,11 @@ gui_update_horiz_scrollbar(force)
  * Do a horizontal scroll.  Return TRUE if the cursor moved, FALSE otherwise.
  */
     int
-gui_do_horiz_scroll(leftcol, compute_longest_lnum)
-    long_u	leftcol;
-    int		compute_longest_lnum;
+gui_do_horiz_scroll /*(leftcol, compute_longest_lnum)*/
+    (
+    long_u	leftcol,
+    int		compute_longest_lnum
+    )
 {
     /* no wrapping, no scrolling */
     if (curwin->w_p_wrap)
@@ -4518,16 +4588,20 @@ gui_check_colors()
 }
 
     static void
-gui_set_fg_color(name)
-    char_u	*name;
+gui_set_fg_color /*(name)*/
+    (
+    char_u	*name
+    )
 {
     gui.norm_pixel = gui_get_color(name);
     hl_set_fg_color_name(vim_strsave(name));
 }
 
     static void
-gui_set_bg_color(name)
-    char_u	*name;
+gui_set_bg_color /*(name)*/
+    (
+    char_u	*name
+    )
 {
     gui.back_pixel = gui_get_color(name);
     hl_set_bg_color_name(vim_strsave(name));
@@ -4538,8 +4612,10 @@ gui_set_bg_color(name)
  * Returns INVALCOLOR and gives an error message when failed.
  */
     guicolor_T
-gui_get_color(name)
-    char_u	*name;
+gui_get_color /*(name)*/
+    (
+    char_u	*name
+    )
 {
     guicolor_T	t;
 
@@ -4560,8 +4636,10 @@ gui_get_color(name)
  * Return the grey value of a color (range 0-255).
  */
     int
-gui_get_lightness(pixel)
-    guicolor_T	pixel;
+gui_get_lightness /*(pixel)*/
+    (
+    guicolor_T	pixel
+    )
 {
     long_u	rgb = gui_mch_get_rgb(pixel);
 
@@ -4593,8 +4671,10 @@ gui_new_scrollbar_colors()
  * Call this when focus has changed.
  */
     void
-gui_focus_change(in_focus)
-    int		in_focus;
+gui_focus_change /*(in_focus)*/
+    (
+    int		in_focus
+    )
 {
 /*
  * Skip this code to avoid drawing the cursor when debugging and switching
@@ -4628,9 +4708,11 @@ gui_focus_change(in_focus)
  * Called when the mouse moved (but not when dragging).
  */
     void
-gui_mouse_moved(x, y)
-    int		x;
-    int		y;
+gui_mouse_moved /*(x, y)*/
+    (
+    int		x,
+    int		y
+    )
 {
     win_T	*wp;
     char_u	st[8];
@@ -4740,9 +4822,11 @@ gui_mouse_correct()
  * Find window where the mouse pointer "y" coordinate is in.
  */
     static win_T *
-xy2win(x, y)
-    int		x UNUSED;
-    int		y UNUSED;
+xy2win /*(x, y)*/
+    (
+    int		x UNUSED,
+    int		y UNUSED
+    )
 {
 #ifdef FEAT_WINDOWS
     int		row;
@@ -4787,8 +4871,10 @@ xy2win(x, y)
  * File names may be given to redefine the args list.
  */
     void
-ex_gui(eap)
-    exarg_T	*eap;
+ex_gui /*(eap)*/
+    (
+    exarg_T	*eap
+    )
 {
     char_u	*arg = eap->arg;
 
@@ -4829,9 +4915,11 @@ static void gfp_setname __ARGS((char_u *fname, void *cookie));
  * Callback function for do_in_runtimepath().
  */
     static void
-gfp_setname(fname, cookie)
-    char_u	*fname;
-    void	*cookie;
+gfp_setname /*(fname, cookie)*/
+    (
+    char_u	*fname,
+    void	*cookie
+    )
 {
     char_u	*gfp_buffer = cookie;
 
@@ -4846,10 +4934,12 @@ gfp_setname(fname, cookie)
  * Return FAIL for failure and OK if buffer[MAXPATHL] contains the result.
  */
     int
-gui_find_bitmap(name, buffer, ext)
-    char_u	*name;
-    char_u	*buffer;
-    char	*ext;
+gui_find_bitmap /*(name, buffer, ext)*/
+    (
+    char_u	*name,
+    char_u	*buffer,
+    char	*ext
+    )
 {
     if (STRLEN(name) > MAXPATHL - 14)
 	return FAIL;
@@ -4869,10 +4959,12 @@ gui_find_bitmap(name, buffer, ext)
  * contains "name".
  */
     void
-gui_find_iconfile(name, buffer, ext)
-    char_u	*name;
-    char_u	*buffer;
-    char	*ext;
+gui_find_iconfile /*(name, buffer, ext)*/
+    (
+    char_u	*name,
+    char_u	*buffer,
+    char	*ext
+    )
 {
     char_u	buf[MAXPATHL + 1];
 
@@ -5005,10 +5097,12 @@ static void concat_esc __ARGS((garray_T *gap, char_u *text, int what));
  * Returns an allocated string.
  */
     char_u *
-get_find_dialog_text(arg, wwordp, mcasep)
-    char_u	*arg;
-    int		*wwordp;	/* return: TRUE if \< \> found */
-    int		*mcasep;	/* return: TRUE if \C found */
+get_find_dialog_text /*(arg, wwordp, mcasep)*/
+    (
+    char_u	*arg,
+    int		*wwordp,	/* return: TRUE if \< \> found */
+    int		*mcasep
+    )/* return: TRUE if \C found */
 {
     char_u	*text;
 
@@ -5066,10 +5160,12 @@ get_find_dialog_text(arg, wwordp, mcasep)
  * Concatenate "text" to grow array "gap", escaping "what" with a backslash.
  */
     static void
-concat_esc(gap, text, what)
-    garray_T	*gap;
-    char_u	*text;
-    int		what;
+concat_esc /*(gap, text, what)*/
+    (
+    garray_T	*gap,
+    char_u	*text,
+    int		what
+    )
 {
     while (*text != NUL)
     {
@@ -5095,11 +5191,13 @@ concat_esc(gap, text, what)
  * Return TRUE when something was added to the input buffer.
  */
     int
-gui_do_findrepl(flags, find_text, repl_text, down)
-    int		flags;		/* one of FRD_REPLACE, FRD_FINDNEXT, etc. */
-    char_u	*find_text;
-    char_u	*repl_text;
-    int		down;		/* Search downwards. */
+gui_do_findrepl /*(flags, find_text, repl_text, down)*/
+    (
+    int		flags,		/* one of FRD_REPLACE, FRD_FINDNEXT, etc. */
+    char_u	*find_text,
+    char_u	*repl_text,
+    int		down
+    )/* Search downwards. */
 {
     garray_T	ga;
     int		i;
@@ -5228,9 +5326,11 @@ static void gui_wingoto_xy __ARGS((int x, int y));
  * Jump to the window at specified point (x, y).
  */
     static void
-gui_wingoto_xy(x, y)
-    int x;
-    int y;
+gui_wingoto_xy /*(x, y)*/
+    (
+    int x,
+    int y
+    )
 {
     int		row = Y_2_ROW(y);
     int		col = X_2_COL(x);
@@ -5252,12 +5352,14 @@ gui_wingoto_xy(x, y)
  * fnames after call this function.
  */
     void
-gui_handle_drop(x, y, modifiers, fnames, count)
-    int		x UNUSED;
-    int		y UNUSED;
-    int_u	modifiers;
-    char_u	**fnames;
-    int		count;
+gui_handle_drop /*(x, y, modifiers, fnames, count)*/
+    (
+    int		x UNUSED,
+    int		y UNUSED,
+    int_u	modifiers,
+    char_u	**fnames,
+    int		count
+    )
 {
     int		i;
     char_u	*p;

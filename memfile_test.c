@@ -1,3 +1,12 @@
+#error memfile_test.c is used when building vim_sdl2
+/*
+ * This file is used to test memfile.
+ * There are only two functions in this file.
+ * One is main() and the other is the test function.
+ *
+ * I am not deleting this file in case memfile.c is modified and need testing.
+ */
+
 /* vi:set ts=8 sts=4 sw=4:
  *
  * VIM - Vi IMproved	by Bram Moolenaar

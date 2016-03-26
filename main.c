@@ -7,6 +7,8 @@ static SDL_Window* gWindow=NULL;
 static SDL_Renderer* gWindowRenderer=NULL;
 static int gWindow_w, gWindow_h;
 
+static FILE* s_log_file;
+
 static void
 resize(int w, int h)
 {
@@ -90,13 +92,22 @@ for (;;)
     if (time_to_wait>0)
         SDL_Delay(time_to_wait);
     }
-FILE* fout=fopen("zzz.log", "w");
+FILE* fout=fopen("dirty.log", "w");
 fprintf(fout, "num_dirty=%d num_clean=%d\n", num_dirty, num_clean);
 fclose(fout);
 }
 
+static void log_vim(const char* msg)
+{
+fprintf(s_log_file, "%s\n", msg);
+fflush(s_log_file);
+}
+
 static void init(int w, int h)
 {
+s_log_file=fopen("zzzVim.log", "w");
+if (!s_log_file)
+    fnError("error creating log file");
 if (!SDL_WasInit(SDL_INIT_VIDEO))
     {
     int status=SDL_Init(SDL_INIT_VIDEO);
@@ -104,6 +115,8 @@ if (!SDL_WasInit(SDL_INIT_VIDEO))
         fnError2("sdl-init-video failed.", SDL_GetError());
     }
 iVim_init(w,h,0,0);
+
+iVim_setLogger(log_vim);
 iVim_getDisplaySize(&gWindow_w, &gWindow_h);
 gWindow=
     SDL_CreateWindow( "SDLdisplay", 
@@ -126,6 +139,7 @@ int main(int argc, char** argv)
 init(500, 500);
 main_loop();
 iVim_quit();
+fclose(s_log_file);
 return 0;
 }
 

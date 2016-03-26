@@ -37,6 +37,8 @@ typedef struct tex_font
 static pthread_t thread_vim;
 
 static int s_info_shown=0;
+void (*s_logger)(const char*)= NULL;
+
 static SDL_Window *gInfo=NULL;
 static SDL_Renderer *gInfoRenderer=NULL;
 static TTF_Font *gFont=NULL;
@@ -365,6 +367,8 @@ mySDL_show_info(SDL_Rect *dstRect)
 #define ROWS 20
 #define COLUMNS 35
 static char buf[ROWS][COLUMNS];
+static char log_buf[512];
+static int log_len;
 /*
 SDL_Surface *tmp_info_window=
     SDL_CreateRGBSurface(0,500, 500, 32, 0,0,0,0);
@@ -374,10 +378,14 @@ int lines=info_message_number();
 if (lines>=ROWS)
     {
     for (i=0; i<(lines-ROWS); i++)
-        info_poll_message(NULL, NULL, 0);
+        {
+        info_poll_message(log_buf,&log_len, 500);
+        if (s_logger) s_logger(log_buf);
+        }
     for (i=0; i<ROWS; i++)
         {
         info_poll_message(buf[i], &len,COLUMNS);
+        if (s_logger) s_logger(buf[i]);
         for (j=len; j<COLUMNS; j++)
             buf[i][j]=0;
         }
@@ -388,6 +396,7 @@ else // need to move within buf
     for (i=ROWS-lines; i<ROWS; i++)
         {
         info_poll_message(buf[i], &len,COLUMNS);
+        if (s_logger) s_logger(buf[i]);
         for (j=len; j<COLUMNS; j++)
             buf[i][j]=0;
         }
@@ -1125,4 +1134,9 @@ else
 s_info_shown=shown;
 }
 
+
+void iVim_setLogger( void (*f)(const char*) )
+{
+s_logger=f;
+}
 

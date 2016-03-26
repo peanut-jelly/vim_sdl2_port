@@ -1,4 +1,5 @@
 #include "iVim.h"
+#include <stdio.h>
 
 #include "mock.h"
 
@@ -55,10 +56,13 @@ switch (e.type)
 static void 
 main_loop()
 {
+int num_dirty=0, num_clean=0;
 SDL_Event evnt;
 
 for (;;)
     {
+    int t0=SDL_GetTicks();
+    // maybe :q
     if (!iVim_running()) break;
     while(SDL_PollEvent(&evnt))
         {
@@ -67,15 +71,28 @@ for (;;)
             iVim_onEvent(evnt);
             }
         }
-    iVim_flush();
+    int dirty=iVim_flush();
+    if (dirty) 
+        num_dirty++;
+    else
+        num_clean++;
+
     int ww,hh;
     iVim_getDisplaySize(&ww, &hh);
     if (ww!=gWindow_w || hh!=gWindow_h)
         resize(ww,hh);
-    myWindow_draw();
+    //if the display surface is not changed then do not redraw.
+    if (dirty)
+        myWindow_draw();
 
-    SDL_Delay(50);
+    int t1=SDL_GetTicks();
+    int time_to_wait=30-(t1-t0);
+    if (time_to_wait>0)
+        SDL_Delay(time_to_wait);
     }
+FILE* fout=fopen("zzz.log", "w");
+fprintf(fout, "num_dirty=%d num_clean=%d\n", num_dirty, num_clean);
+fclose(fout);
 }
 
 static void init(int w, int h)
@@ -100,6 +117,8 @@ gWindowRenderer=SDL_CreateRenderer(gWindow, -1,
 if (gWindowRenderer==NULL)
     fnError("error creating gWindowRenderer");
 SDL_SetRenderDrawColor(gWindowRenderer, 0, 20, 10, 0xff);
+
+iVim_showDebugWindow(1);
 }
 
 int main(int argc, char** argv)

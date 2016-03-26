@@ -158,10 +158,8 @@ VimMain
 #error using main in vim_main.c 
 main
 # endif
- /*(argc, argv)*/
     (
-    int		argc,
-    char	**argv
+    int	argc, char **argv
     )
 {
     char_u	*fname = NULL;		/* file name from command line */

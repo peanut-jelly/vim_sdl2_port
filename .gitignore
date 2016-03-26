@@ -3,6 +3,7 @@
 
 gobji386/
 *.exe
+*.log
 
 *.pydevproject
 .project

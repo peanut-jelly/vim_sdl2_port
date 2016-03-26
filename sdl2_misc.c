@@ -36,6 +36,7 @@ typedef struct tex_font
 
 static pthread_t thread_vim;
 
+static int s_info_shown=0;
 static SDL_Window *gInfo=NULL;
 static SDL_Renderer *gInfoRenderer=NULL;
 static TTF_Font *gFont=NULL;
@@ -65,6 +66,8 @@ static SDL_Surface
     *gDisplayTarget0_surf = NULL,
     *gDisplayTarget1_surf = NULL,
     *gDisplayTargetCur_surf = NULL;
+static int s_surface_dirty=1;
+
 static SDL_Color gDisplayColorFG,
                  gDisplayColorBG,
                  gDisplayColorSP;
@@ -1036,18 +1039,6 @@ if (e.type==SDL_QUIT)
     mySDLrunning=0;
 }
 
-
-
-/*
-void 
-mySDL_dosomething()
-{
-mySDL_init(500, 500);
-mySDL_main_loop();
-SDL_DestroyWindow(gInfo);
-}
-*/
-
 void * fn_vim_thread(void *ud)
 {
 
@@ -1107,19 +1098,31 @@ pthread_join(thread_vim, NULL);
 return 0;
 }
 
-void iVim_flush()
+int iVim_flush()
 {
+int dirty=display_has_task();
 myDisplay_draw();
 
-// don't redraw info if no message pending there.
-if (info_message_number()==0)
-    return;
 myInfo_clear();
 myInfo_draw();
-myInfo_present();
+if (s_info_shown)
+    myInfo_present();
+
+return dirty;
 }
 
 int iVim_running()
 {
 return mySDLrunning;
 }
+
+void iVim_showDebugWindow(int shown)
+{
+if (shown)
+    SDL_ShowWindow(gInfo);
+else
+    SDL_HideWindow(gInfo);
+s_info_shown=shown;
+}
+
+

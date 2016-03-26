@@ -379,8 +379,11 @@ if (lines>=ROWS)
     {
     for (i=0; i<(lines-ROWS); i++)
         {
-        info_poll_message(log_buf,&log_len, 500);
-        if (s_logger) s_logger(log_buf);
+        if (s_logger)
+            {
+            info_poll_message(log_buf,&log_len, 500);
+            s_logger(log_buf);
+            }
         }
     for (i=0; i<ROWS; i++)
         {

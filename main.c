@@ -132,6 +132,15 @@ if (gWindowRenderer==NULL)
 SDL_SetRenderDrawColor(gWindowRenderer, 0, 20, 10, 0xff);
 
 iVim_showDebugWindow(1);
+
+// testing logger
+int i;
+static char mmm[100];
+for (i=0; i<100; i++)
+    {
+    snprintf(mmm, 100, "i=%d", i);
+    info_push_message(mmm);
+    }
 }
 
 int main(int argc, char** argv)

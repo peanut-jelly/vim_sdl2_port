@@ -40,5 +40,5 @@ run:
 
 ##Requirements
 
-You need to run the command "set encoding=utf-8", by hand or via a .vimrc file.
+Need to "set encoding=utf-8", by hand or via a .vimrc file.
 

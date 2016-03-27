@@ -33,7 +33,7 @@ Note that text mode tabline and dialog still works.
 Currently compiles and runs in win32 MINGW.
 
 build:
-  `make -f Make_ming.mak`
+  `make`
 
 run:
   `./gvim`

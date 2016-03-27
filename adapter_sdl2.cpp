@@ -6,6 +6,10 @@
 #include <pthread.h>
 #include "utf8.h"
 #include "mock.h"
+extern "C" 
+{
+#include "iVim.h"
+}
 
 using std::queue;
 using std::string;
@@ -83,6 +87,7 @@ void info_push_message(const char* msg)
 {
 lock_m();
 q_msg.push(msg);
+iVim_log(msg);
 unlock_m();
 }
 void info_push_messagef(const char* msg, ...)

@@ -747,7 +747,7 @@ $(OUTDIR)/sdl2_misc.o: sdl2_misc.c adapter_sdl2.h iVim.h
 $(OUTDIR)/sdl2_misc2.o: sdl2_misc2.c adapter_sdl2.h
 	$(CC) -c $(CFLAGS) sdl2_misc2.c -o $@
 
-$(OUTDIR)/adapter_sdl2.o : adapter_sdl2.cpp adapter_sdl2.h
+$(OUTDIR)/adapter_sdl2.o : adapter_sdl2.cpp adapter_sdl2.h iVim.h
 	g++ -c $(CFLAGS) -std=c++0x adapter_sdl2.cpp -o $@
 
 $(OUTDIR)/gui_w32.o:	gui_w32.c gui_w48.c gui_w32_rc.h $(INCL) \

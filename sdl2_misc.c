@@ -23,7 +23,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "adapter_sdl2.h"
 #include <pthread.h>
-//#include "globals.h"
+#include "iVim.h"
 #include "vim.h"
 
 typedef struct tex_font
@@ -38,6 +38,7 @@ static pthread_t thread_vim;
 
 static int s_info_shown=0;
 void (*s_logger)(const char*)= NULL;
+pthread_mutex_t s_mutex_logger=PTHREAD_MUTEX_INITIALIZER;
 
 static SDL_Window *gInfo=NULL;
 static SDL_Renderer *gInfoRenderer=NULL;
@@ -379,16 +380,11 @@ if (lines>=ROWS)
     {
     for (i=0; i<(lines-ROWS); i++)
         {
-        if (s_logger)
-            {
-            info_poll_message(log_buf,&log_len, 500);
-            s_logger(log_buf);
-            }
+        info_poll_message(NULL, NULL, 0);
         }
     for (i=0; i<ROWS; i++)
         {
         info_poll_message(buf[i], &len,COLUMNS);
-        if (s_logger) s_logger(buf[i]);
         for (j=len; j<COLUMNS; j++)
             buf[i][j]=0;
         }
@@ -399,7 +395,6 @@ else // need to move within buf
     for (i=ROWS-lines; i<ROWS; i++)
         {
         info_poll_message(buf[i], &len,COLUMNS);
-        if (s_logger) s_logger(buf[i]);
         for (j=len; j<COLUMNS; j++)
             buf[i][j]=0;
         }
@@ -1141,5 +1136,12 @@ s_info_shown=shown;
 void iVim_setLogger( void (*f)(const char*) )
 {
 s_logger=f;
+}
+
+void iVim_log(const char* msg)
+{
+pthread_mutex_lock(&s_mutex_logger);
+if (s_logger) s_logger(msg);
+pthread_mutex_unlock(&s_mutex_logger);
 }
 

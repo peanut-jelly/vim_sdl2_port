@@ -21,6 +21,13 @@ extern int iVim_init(int w, int h, int argc, char** argv);
  */
 extern void iVim_setLogger(void (*f)(const char*));
 
+/* @func iVim_log
+ * logging messages.
+ * This function can be called from vim core thread, so locking of the 
+ * log file is performed.
+ */
+extern void iVim_log(const char* msg);
+
 extern void iVim_onEvent(SDL_Event evnt);
 
 /* @func iVim_flush

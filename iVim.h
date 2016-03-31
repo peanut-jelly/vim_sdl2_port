@@ -18,13 +18,18 @@ extern int iVim_init(int w, int h, int argc, char** argv);
  * the registered logger function (if non null), so logger should be
  * set before calling `iVim_flush`, otherwise those messages flushed
  * before logger is set is lost.
+ *
+ * @arg f may be called from multiple threads. It must perform necessary
+ * locking itself.
  */
 extern void iVim_setLogger(void (*f)(const char*));
 
 /* @func iVim_log
  * logging messages.
- * This function can be called from vim core thread, so locking of the 
- * log file is performed.
+ * This function may be called from multiple threads, so locking is
+ * necessary. However, I decide it is the user's logging function's
+ * responsbility to do the locking, because any resonable logger in
+ * multithreaded environment has locking capacity.
  */
 extern void iVim_log(const char* msg);
 

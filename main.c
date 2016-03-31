@@ -1,5 +1,6 @@
 #include "iVim.h"
 #include <stdio.h>
+#include <pthread.h>
 
 #include "mock.h"
 
@@ -99,8 +100,12 @@ fclose(fout);
 
 static void log_vim(const char* msg)
 {
+static pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_lock(&mutex);
 fprintf(s_log_file, "%s\n", msg);
 fflush(s_log_file);
+pthread_mutex_unlock(&mutex);
 }
 
 static void init(int w, int h)

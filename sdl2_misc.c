@@ -38,7 +38,6 @@ static pthread_t thread_vim;
 
 static int s_info_shown=0;
 void (*s_logger)(const char*)= NULL;
-pthread_mutex_t s_mutex_logger=PTHREAD_MUTEX_INITIALIZER;
 
 static SDL_Window *gInfo=NULL;
 static SDL_Renderer *gInfoRenderer=NULL;
@@ -1140,8 +1139,7 @@ s_logger=f;
 
 void iVim_log(const char* msg)
 {
-pthread_mutex_lock(&s_mutex_logger);
+// s_logger 's responsbility to perform locking.
 if (s_logger) s_logger(msg);
-pthread_mutex_unlock(&s_mutex_logger);
 }
 

@@ -117,7 +117,7 @@ void send_mousebuttondown_to_adapter(SDL_MouseButtonEvent e)
 {
 extern void _on_mousebuttondown_callback(int, void*, void*);
 Uint32 modState = getCurrentKeymod();
-SDL_MouseButtonEvent* ne=malloc(sizeof(SDL_MouseButtonEvent));
+SDL_MouseButtonEvent* ne=(SDL_MouseButtonEvent*)malloc(sizeof(SDL_MouseButtonEvent));
 *ne=e;
 adapter_event_t evnt={ADAPT_EVENT_MOUSEBUTTON_DOWN,
     _on_mousebuttondown_callback,
@@ -129,7 +129,7 @@ void send_mousebuttonup_or_move_to_adapter(SDL_Event e)
 {
 extern void _on_mouse_move_or_release_callback(int, void*, void*);
 Uint32 modState = getCurrentKeymod();
-SDL_Event* ne=malloc(sizeof(SDL_Event));
+SDL_Event* ne=(SDL_Event*)malloc(sizeof(SDL_Event));
 *ne=e;
 adapter_event_t evnt={ADAPT_EVENT_MOUSEBUTTON_UP,
     _on_mouse_move_or_release_callback,

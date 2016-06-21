@@ -295,7 +295,7 @@ static void st_error __ARGS((int *postfix, int *end, int *p));
 static int nfa_max_width __ARGS((nfa_state_T *startstate, int depth));
 static nfa_state_T *post2nfa __ARGS((int *postfix, int *end, int nfa_calc_size));
 static void nfa_postprocess __ARGS((nfa_regprog_T *prog));
-static int check_char_class __ARGS((int class, int c));
+static int check_char_class __ARGS((int my_class, int c));
 static void nfa_save_listids __ARGS((nfa_regprog_T *prog, int *list));
 static void nfa_restore_listids __ARGS((nfa_regprog_T *prog, int *list));
 static int nfa_re_num_cmp __ARGS((long_u val, int op, long_u pos));
@@ -3377,10 +3377,10 @@ post2nfa /*(postfix, end, nfa_calc_size)*/
 
     e = POP();
     if (stackp != stack)
-	EMSG_RET_NULL(_("E875: (NFA regexp) (While converting from postfix to NFA), too many states left on stack"));
+	EMSG_RET_NULL(_("E875: (NFA regexp) (While converting from postfix to NFA), too many states left on stack"), nfa_state_T*);
 
     if (istate >= nstate)
-	EMSG_RET_NULL(_("E876: (NFA regexp) Not enough space to store the whole NFA "));
+	EMSG_RET_NULL(_("E876: (NFA regexp) Not enough space to store the whole NFA "), nfa_state_T*);
 
     matchstate = &state_ptr[istate++]; /* the match state */
     matchstate->c = NFA_MATCH;
@@ -3470,19 +3470,19 @@ typedef struct
     int	    in_use; /* number of subexpr with useful info */
 
     /* When REG_MULTI is TRUE list.multi is used, otherwise list.line. */
-    union
-    {
-	struct multipos
-	{
-	    lpos_T	start;
-	    lpos_T	end;
-	} multi[NSUBEXP];
-	struct linepos
-	{
-	    char_u	*start;
-	    char_u	*end;
-	} line[NSUBEXP];
-    } list;
+    union ppos
+        {
+        struct multipos
+            {
+            lpos_T	start;
+            lpos_T	end;
+            } multi[NSUBEXP];
+        struct linepos
+            {
+            char_u	*start;
+            char_u	*end;
+            } line[NSUBEXP];
+        } list;
 } regsub_T;
 
 typedef struct
@@ -3644,9 +3644,9 @@ clear_sub /*(sub)*/
     if (REG_MULTI)
 	/* Use 0xff to set lnum to -1 */
 	vim_memset(sub->list.multi, 0xff,
-				      sizeof(struct multipos) * nfa_nsubexpr);
+				      sizeof(struct regsub_T::ppos::multipos) * nfa_nsubexpr);
     else
-	vim_memset(sub->list.line, 0, sizeof(struct linepos) * nfa_nsubexpr);
+        vim_memset(sub->list.line, 0, sizeof(struct regsub_T::ppos::linepos) * nfa_nsubexpr);
     sub->in_use = 0;
 }
 
@@ -3667,11 +3667,11 @@ copy_sub /*(to, from)*/
 	if (REG_MULTI)
 	    mch_memmove(&to->list.multi[0],
 			&from->list.multi[0],
-			sizeof(struct multipos) * from->in_use);
+			sizeof(struct regsub_T::ppos::multipos) * from->in_use);
 	else
 	    mch_memmove(&to->list.line[0],
 			&from->list.line[0],
-			sizeof(struct linepos) * from->in_use);
+			sizeof(struct regsub_T::ppos::linepos) * from->in_use);
     }
 }
 
@@ -3693,11 +3693,11 @@ copy_sub_off /*(to, from)*/
 	if (REG_MULTI)
 	    mch_memmove(&to->list.multi[1],
 			&from->list.multi[1],
-			sizeof(struct multipos) * (from->in_use - 1));
+			sizeof(struct regsub_T::ppos::multipos) * (from->in_use - 1));
 	else
 	    mch_memmove(&to->list.line[1],
 			&from->list.line[1],
-			sizeof(struct linepos) * (from->in_use - 1));
+			sizeof(struct regsub_T::ppos::linepos) * (from->in_use - 1));
     }
 }
 
@@ -4092,7 +4092,7 @@ skip_add:
 		    subs = &temp_subs;
 		}
 
-		l->t = vim_realloc(l->t, newlen * sizeof(nfa_thread_T));
+		l->t = (nfa_thread_T*)vim_realloc(l->t, newlen * sizeof(nfa_thread_T));
 		l->len = newlen;
 	    }
 
@@ -4423,11 +4423,11 @@ addstate_here /*(l, state, subs, pim, ip)*/
     static int
 check_char_class /*(class, c)*/
     (
-    int		class,
+    int		my_class,
     int		c
     )
 {
-    switch (class)
+    switch (my_class)
     {
 	case NFA_CLASS_ALNUM:
 	    if (c >= 1 && c <= 255 && isalnum(c))
@@ -4496,7 +4496,7 @@ check_char_class /*(class, c)*/
 
 	default:
 	    /* should not be here :P */
-	    EMSGN("E877: (NFA regexp) Invalid character class: %ld", class);
+	    EMSGN("E877: (NFA regexp) Invalid character my_class: %ld", my_class);
 	    return FAIL;
     }
     return FAIL;
@@ -6499,7 +6499,7 @@ nfa_regtry /*(prog, col)*/
 	{
 	    if (REG_MULTI)
 	    {
-		struct multipos *mpos = &subs.synt.list.multi[i];
+		struct regsub_T::ppos::multipos *mpos = &subs.synt.list.multi[i];
 
 		/* Only accept single line matches. */
 		if (mpos->start.lnum >= 0 && mpos->start.lnum == mpos->end.lnum)
@@ -6509,14 +6509,14 @@ nfa_regtry /*(prog, col)*/
 					     mpos->end.col - mpos->start.col);
 	    }
 	    else
-	    {
-		struct linepos *lpos = &subs.synt.list.line[i];
+            {
+            struct regsub_T::ppos::linepos *lpos = &subs.synt.list.line[i];
 
-		if (lpos->start != NULL && lpos->end != NULL)
-		    re_extmatch_out->matches[i] =
-			    vim_strnsave(lpos->start,
-					      (int)(lpos->end - lpos->start));
-	    }
+            if (lpos->start != NULL && lpos->end != NULL)
+                re_extmatch_out->matches[i] =
+                    vim_strnsave(lpos->start,
+                            (int)(lpos->end - lpos->start));
+            }
 	}
     }
 #endif

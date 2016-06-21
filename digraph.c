@@ -13,6 +13,9 @@
 
 #include "vim.h"
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 #if defined(FEAT_DIGRAPHS) || defined(PROTO)
 
 #ifdef FEAT_MBYTE
@@ -2538,4 +2541,6 @@ keymap_unload()
 }
 
 #endif /* FEAT_KEYMAP */
+
+#include "end_ns_vim.h"
 

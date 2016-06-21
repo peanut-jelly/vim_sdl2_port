@@ -17,6 +17,13 @@
  * They may have different values when the screen wasn't (re)allocated yet
  * after setting Rows or Columns (e.g., when starting up).
  */
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 EXTERN long	Rows			/* nr of rows in the screen */
 #ifdef DO_INIT
 # if defined(MSDOS) || defined(WIN3264) || defined(OS2)
@@ -1628,5 +1635,8 @@ EXTERN char *ignoredp;
 #endif
 
 // MYCHANGE 2016 Feb. 3 
-EXTERN int myVimRunning;
+extern int myVimRunning;
+
+
+#include "end_ns_vim.h"
 

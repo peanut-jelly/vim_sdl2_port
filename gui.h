@@ -58,6 +58,20 @@
 # include "photon/PxProto.h"
 #endif
 
+
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 /*
  * On some systems scrolling needs to be done right away instead of in the
  * main loop.
@@ -535,3 +549,8 @@ typedef enum
 # define CONVERT_FROM_UTF8(String) (String)
 # define CONVERT_FROM_UTF8_FREE(String) ((String) = (char_u *)NULL)
 #endif /* FEAT_GUI_GTK */
+
+
+
+#include "end_ns_vim.h"
+

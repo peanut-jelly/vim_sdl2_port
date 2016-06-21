@@ -14,6 +14,15 @@
 #include "vim.h"
 #include "version.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static void	cmd_source __ARGS((char_u *fname, exarg_T *eap));
 
 #ifdef FEAT_EVAL
@@ -3587,7 +3596,7 @@ getsourceline(int c, void* cookie, int indent)
 	    }
 	    ga_append(&ga, NUL);
 	    vim_free(line);
-	    line = ga.ga_data;
+	    line = (char_u*)ga.ga_data;
 	}
     }
 
@@ -4002,10 +4011,10 @@ get_locale_val(int what)
 
 	/* setocale() returns something like "LC_COLLATE=<name>;LC_..." when
 	 * one of the values (e.g., LC_CTYPE) differs. */
-	p = vim_strchr(loc, '=');
+	p = (char_u*)vim_strchr((char_u*)loc, '=');
 	if (p != NULL)
 	{
-	    loc = ++p;
+	    loc = (char*)++p;
 	    while (*p != NUL)	/* remove trailing newline */
 	    {
 		if (*p < ' ' || *p == ';')
@@ -4057,7 +4066,7 @@ gettext_lang(char_u *name)
 
     for (i = 0; mtable[i] != NULL; i += 2)
 	if (STRNICMP(mtable[i], name, STRLEN(mtable[i])) == 0)
-	    return mtable[i + 1];
+	    return (char_u*)mtable[i + 1];
     return name;
 }
 #endif
@@ -4416,3 +4425,8 @@ get_locales(expand_T* xp, int idx)
 # endif
 
 #endif
+
+
+#include "end_ns_vim.h"
+
+

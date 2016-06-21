@@ -1294,15 +1294,15 @@ intro_message /*(colon)*/
 	    if (sponsor != 0)
 	    {
 		if (strstr(p, "children") != NULL)
-		    p = sponsor < 0
+		    p = (char*)(sponsor < 0
 			? N_("Sponsor Vim development!")
-			: N_("Become a registered Vim user!");
+			: N_("Become a registered Vim user!"));
 		else if (strstr(p, "iccf") != NULL)
-		    p = sponsor < 0
+		    p = (char*)(sponsor < 0
 			? N_("type  :help sponsor<Enter>    for information ")
-			: N_("type  :help register<Enter>   for information ");
+			: N_("type  :help register<Enter>   for information "));
 		else if (strstr(p, "Orphans") != NULL)
-		    p = N_("menu  Help->Sponsor/Register  for information    ");
+		    p = (char*)N_("menu  Help->Sponsor/Register  for information    ");
 	    }
 	    if (*p != NUL)
 		do_intro_line(row, (char_u *)_(p), i == 2, 0);

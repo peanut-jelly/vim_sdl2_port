@@ -2185,8 +2185,8 @@ ga_grow /*(gap, n)*/
 	if (n < gap->ga_growsize)
 	    n = gap->ga_growsize;
 	new_len = gap->ga_itemsize * (gap->ga_len + n);
-	pp = (gap->ga_data == NULL)
-	      ? alloc((unsigned)new_len) : vim_realloc(gap->ga_data, new_len);
+	pp = (char_u*)((gap->ga_data == NULL)
+	      ? alloc((unsigned)new_len) : vim_realloc(gap->ga_data, new_len));
 	if (pp == NULL)
 	    return FAIL;
 	old_len = gap->ga_itemsize * gap->ga_maxlen;
@@ -2282,7 +2282,7 @@ append_ga_line /*(gap)*/
 	    && ((char_u *)gap->ga_data)[gap->ga_len - 1] == CAR)
 	--gap->ga_len;
     ga_append(gap, NUL);
-    ml_append(curwin->w_cursor.lnum++, gap->ga_data, 0, FALSE);
+    ml_append(curwin->w_cursor.lnum++, (char_u*)gap->ga_data, 0, FALSE);
     gap->ga_len = 0;
 }
 #endif
@@ -4619,7 +4619,7 @@ vim_findfile_init /*(path, filename, stopdirs, level, free_visited, find_what,
      * new one.
      */
     if (search_ctx_arg != NULL)
-	search_ctx = search_ctx_arg;
+	search_ctx = (ff_search_ctx_T*)search_ctx_arg;
     else
     {
 	search_ctx = (ff_search_ctx_T*)alloc((unsigned)sizeof(ff_search_ctx_T));
@@ -4747,7 +4747,7 @@ vim_findfile_init /*(path, filename, stopdirs, level, free_visited, find_what,
 		ptr = vim_realloc(search_ctx->ffsc_stopdirs_v,
 					   (dircount + 1) * sizeof(char_u *));
 		if (ptr)
-		    search_ctx->ffsc_stopdirs_v = ptr;
+		    search_ctx->ffsc_stopdirs_v = (char_u**)ptr;
 		else
 		    /* ignore, keep what we have and continue */
 		    break;
@@ -4990,7 +4990,7 @@ vim_findfile_cleanup /*(ctx)*/
 	return;
 
     vim_findfile_free_visited(ctx);
-    ff_clear(ctx);
+    ff_clear((ff_search_ctx_T*)ctx);
     vim_free(ctx);
 }
 
@@ -5747,42 +5747,42 @@ ff_create_stack_element
     int		star_star_empty
     )
 {
-    ff_stack_T	*new;
+    ff_stack_T	*my_new;
 
-    new = (ff_stack_T *)alloc((unsigned)sizeof(ff_stack_T));
-    if (new == NULL)
+    my_new = (ff_stack_T *)alloc((unsigned)sizeof(ff_stack_T));
+    if (my_new == NULL)
 	return NULL;
 
-    new->ffs_prev	   = NULL;
-    new->ffs_filearray	   = NULL;
-    new->ffs_filearray_size = 0;
-    new->ffs_filearray_cur  = 0;
-    new->ffs_stage	   = 0;
-    new->ffs_level	   = level;
-    new->ffs_star_star_empty = star_star_empty;;
+    my_new->ffs_prev	   = NULL;
+    my_new->ffs_filearray	   = NULL;
+    my_new->ffs_filearray_size = 0;
+    my_new->ffs_filearray_cur  = 0;
+    my_new->ffs_stage	   = 0;
+    my_new->ffs_level	   = level;
+    my_new->ffs_star_star_empty = star_star_empty;;
 
     /* the following saves NULL pointer checks in vim_findfile */
     if (fix_part == NULL)
 	fix_part = (char_u *)"";
-    new->ffs_fix_path = vim_strsave(fix_part);
+    my_new->ffs_fix_path = vim_strsave(fix_part);
 
 #ifdef FEAT_PATH_EXTRA
     if (wc_part == NULL)
 	wc_part  = (char_u *)"";
-    new->ffs_wc_path = vim_strsave(wc_part);
+    my_new->ffs_wc_path = vim_strsave(wc_part);
 #endif
 
-    if (new->ffs_fix_path == NULL
+    if (my_new->ffs_fix_path == NULL
 #ifdef FEAT_PATH_EXTRA
-	    || new->ffs_wc_path == NULL
+	    || my_new->ffs_wc_path == NULL
 #endif
 	    )
     {
-	ff_free_stack_element(new);
-	new = NULL;
+	ff_free_stack_element(my_new);
+	my_new = NULL;
     }
 
-    return new;
+    return my_new;
 }
 
 /*

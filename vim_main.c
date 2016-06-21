@@ -3766,7 +3766,7 @@ build_drop_cmd /*(filec, filev, tabs, sendReply)*/
     }
     p = vim_strsave_escaped_ext(cwd,
 #ifdef BACKSLASH_IN_FILENAME
-		    "",  /* rem_backslash() will tell what chars to escape */
+		    (char_u*)"",  /* rem_backslash() will tell what chars to escape */
 #else
 		    PATH_ESC_CHARS,
 #endif
@@ -3831,7 +3831,7 @@ build_drop_cmd /*(filec, filev, tabs, sendReply)*/
      * clear command line. */
     ga_concat(&ga, (char_u *)"cal foreground()|if &im|star|en|redr|f<CR>");
     ga_append(&ga, NUL);
-    return ga.ga_data;
+    return (char_u*)ga.ga_data;
 }
 
 /*

@@ -1019,7 +1019,7 @@ gui_mch_set_fg_color(guicolor_T color)
             myGetBValue(gui.currFgColor),
             0xff //GetAValue(gui.currBgColor)
             };
-        display_push_task(&scolor);
+        display_push_task((disp_task_t*)&scolor);
 
 }
 
@@ -1042,7 +1042,7 @@ gui_mch_set_bg_color(guicolor_T color)
             myGetBValue(gui.currBgColor),
             0xff //GetAValue(gui.currBgColor)
             };
-        display_push_task(&scolor);
+        display_push_task((disp_task_t*)&scolor);
 }
 
 /*
@@ -1064,7 +1064,7 @@ gui_mch_set_sp_color(guicolor_T color)
             myGetBValue(gui.currSpColor),
             0xff //GetAValue(gui.currBgColor)
             };
-        display_push_task(&scolor);
+        display_push_task((disp_task_t*)&scolor);
 }
 
 #ifdef FEAT_MBYTE
@@ -1239,7 +1239,7 @@ gui_mch_draw_string(
             (double)col/Columns, (double)row/Rows, 
                 (double)mb_string2cells(text,len)/Columns, (double)1/Rows
             };
-        display_push_task(&clrect);
+        display_push_task((disp_task_t*)&clrect);
 
 	/*
 	 * When drawing block cursor, prevent inverted character spilling
@@ -1347,17 +1347,17 @@ gui_mch_draw_string(
 
         //info_push_message("ExtTextOutW 2423");
         // utf-8 string is here.
-        if (!is_valid_utf8(text, text+len))
+        if (!is_valid_utf8((char*)text, (char*)text+len))
             Warn("not valid utf8.");
-        int u8len=utf8_distance(text, text+len);
-        int na=num_ascii_chars(text, text+len);
+        int u8len=utf8_distance((char*)text, (char*)text+len);
+        int na=num_ascii_chars((char*)text, (char*)text+len);
         int ncell=mb_string2cells(text, len); // number of screen cells need
         disp_task_textout_t textout;
         display_fill_textout(&textout, 
                 (double)col/Columns, (double)row/Rows,
                 (double)ncell/Columns, (double)1/Rows,
-                text, len);
-        display_push_task(&textout);
+                (char*)text, len);
+        display_push_task((disp_task_t*)&textout);
 
         /*
 	ExtTextOutW(s_hdc, TEXT_X(col), TEXT_Y(row),
@@ -1421,16 +1421,16 @@ gui_mch_draw_string(
             // i am using utf-8, so here is one-byte chars.
             // can i say here is only ascii chars?
             //info_push_message("ExtTextOut 2479");
-            if (!is_valid_utf8(text, text+len))
+            if (!is_valid_utf8((char*)text, (char*)text+len))
                 Warn("not valid utf8.");
-            int u8len=utf8_distance(text, text+len);
+            int u8len=utf8_distance((char*)text, (char*)text+len);
             int ncell=mb_string2cells(text, len);
             disp_task_textout_t textout;
             display_fill_textout(&textout, 
                     (double)col/Columns, (double)row/Rows,
                     (double)ncell/Columns, (double)1/Rows,
-                    text, len);
-            display_push_task(&textout);
+                    (char*)text, len);
+            display_push_task((disp_task_t*)&textout);
             /*
             ExtTextOut(s_hdc, TEXT_X(col), TEXT_Y(row),
                     foptions, pcliprect, (char *)text, len, padding);
@@ -1447,7 +1447,7 @@ gui_mch_draw_string(
                x2=(double)(col+len)/Columns;
         disp_task_drawline_t drawline=
             {DISP_TASK_DRAWLINE, x1, y, x2, y};
-        display_push_task(&drawline);
+        display_push_task((disp_task_t*)&drawline);
     }
 
     /* Undercurl */
@@ -1459,7 +1459,7 @@ gui_mch_draw_string(
         double y=(double)(row+1)/Rows-(double)6/Rows/gui.char_height;
         disp_task_undercurl_t undercurl=
             {DISP_TASK_UNDERCURL, x, y, w};
-        display_push_task(&undercurl);
+        display_push_task((disp_task_t*)&undercurl);
     }
 }
 
@@ -1474,7 +1474,7 @@ gui_mch_flush(void)
 {
 disp_task_flush_t flush=
     {DISP_TASK_FLUSH};
-display_push_task(&flush);
+display_push_task((disp_task_t*)&flush);
 }
 
 

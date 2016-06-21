@@ -730,7 +730,7 @@ utf16_to_enc(short_u *str, int *lenp)
 
     if (lenp == NULL)
     {
-	len_loc = (int)wcslen(str) + 1;
+	len_loc = (int)wcslen((WCHAR*)str) + 1;
 	lenp = &len_loc;
     }
 
@@ -739,7 +739,7 @@ utf16_to_enc(short_u *str, int *lenp)
 	/* We can do any UTF-16 -> CP### in one pass. */
 	int length;
 
-	WideCharToMultiByte_alloc(enc_codepage, 0, str, *lenp,
+	WideCharToMultiByte_alloc(enc_codepage, 0, (WCHAR*)str, *lenp,
 					    (LPSTR *)&enc_str, &length, 0, 0);
 	*lenp = length;
 	return enc_str;

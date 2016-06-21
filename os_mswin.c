@@ -215,7 +215,7 @@ mch_exit(int r)
     //exit(r);
     myVimRunning=0;
     disp_task_requireesc_t resc = {DISP_TASK_REQUIREESC};
-    display_push_task(&resc);
+    display_push_task((disp_task_t*)&resc);
 }
 
 #endif /* FEAT_GUI_MSWIN */
@@ -237,8 +237,8 @@ mch_early_init(void)
     for (i = 0; i < 256; ++i)
 	toupper_tab[i] = tolower_tab[i] = i;
 #ifdef WIN3264
-    CharUpperBuff(toupper_tab, 256);
-    CharLowerBuff(tolower_tab, 256);
+    CharUpperBuff((char*)toupper_tab, 256);
+    CharLowerBuff((char*)tolower_tab, 256);
 #else
     AnsiUpperBuff(toupper_tab, 256);
     AnsiLowerBuff(tolower_tab, 256);
@@ -358,7 +358,7 @@ mch_FullName(
 	     * - invoke _wfullpath()
 	     * - convert the result from UCS2 to 'encoding'.
 	     */
-	    wname = enc_to_utf16(fname, NULL);
+	    wname = (WCHAR*)enc_to_utf16(fname, NULL);
 	    if (wname != NULL && _wfullpath(wbuf, wname, MAX_PATH - 1) != NULL)
 	    {
 		cname = utf16_to_enc((short_u *)wbuf, NULL);
@@ -374,7 +374,7 @@ mch_FullName(
 	if (nResult == FAIL)	    /* fall back to non-wide function */
 #endif
 	{
-	    if (_fullpath(buf, fname, len - 1) == NULL)
+	    if (_fullpath((char*)buf, (char*)fname, len - 1) == NULL)
 	    {
 		/* failed, use relative path name */
 		vim_strncpy(buf, fname, len - 1);
@@ -408,10 +408,10 @@ mch_isFullName(char_u *fname)
 	return TRUE;
 
     /* A name that can't be made absolute probably isn't absolute. */
-    if (mch_FullName(fname, szName, _MAX_PATH, FALSE) == FAIL)
+    if (mch_FullName(fname, (char_u*)szName, _MAX_PATH, FALSE) == FAIL)
 	return FALSE;
 
-    return pathcmp(fname, szName, -1) == 0;
+    return pathcmp((char*)fname, szName, -1) == 0;
 }
 
 /*
@@ -450,7 +450,7 @@ vim_stat(const char *name, struct stat *stp)
     vim_strncpy((char_u *)buf, (char_u *)name, _MAX_PATH);
     p = buf + strlen(buf);
     if (p > buf)
-	mb_ptr_back(buf, p);
+	mb_ptr_back((char_u*)buf, p);
     if (p > buf && (*p == '\\' || *p == '/') && p[-1] != ':')
 	*p = NUL;
 #ifdef FEAT_MBYTE
@@ -461,7 +461,7 @@ vim_stat(const char *name, struct stat *stp)
 # endif
        )
     {
-	WCHAR	*wp = enc_to_utf16(buf, NULL);
+	WCHAR	*wp = (WCHAR*)enc_to_utf16((char_u*)buf, NULL);
 	int	n;
 
 	if (wp != NULL)
@@ -550,7 +550,7 @@ display_errors()
 				     gui.starting ? (char_u *)_("Message") :
 #endif
 					     (char_u *)_("Error"),
-				     p, (char_u *)_("&Ok"), 1, NULL, FALSE);
+				     (char_u*)p, (char_u *)_("&Ok"), 1, NULL, FALSE);
 		break;
 	    }
 	ga_clear(&error_ga);
@@ -630,7 +630,7 @@ mch_chdir(char *path)
 #ifdef FEAT_MBYTE
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	WCHAR	*p = enc_to_utf16(path, NULL);
+	WCHAR	*p = (WCHAR*)enc_to_utf16((char_u*)path, NULL);
 	int	n;
 
 	if (p != NULL)
@@ -743,7 +743,7 @@ check_str_len(char_u *str)
 	/* get length from str to end of page */
 	long_u pageLength = si.dwPageSize - (dwStr - strPage);
 
-	for (p = str; !IsBadReadPtr(p, (UINT)pageLength);
+	for (p = (const char*) str; !IsBadReadPtr(p, (UINT)pageLength);
 				  p += pageLength, pageLength = si.dwPageSize)
 	    for (i = 0; i < pageLength; ++i, ++length)
 		if (p[i] == NUL)
@@ -776,7 +776,7 @@ mch_libcall(
 # ifdef WIN16
     hinstLib = LoadLibrary(libname);
 # else
-    hinstLib = vimLoadLib(libname);
+    hinstLib = vimLoadLib((char*)libname);
 # endif
 
     // If the handle is valid, try to get the function address.
@@ -789,25 +789,25 @@ mch_libcall(
 	if (argstring != NULL)
 	{
 	    /* Call with string argument */
-	    ProcAdd = (MYSTRPROCSTR) GetProcAddress(hinstLib, funcname);
+	    ProcAdd = (MYSTRPROCSTR) GetProcAddress(hinstLib, (char*)funcname);
 	    if ((fRunTimeLinkSuccess = (ProcAdd != NULL)) != 0)
 	    {
 		if (string_result == NULL)
-		    retval_int = ((MYSTRPROCINT)ProcAdd)(argstring);
+		    retval_int = ((MYSTRPROCINT)ProcAdd)((char*)argstring);
 		else
-		    retval_str = (ProcAdd)(argstring);
+		    retval_str = (char_u*) (ProcAdd)((char*)argstring);
 	    }
 	}
 	else
 	{
 	    /* Call with number argument */
-	    ProcAddI = (MYINTPROCSTR) GetProcAddress(hinstLib, funcname);
+	    ProcAddI = (MYINTPROCSTR) GetProcAddress(hinstLib, (char*)funcname);
 	    if ((fRunTimeLinkSuccess = (ProcAddI != NULL)) != 0)
 	    {
 		if (string_result == NULL)
 		    retval_int = ((MYINTPROCINT)ProcAddI)(argint);
 		else
-		    retval_str = (ProcAddI)(argint);
+		    retval_str = (char_u*) (ProcAddI)(argint);
 	    }
 	}
 
@@ -931,22 +931,23 @@ mch_resolve_shortcut(char_u *fname)
 
     // create a link manager object and request its interface
     hr = CoCreateInstance(
-	    &CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-	    &IID_IShellLink, (void**)&psl);
+	    CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
+	    IID_IShellLink, (void**)&psl);
     if (hr != S_OK)
 	goto shortcut_error;
 
     // Get a pointer to the IPersistFile interface.
-    hr = psl->lpVtbl->QueryInterface(
-	    psl, &IID_IPersistFile, (void**)&ppf);
+    //hr = psl->lpVtbl->QueryInterface( psl, &IID_IPersistFile, (void**)&ppf);
+    hr = psl->QueryInterface(IID_IPersistFile, (void**)&ppf);
     if (hr != S_OK)
 	goto shortcut_error;
 
     // full path string must be in Unicode.
-    MultiByteToWideChar(CP_ACP, 0, fname, -1, wsz, MAX_PATH);
+    MultiByteToWideChar(CP_ACP, 0, (char*)fname, -1, wsz, MAX_PATH);
 
     // "load" the name and resolve the link
-    hr = ppf->lpVtbl->Load(ppf, wsz, STGM_READ);
+    //hr = ppf->lpVtbl->Load(ppf, wsz, STGM_READ);
+    hr = ppf->Load(wsz, STGM_READ);
     if (hr != S_OK)
 	goto shortcut_error;
 #if 0  // This makes Vim wait a long time if the target doesn't exist.
@@ -957,16 +958,19 @@ mch_resolve_shortcut(char_u *fname)
 
     // Get the path to the link target.
     ZeroMemory(buf, MAX_PATH);
-    hr = psl->lpVtbl->GetPath(psl, buf, MAX_PATH, &ffd, 0);
+    //hr = psl->lpVtbl->GetPath(psl, buf, MAX_PATH, &ffd, 0);
+    hr = psl->GetPath(buf, MAX_PATH, &ffd, 0);
     if (hr == S_OK && buf[0] != NUL)
-	rfname = vim_strsave(buf);
+	rfname = vim_strsave((char_u*)buf);
 
 shortcut_error:
     // Release all interface pointers (both belong to the same object)
     if (ppf != NULL)
-	ppf->lpVtbl->Release(ppf);
+	//ppf->lpVtbl->Release(ppf);
+	ppf->Release();
     if (psl != NULL)
-	psl->lpVtbl->Release(psl);
+	//psl->lpVtbl->Release(psl);
+	psl->Release();
 
     CoUninitialize();
     return rfname;
@@ -1132,7 +1136,7 @@ Messaging_WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	    if (res == NULL)
 	    {
-		res = vim_strsave(_(e_invexprmsg));
+		res = vim_strsave((char_u*)_(e_invexprmsg));
 		reply.dwData = COPYDATA_ERROR_RESULT;
 	    }
 	    else
@@ -1297,8 +1301,8 @@ enumWindowsGetNames(HWND hwnd, LPARAM lparam)
 	return TRUE;
 
     /* Add the name to the list */
-    ga_concat(ga, server);
-    ga_concat(ga, "\n");
+    ga_concat(ga, (char_u*)server);
+    ga_concat(ga, (char_u*)"\n");
     return TRUE;
 }
 
@@ -1357,7 +1361,7 @@ serverSetName(char_u *name)
 #endif
 
 	/* Update the message window title */
-	SetWindowText(message_window, ok_name);
+	SetWindowText(message_window, (char*)ok_name);
 
 #ifdef FEAT_EVAL
 	/* Set the servername variable */
@@ -1376,13 +1380,13 @@ serverGetVimNames(void)
     EnumWindows(enumWindowsGetNames, (LPARAM)(&ga));
     ga_append(&ga, NUL);
 
-    return ga.ga_data;
+    return (char_u*)ga.ga_data;
 }
 
     int
-serverSendReply(name, reply)
-    char_u	*name;		/* Where to send. */
-    char_u	*reply;		/* What to send. */
+serverSendReply(char_u* name, char_u* reply)
+    //char_u	*name;		/* Where to send. */
+    //char_u	*reply;		/* What to send. */
 {
     HWND	target;
     COPYDATASTRUCT data;
@@ -1413,13 +1417,21 @@ serverSendReply(name, reply)
 }
 
     int
-serverSendToVim(name, cmd, result, ptarget, asExpr, silent)
-    char_u	 *name;			/* Where to send. */
-    char_u	 *cmd;			/* What to send. */
-    char_u	 **result;		/* Result of eval'ed expression */
-    void	 *ptarget;		/* HWND of server */
-    int		 asExpr;		/* Expression or keys? */
-    int		 silent;		/* don't complain about no server */
+serverSendToVim(
+        char_u* name, 
+        char_u* cmd, 
+        char_u** result, 
+        void* ptarget, 
+        int asExpr, 
+        int silent
+        )
+    
+    //char_u	 *name;			/* Where to send. */
+    //char_u	 *cmd;			/* What to send. */
+    //char_u	 **result;		/* Result of eval'ed expression */
+    //void	 *ptarget;		/* HWND of server */
+    //int		 asExpr;		/* Expression or keys? */
+    //int		 silent;		/* don't complain about no server */
 {
     HWND	target;
     COPYDATASTRUCT data;
@@ -1472,8 +1484,8 @@ serverSendToVim(name, cmd, result, ptarget, asExpr, silent)
  * Bring the server to the foreground.
  */
     void
-serverForeground(name)
-    char_u	*name;
+serverForeground(char_u* name)
+    //char_u	*name;
 {
     HWND	target = findServer(name);
 

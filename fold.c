@@ -14,6 +14,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #if defined(FEAT_FOLDING) || defined(PROTO)
 
 /* local declarations. {{{1 */
@@ -3590,3 +3599,8 @@ put_fold_open_close /*(fd, fp, off)*/
 
 /* }}}1 */
 #endif /* defined(FEAT_FOLDING) || defined(PROTO) */
+
+
+#include "end_ns_vim.h"
+
+

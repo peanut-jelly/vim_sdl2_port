@@ -27,6 +27,11 @@
 
 #include "vim.h"
 
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #if defined(FEAT_CMDL_COMPL) || defined(FEAT_LISTCMDS) || defined(FEAT_EVAL) || defined(FEAT_PERL)
 static char_u	*buflist_match __ARGS((regprog_T *prog, buf_T *buf));
 # define HAVE_BUFLIST_MATCH
@@ -3643,14 +3648,14 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	    s++;
 	    if (groupdepth > 0)
 		continue;
-	    item[curitem].type = Middle;
+	    item[curitem].type = stl_item::Middle;
 	    item[curitem++].start = p;
 	    continue;
 	}
 	if (*s == STL_TRUNCMARK)
 	{
 	    s++;
-	    item[curitem].type = Trunc;
+	    item[curitem].type = stl_item::Trunc;
 	    item[curitem++].start = p;
 	    continue;
 	}
@@ -3669,7 +3674,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	    {
 		/* remove group if all items are empty */
 		for (n = groupitem[groupdepth] + 1; n < curitem; n++)
-		    if (item[n].type == Normal)
+		    if (item[n].type == stl_item::Normal)
 			break;
 		if (n == curitem)
 		{
@@ -3761,7 +3766,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	}
 	if (*s == STL_USER_HL)
 	{
-	    item[curitem].type = Highlight;
+	    item[curitem].type = stl_item::Highlight;
 	    item[curitem].start = p;
 	    item[curitem].minwid = minwid > 9 ? 1 : minwid;
 	    s++;
@@ -3777,7 +3782,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 		    /* %X ends the close label, go back to the previously
 		     * define tab label nr. */
 		    for (n = curitem - 1; n >= 0; --n)
-			if (item[n].type == TabPage && item[n].minwid >= 0)
+			if (item[n].type == stl_item::TabPage && item[n].minwid >= 0)
 			{
 			    minwid = item[n].minwid;
 			    break;
@@ -3787,7 +3792,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 		    /* close nrs are stored as negative values */
 		    minwid = - minwid;
 	    }
-	    item[curitem].type = TabPage;
+	    item[curitem].type = stl_item::TabPage;
 	    item[curitem].start = p;
 	    item[curitem].minwid = minwid;
 	    s++;
@@ -3808,7 +3813,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	if (*s == '(')
 	{
 	    groupitem[groupdepth++] = curitem;
-	    item[curitem].type = Group;
+	    item[curitem].type = stl_item::Group;
 	    item[curitem].start = p;
 	    item[curitem].minwid = minwid;
 	    item[curitem].maxwid = maxwid;
@@ -4056,7 +4061,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 		++s;
 	    if (*s == '#')
 	    {
-		item[curitem].type = Highlight;
+		item[curitem].type = stl_item::Highlight;
 		item[curitem].start = p;
 		item[curitem].minwid = -syn_namen2id(t, (int)(s - t));
 		curitem++;
@@ -4066,7 +4071,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	}
 
 	item[curitem].start = p;
-	item[curitem].type = Normal;
+	item[curitem].type = stl_item::Normal;
 	if (str != NULL && *str)
 	{
 	    t = str;
@@ -4167,7 +4172,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	    p += STRLEN(p);
 	}
 	else
-	    item[curitem].type = Empty;
+	    item[curitem].type = stl_item::Empty;
 
 	if (opt == STL_VIM_EXPR)
 	    vim_free(str);
@@ -4194,7 +4199,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	else
 	{
 	    for ( ; l < itemcnt; l++)
-		if (item[l].type == Trunc)
+		if (item[l].type == stl_item::Trunc)
 		{
 		    /* Truncate at %< item. */
 		    s = item[l].start;
@@ -4279,7 +4284,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
     {
 	/* Apply STL_MIDDLE if any */
 	for (l = 0; l < itemcnt; l++)
-	    if (item[l].type == Middle)
+	    if (item[l].type == stl_item::Middle)
 		break;
 	if (l < itemcnt)
 	{
@@ -4299,7 +4304,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	sp = hltab;
 	for (l = 0; l < itemcnt; l++)
 	{
-	    if (item[l].type == Highlight)
+	    if (item[l].type == stl_item::Highlight)
 	    {
 		sp->start = item[l].start;
 		sp->userhl = item[l].minwid;
@@ -4316,7 +4321,7 @@ build_stl_str_hl(win_T *wp, char_u *out, size_t outlen,
 	sp = tabtab;
 	for (l = 0; l < itemcnt; l++)
 	{
-	    if (item[l].type == TabPage)
+	    if (item[l].type == stl_item::TabPage)
 	    {
 		sp->start = item[l].start;
 		sp->userhl = item[l].minwid;
@@ -5828,3 +5833,6 @@ wipe_buffer(buf_T *buf, int aucmd)
 	unblock_autocmds();
 #endif
 }
+
+#include "end_ns_vim.h"
+

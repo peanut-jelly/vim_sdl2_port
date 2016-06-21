@@ -376,7 +376,7 @@ writer(writefn fn, char_u *str, PyInt n)
 
     /* Write each NL separated line.  Text after the last NL is kept for
      * writing later. */
-    while (n > 0 && (ptr = memchr(str, '\n', n)) != NULL)
+    while (n > 0 && (ptr = (char_u*)memchr(str, '\n', n)) != NULL)
     {
 	PyInt len = ptr - str;
 
@@ -2072,7 +2072,7 @@ static struct PyMethodDef DictionaryMethods[] = {
 };
 
 static PyTypeObject ListType;
-static PySequenceMethods ListAsSeq;
+extern PySequenceMethods ListAsSeq;
 static PyMappingMethods ListAsMapping;
 
 typedef struct
@@ -3026,7 +3026,7 @@ TabPageNew(tabpage_T *tab)
 
     if (TAB_PYTHON_REF(tab))
     {
-	self = TAB_PYTHON_REF(tab);
+	self = (TabPageObject*) TAB_PYTHON_REF(tab);
 	Py_INCREF(self);
     }
     else
@@ -3125,7 +3125,7 @@ static struct PyMethodDef TabPageMethods[] = {
  */
 
 static PyTypeObject TabListType;
-static PySequenceMethods TabListAsSeq;
+extern PySequenceMethods TabListAsSeq;
 
 typedef struct
 {
@@ -3207,12 +3207,12 @@ WindowNew(win_T *win, tabpage_T *tab)
 
     if (WIN_PYTHON_REF(win))
     {
-	self = WIN_PYTHON_REF(win);
+	self = (WindowObject*) WIN_PYTHON_REF(win);
 	Py_INCREF(self);
     }
     else
     {
-	self = PyObject_GC_New(WindowObject, &WindowType);
+	self = (WindowObject*) PyObject_GC_New(WindowObject, &WindowType);
 	if (self == NULL)
 	    return NULL;
 	self->win = win;
@@ -3457,7 +3457,7 @@ static struct PyMethodDef WindowMethods[] = {
  */
 
 static PyTypeObject WinListType;
-static PySequenceMethods WinListAsSeq;
+extern PySequenceMethods WinListAsSeq;
 
 typedef struct
 {
@@ -3580,7 +3580,7 @@ StringToLine(PyObject *obj)
      * a single line.
      * A trailing newline is removed, so that append(f.readlines()) works.
      */
-    p = memchr(str, '\n', len);
+    p = (char*)memchr(str, '\n', len);
     if (p != NULL)
     {
 	if (p == str + len - 1)
@@ -4354,7 +4354,7 @@ RBAppend(
  */
 
 static PyTypeObject RangeType;
-static PySequenceMethods RangeAsSeq;
+extern PySequenceMethods RangeAsSeq;
 static PyMappingMethods RangeAsMapping;
 
 typedef struct
@@ -4476,7 +4476,7 @@ static struct PyMethodDef RangeMethods[] = {
 };
 
 static PyTypeObject BufferType;
-static PySequenceMethods BufferAsSeq;
+extern PySequenceMethods BufferAsSeq;
 static PyMappingMethods BufferAsMapping;
 
     static PyObject *
@@ -4503,7 +4503,7 @@ BufferNew(buf_T *buf)
 
     if (BUF_PYTHON_REF(buf) != NULL)
     {
-	self = BUF_PYTHON_REF(buf);
+	self = (BufferObject*)BUF_PYTHON_REF(buf);
 	Py_INCREF(self);
     }
     else
@@ -5462,7 +5462,7 @@ convert_dl(PyObject *obj, typval_T *tv,
 	typval_T	*v;
 
 # ifdef PY_USE_CAPSULE
-	v = PyCapsule_GetPointer(capsule, NULL);
+	v = (typval_T*)PyCapsule_GetPointer(capsule, NULL);
 # else
 	v = PyCObject_AsVoidPtr(capsule);
 # endif

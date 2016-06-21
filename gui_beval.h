@@ -18,6 +18,15 @@
 # endif
 #endif
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 typedef enum
 {
     ShS_NEUTRAL,			/* nothing showing or pending */
@@ -73,4 +82,6 @@ typedef struct BalloonEvalStruct
 
 #include "gui_beval.pro"
 
+
+#include "end_ns_vim.h"
 #endif /* GUI_BEVAL_H and FEAT_BEVAL */

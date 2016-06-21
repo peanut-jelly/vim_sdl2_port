@@ -256,3 +256,4 @@
 
 /* Range of Arabic characters that might be shaped. */
 #define ARABIC_CHAR(c)		((c) >= a_HAMZA && (c) <= a_MINI_ALEF)
+

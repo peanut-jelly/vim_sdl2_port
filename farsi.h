@@ -24,6 +24,13 @@
  * Begin of the non-standard part
  */
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 #define TEE_		0x80
 #define ALEF_U_H_	0x81
 #define ALEF_		0x82
@@ -232,3 +239,7 @@ EXTERN char_u farsi_text_5[]
 		= { ' ', YE_, _SIN, RE, ALEF_, _FE, '\0'}
 #endif
 		    ;
+
+
+#include "end_ns_vim.h"
+

@@ -455,7 +455,7 @@ s_timed_out=TRUE;
 s_wait_timer=0;
 }
 
-static int
+static Uint32
 _OnTimer_sdl(Uint32 interval, void* ud)
 {
 adapter_event_t evnt;
@@ -531,7 +531,7 @@ void _on_mousebuttondown_callback(int tt, void* ud0, void* ud1)
 {
 // p is allocated in the caller (malloc). Must free it when done with it
 // in this function
-const SDL_MouseButtonEvent *p=(SDL_MouseButtonEvent*)ud0;
+SDL_MouseButtonEvent *p=(SDL_MouseButtonEvent*)ud0;
 // p->clicks not used here, because vim is not relying on OS to
 // translate double-click.
 int x=p->x, y=p->y;
@@ -826,9 +826,9 @@ return (GuiFont)1;
  */
 /*ARGSUSED*/
     char_u *
-gui_mch_get_fontname(font, name)
-    GuiFont font;
-    char_u  *name;
+gui_mch_get_fontname(GuiFont font, char_u* name)
+    //GuiFont font;
+    //char_u  *name;
 {
     if (name == NULL)
 	return NULL;
@@ -970,7 +970,7 @@ gui_mch_get_color(char_u *name)
     int		    r, g, b;
     int		    i;
 
-    if (name[0] == '#' && strlen(name) == 7)
+    if (name[0] == '#' && strlen((char*)name) == 7)
     {
 	/* Name is in "#rrggbb" format */
 	r = hex_digit(name[1]) * 16 + hex_digit(name[2]);
@@ -1076,7 +1076,7 @@ gui_mch_haskey(char_u *name)
 gui_mch_beep(void)
 {
 disp_task_beep_t beep={DISP_TASK_BEEP};
-display_push_task(&beep);
+display_push_task((disp_task_t*)&beep);
 }
 /*
  * Invert a rectangle from row r, column c, for nr rows and nc columns.
@@ -1095,7 +1095,7 @@ irect.rect=(Rect_f)
     (double)c/Columns, (double)r/Rows,
         (double)nc/Columns, (double)nr/Rows
     };
-display_push_task(&irect);
+display_push_task((disp_task_t*)&irect);
 }
 
 /*
@@ -1127,7 +1127,7 @@ gui_mch_draw_hollow_cursor(guicolor_T color)
             (double)ncell/Columns,
             (double)1/Rows
         };
-    display_push_task(&hollow);
+    display_push_task((disp_task_t*)&hollow);
 }
 /*
  * Draw part of a cursor, "w" pixels wide, and "h" pixels high, using
@@ -1153,7 +1153,7 @@ gui_mch_draw_part_cursor(
             (double)w/gui.char_width/Columns,
             (double)h/gui.char_height/Rows
         };
-    display_push_task(&part);
+    display_push_task((disp_task_t*)&part);
 
 }
 
@@ -1301,11 +1301,6 @@ return ret_ch;
 }
 
 
-void _adapter_on_sdl_keydown(int tt, void* ud0, void* ud1)
-{
-process_sdl_key((int)ud0, (int)ud1);
-}
-
 void process_sdl_key(int scode, int mod_sdl)
 {
 
@@ -1427,6 +1422,11 @@ if (special_keys_sdl[i].key_sym == 0)
 
     add_to_input_buf(string, len);
     }
+}
+
+void _adapter_on_sdl_keydown(int tt, void* ud0, void* ud1)
+{
+process_sdl_key((int)ud0, (int)ud1);
 }
 
 /*
@@ -1566,7 +1566,7 @@ gui_mch_clear_block(
             myGetBValue(gui.back_pixel),
             0xff //GetAValue(gui.back_pixel)
         };
-    display_push_task(&scolor);
+    display_push_task((disp_task_t*)&scolor);
     // inform sdl to do clearing.
     disp_task_clearrect_t clrect;
     clrect.type=DISP_TASK_CLEARRECT;
@@ -1576,7 +1576,7 @@ gui_mch_clear_block(
             (double)(abs(col2-col1)+1)/Columns, 
             (double)(abs(row2-row1)+1)/Rows
         };
-    display_push_task(&clrect);
+    display_push_task((disp_task_t*)&clrect);
 }
 
 /*
@@ -1596,12 +1596,12 @@ gui_mch_clear_all(void)
             myGetBValue(gui.back_pixel),
             0xff //GetAValue(gui.back_pixel)
         };
-    display_push_task(&scolor);
+    display_push_task((disp_task_t*)&scolor);
     // inform sdl to do clearing.
     disp_task_clearrect_t clrect;
     clrect.type=DISP_TASK_CLEARRECT;
     clrect.rect=(Rect_f){ 0.0 , 0.0, 1.0, 1.0};
-    display_push_task(&clrect);
+    display_push_task((disp_task_t*)&clrect);
 }
 /*
  * Return the myRGB value of a pixel as a long.
@@ -1748,9 +1748,9 @@ gui_mch_flash(int msec)
 disp_task_invertrect_t irect;
 irect.type=DISP_TASK_INVERTRECT;
 irect.rect=(Rect_f) {0.0, 0.0, 1.0, 1.0};
-display_push_task(&irect);
+display_push_task((disp_task_t*)&irect);
 ui_delay((long)msec, TRUE);	/* wait for a few msec */
-display_push_task(&irect);
+display_push_task((disp_task_t*)&irect);
 }
 
 /*
@@ -1790,7 +1790,7 @@ gui_mch_delete_lines(
         };
     scro.clip_rect=scro.scroll_rect;
     scro.flags=get_scroll_flags();
-    display_push_task(&scro);
+    display_push_task((disp_task_t*)&scro);
 
     gui_clear_block(gui.scroll_region_bot - num_lines + 1,
             gui.scroll_region_left,
@@ -1819,7 +1819,7 @@ gui_mch_insert_lines(
         };
     scro.clip_rect=scro.scroll_rect;
     scro.flags=get_scroll_flags();
-    display_push_task(&scro);
+    display_push_task((disp_task_t*)&scro);
     gui_clear_block(row, gui.scroll_region_left,
 				row + num_lines - 1, gui.scroll_region_right);
 

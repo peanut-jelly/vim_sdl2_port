@@ -3,10 +3,6 @@
 
 #include <stdarg.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define Warn(msg) \
      do { \
         char _errMsg[200]; \
@@ -31,10 +27,6 @@ extern void fnError2(const char *msg1, const char* msg2);
 extern void fnWarn2(const char* msg1, const char* msg2);
 extern void fnWarnf(const char* fmt, ...);
 extern void fnErrorf(const char* fmt, ...);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // _MOCK_H_
 

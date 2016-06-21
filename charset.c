@@ -9,6 +9,9 @@
 
 #include "vim.h"
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 #ifdef FEAT_LINEBREAK
 static int win_chartabsize __ARGS((win_T *wp, char_u *p, colnr_T col));
 #endif
@@ -2065,3 +2068,8 @@ ebcdic2ascii(char_u* buffer, int len)
 	buffer[i] = ebcdic2ascii_tab[buffer[i]];
 }
 #endif
+
+
+#include "end_ns_vim.h"
+
+

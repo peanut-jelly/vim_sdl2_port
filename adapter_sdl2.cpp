@@ -6,10 +6,11 @@
 #include <pthread.h>
 #include "utf8.h"
 #include "mock.h"
-extern "C" 
-{
 #include "iVim.h"
-}
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 
 using std::queue;
 using std::string;
@@ -261,7 +262,8 @@ int utf8_distance(const char* start, const char* end)
 return utf8::distance(start, end);
 }
 
-extern "C" int mb_string2cells(unsigned char* p, int len);
+int mb_string2cells(unsigned char* p, int len);
+
 int num_string_cells(char* start, char* end)
 {
 // call vim routine.
@@ -285,10 +287,12 @@ while (ch<end)
 return n;
 }
 
-extern "C" int utf_ptr2char(unsigned char* p);
+int utf_ptr2char(unsigned char* p);
 int utf8_ptr2char(char* ptr)
 {
 // call vim routine
 return utf_ptr2char((unsigned char*)ptr);
 }
+
+#include "end_ns_vim.h"
 

@@ -21,6 +21,7 @@
  */
 
 #include "vim.h"
+#include "mock.h"
 
 #ifdef FEAT_MZSCHEME
 # include "if_mzsch.h"
@@ -160,7 +161,7 @@ get_exe_name(void)
 		    STRCAT(temp, ";");
 		}
 		STRCAT(temp, exe_path);
-		vim_setenv((char_u *)"PATH", temp);
+		vim_setenv((char_u *)"PATH", (char_u*)temp);
 	    }
 	}
     }
@@ -212,7 +213,7 @@ vimLoadLib(char *name)
 	    /* Change directory to where the executable is, both to make
 	     * sure we find a .dll there and to avoid looking for a .dll
 	     * in the current directory. */
-	    SetCurrentDirectory(exe_path);
+	    SetCurrentDirectory((const char*)exe_path);
 	    dll = LoadLibrary(name);
 	    SetCurrentDirectoryW(old_dirw);
 	    return dll;
@@ -225,7 +226,7 @@ vimLoadLib(char *name)
 		/* Change directory to where the executable is, both to make
 		 * sure we find a .dll there and to avoid looking for a .dll
 		 * in the current directory. */
-		SetCurrentDirectory(exe_path);
+		SetCurrentDirectory((const char*)exe_path);
 		dll = LoadLibrary(name);
 		SetCurrentDirectory(old_dir);
 	    }
@@ -271,7 +272,7 @@ dyn_libintl_init(char *libname)
     if (hLibintlDLL)
 	return 1;
     /* Load gettext library (libintl.dll) */
-    hLibintlDLL = vimLoadLib(libname != NULL ? libname : GETTEXT_DLL);
+    hLibintlDLL = vimLoadLib((char*)(libname != NULL ? libname : GETTEXT_DLL));
     if (!hLibintlDLL)
     {
 	if (p_verbose > 0)
@@ -300,7 +301,7 @@ dyn_libintl_init(char *libname)
     }
 
     /* The bind_textdomain_codeset() function is optional. */
-    dyn_libintl_bind_textdomain_codeset = (void *)GetProcAddress(hLibintlDLL,
+    dyn_libintl_bind_textdomain_codeset = (char*(*)(const char*, const char*))GetProcAddress(hLibintlDLL,
 						   "bind_textdomain_codeset");
     if (dyn_libintl_bind_textdomain_codeset == NULL)
 	dyn_libintl_bind_textdomain_codeset =
@@ -471,14 +472,14 @@ PlatformId(void)
 	    advapi_lib = vimLoadLib("ADVAPI32.DLL");
 	    if (advapi_lib != NULL)
 	    {
-		pSetNamedSecurityInfo = (PSNSECINFO)GetProcAddress(advapi_lib,
+		pSetNamedSecurityInfo = (PSNSECINFO)GetProcAddress((HINSTANCE)advapi_lib,
 						      "SetNamedSecurityInfoA");
-		pGetNamedSecurityInfo = (PGNSECINFO)GetProcAddress(advapi_lib,
+		pGetNamedSecurityInfo = (PGNSECINFO)GetProcAddress((HINSTANCE)advapi_lib,
 						      "GetNamedSecurityInfoA");
 # ifdef FEAT_MBYTE
-		pSetNamedSecurityInfoW = (PSNSECINFOW)GetProcAddress(advapi_lib,
+		pSetNamedSecurityInfoW = (PSNSECINFOW)GetProcAddress((HINSTANCE)advapi_lib,
 						      "SetNamedSecurityInfoW");
-		pGetNamedSecurityInfoW = (PGNSECINFOW)GetProcAddress(advapi_lib,
+		pGetNamedSecurityInfoW = (PGNSECINFOW)GetProcAddress((HINSTANCE)advapi_lib,
 						      "GetNamedSecurityInfoW");
 # endif
 		if (pSetNamedSecurityInfo == NULL
@@ -491,7 +492,7 @@ PlatformId(void)
 		{
 		    /* If we can't get the function addresses, set advapi_lib
 		     * to NULL so that we don't use them. */
-		    FreeLibrary(advapi_lib);
+		    FreeLibrary((HMODULE)advapi_lib);
 		    advapi_lib = NULL;
 		}
 		/* Enable privilege for getting or setting SACLs. */
@@ -507,7 +508,7 @@ PlatformId(void)
 	{
 	    HANDLE kernel32 = GetModuleHandle("kernel32");
 	    pSetHandleInformation = (PSETHANDLEINFORMATION)GetProcAddress(
-					    kernel32, "SetHandleInformation");
+					    (HINSTANCE)kernel32, "SetHandleInformation");
 
 	    allowPiping = pSetHandleInformation != NULL;
 	}
@@ -597,7 +598,7 @@ executable_exists(char *name)
 #ifdef FEAT_MBYTE
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	WCHAR	*p = enc_to_utf16(name, NULL);
+	WCHAR	*p = (WCHAR*)enc_to_utf16((char_u*)name, NULL);
 	WCHAR	fnamew[_MAX_PATH];
 	WCHAR	*dumw;
 	long	n;
@@ -620,7 +621,7 @@ executable_exists(char *name)
 #endif
     if (SearchPath(NULL, name, NULL, _MAX_PATH, fname, &dum) == 0)
 	return FALSE;
-    if (mch_isdir(fname))
+    if (mch_isdir((char_u*)fname))
 	return FALSE;
     return TRUE;
 }
@@ -740,7 +741,7 @@ fname_case(
     slash_adjust(name);
 
     /* Build the new name in szTrueName[] one component at a time. */
-    porig = name;
+    porig = (char*)name;
     ptrue = szTrueName;
 
     if (isalpha(porig[0]) && porig[1] == ':')
@@ -766,7 +767,7 @@ fname_case(
 
 	    if (enc_dbcs)
 	    {
-		l = (*mb_ptr2len)(porig);
+		l = (*mb_ptr2len)((char_u*)porig);
 		while (--l >= 0)
 		    *ptrue++ = *porig++;
 	    }
@@ -845,7 +846,7 @@ mch_get_user_name(
 
     if (GetUserName(szUserName, &cch))
     {
-	vim_strncpy(s, szUserName, len - 1);
+	vim_strncpy(s, (char_u*)szUserName, len - 1);
 	return OK;
     }
     s[0] = NUL;
@@ -863,8 +864,8 @@ mch_get_host_name(
 {
     DWORD cch = len;
 
-    if (!GetComputerName(s, &cch))
-	vim_strncpy(s, "PC (Win32 Vim)", len - 1);
+    if (!GetComputerName((char*)s, &cch))
+	vim_strncpy(s, (char_u*)"PC (Win32 Vim)", len - 1);
 }
 
 
@@ -900,7 +901,7 @@ mch_dirname(
 
 	if (GetCurrentDirectoryW(_MAX_PATH, wbuf) != 0)
 	{
-	    char_u  *p = utf16_to_enc(wbuf, NULL);
+	    char_u  *p = utf16_to_enc((short_u*)wbuf, NULL);
 
 	    if (p != NULL)
 	    {
@@ -912,7 +913,7 @@ mch_dirname(
 	/* Retry with non-wide function (for Windows 98). */
     }
 #endif
-    return (GetCurrentDirectory(len, buf) != 0 ? OK : FAIL);
+    return (GetCurrentDirectory(len, (char*)buf) != 0 ? OK : FAIL);
 }
 
 /*
@@ -926,7 +927,7 @@ mch_getperm(char_u *name)
     struct stat st;
     int n;
 
-    n = mch_stat(name, &st);
+    n = mch_stat((char*)name, &st);
     return n == 0 ? (int)st.st_mode : -1;
 }
 
@@ -944,7 +945,7 @@ mch_setperm(char_u *name, long perm)
 #ifdef FEAT_MBYTE
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	WCHAR *p = enc_to_utf16(name, NULL);
+	WCHAR *p = (WCHAR*)enc_to_utf16(name, NULL);
 
 	if (p != NULL)
 	{
@@ -957,7 +958,7 @@ mch_setperm(char_u *name, long perm)
     }
     if (n == -1)
 #endif
-	n = _chmod(name, perm);
+	n = _chmod((char*)name, perm);
     if (n == -1)
 	return FAIL;
 
@@ -1008,7 +1009,7 @@ mch_mkdir(char_u *name)
 	WCHAR	*p;
 	int	retval;
 
-	p = enc_to_utf16(name, NULL);
+	p = (WCHAR*)enc_to_utf16(name, NULL);
 	if (p == NULL)
 	    return -1;
 	retval = _wmkdir(p);
@@ -1016,7 +1017,7 @@ mch_mkdir(char_u *name)
 	return retval;
     }
 #endif
-    return _mkdir(name);
+    return _mkdir((char*)name);
 }
 
 /*
@@ -1046,7 +1047,7 @@ mch_is_symbolic_link(char_u *fname)
     WIN32_FIND_DATAW	findDataW;
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-	wn = enc_to_utf16(fname, NULL);
+	wn = (WCHAR*)enc_to_utf16(fname, NULL);
     if (wn != NULL)
     {
 	hFind = FindFirstFileW(wn, &findDataW);
@@ -1055,7 +1056,7 @@ mch_is_symbolic_link(char_u *fname)
 		&& GetLastError() == ERROR_CALL_NOT_IMPLEMENTED)
 	{
 	    /* Retry with non-wide function (for Windows 98). */
-	    hFind = FindFirstFile(fname, &findDataA);
+	    hFind = FindFirstFile((const char*)fname, &findDataA);
 	    if (hFind != INVALID_HANDLE_VALUE)
 	    {
 		fileFlags = findDataA.dwFileAttributes;
@@ -1071,7 +1072,7 @@ mch_is_symbolic_link(char_u *fname)
     else
 #endif
     {
-	hFind = FindFirstFile(fname, &findDataA);
+	hFind = FindFirstFile((const char*)fname, &findDataA);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 	    fileFlags = findDataA.dwFileAttributes;
@@ -1118,7 +1119,7 @@ win32_fileinfo(char_u *fname, BY_HANDLE_FILE_INFORMATION *info)
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	wn = enc_to_utf16(fname, NULL);
+	wn = (WCHAR*)enc_to_utf16(fname, NULL);
 	if (wn == NULL)
 	    res = FILEINFO_ENC_FAIL;
     }
@@ -1141,7 +1142,7 @@ win32_fileinfo(char_u *fname, BY_HANDLE_FILE_INFORMATION *info)
     }
     if (wn == NULL)
 #endif
-	hFile = CreateFile(fname,	/* file name */
+	hFile = CreateFile((const char*)fname,	/* file name */
 		    GENERIC_READ,	/* access mode */
 		    FILE_SHARE_READ | FILE_SHARE_WRITE,	/* share mode */
 		    NULL,		/* security descriptor */
@@ -1178,7 +1179,7 @@ win32_getattrs(char_u *name)
     WCHAR	*p = NULL;
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-	p = enc_to_utf16(name, NULL);
+	p = (WCHAR*)enc_to_utf16(name, NULL);
 
     if (p != NULL)
     {
@@ -1213,7 +1214,7 @@ win32_setattrs(char_u *name, int attrs)
     WCHAR	*p = NULL;
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-	p = enc_to_utf16(name, NULL);
+	p = (WCHAR*)enc_to_utf16(name, NULL);
 
     if (p != NULL)
     {
@@ -1328,7 +1329,7 @@ mch_nodetype(char_u *name)
     if (STRNCMP(name, "\\\\.\\", 4) == 0)
 	return NODE_WRITABLE;
 
-    hFile = CreateFile(name,		/* file name */
+    hFile = CreateFile((const char*)name,		/* file name */
 		GENERIC_WRITE,		/* access mode */
 		0,			/* share mode */
 		NULL,			/* security descriptor */
@@ -1382,7 +1383,7 @@ mch_get_acl(char_u *fname)
 	    WCHAR	*wn = NULL;
 
 	    if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-		wn = enc_to_utf16(fname, NULL);
+		wn = (WCHAR*)enc_to_utf16(fname, NULL);
 	    if (wn != NULL)
 	    {
 		/* Try to retrieve the entire security descriptor. */
@@ -1522,7 +1523,7 @@ mch_set_acl(char_u *fname, vim_acl_T acl)
 
 # ifdef FEAT_MBYTE
 	if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-	    wn = enc_to_utf16(fname, NULL);
+	    wn = (WCHAR*)enc_to_utf16(fname, NULL);
 	if (wn != NULL)
 	{
 	    (void)pSetNamedSecurityInfoW(
@@ -2221,10 +2222,10 @@ mch_call_shell(
 	else
 	{
 	    strcat(szShellTitle, " - !");
-	    if ((strlen(szShellTitle) + strlen(cmd) < sizeof(szShellTitle)))
-		strcat(szShellTitle, cmd);
+	    if ((strlen(szShellTitle) + strlen((char*)cmd) < sizeof(szShellTitle)))
+		strcat(szShellTitle, (char*)cmd);
 	}
-	mch_settitle(szShellTitle, NULL);
+	mch_settitle((char_u*)szShellTitle, NULL);
     }
 #endif
 
@@ -2259,7 +2260,7 @@ mch_call_shell(
 
     if (cmd == NULL)
     {
-	x = mch_system(p_sh, options);
+	x = mch_system((char*)p_sh, options);
     }
     else
     {
@@ -2342,9 +2343,9 @@ mch_call_shell(
 		char_u	*cmd_shell = mch_getenv("COMSPEC");
 
 		if (cmd_shell == NULL || *cmd_shell == NUL)
-		    cmd_shell = default_shell();
+		    cmd_shell = (char_u*)default_shell();
 
-		subcmd = vim_strsave_escaped_ext(cmdbase, "|", '^', FALSE);
+		subcmd = vim_strsave_escaped_ext(cmdbase, (char_u*)"|", '^', FALSE);
 		if (subcmd != NULL)
 		{
 		    /* make "cmd.exe /c arguments" */
@@ -2365,7 +2366,7 @@ mch_call_shell(
 	     * files if we exit before the spawned process
 	     */
 	    if (CreateProcess(NULL,		// Executable name
-		    newcmd,			// Command to execute
+		    (char*)newcmd,			// Command to execute
 		    NULL,			// Process security attributes
 		    NULL,			// Thread security attributes
 		    FALSE,			// Inherit handles
@@ -2446,7 +2447,7 @@ mch_call_shell(
 #endif
 	    )
     {
-	smsg(_("shell returned %d"), x);
+	smsg((char_u*)_("shell returned %d"), x);
 	msg_putchar('\n');
     }
 #ifdef FEAT_TITLE
@@ -2512,7 +2513,7 @@ mch_remove(char_u *name)
 #ifdef FEAT_MBYTE
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	wn = enc_to_utf16(name, NULL);
+	wn = (WCHAR*)enc_to_utf16(name, NULL);
 	if (wn != NULL)
 	{
 	    n = DeleteFileW(wn) ? 0 : -1;
@@ -2523,7 +2524,7 @@ mch_remove(char_u *name)
 	}
     }
 #endif
-    return DeleteFile(name) ? 0 : -1;
+    return DeleteFile((const char*)name) ? 0 : -1;
 }
 
 
@@ -2638,8 +2639,8 @@ mch_rename(
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
     {
-	wold = enc_to_utf16((char_u *)pszOldFile, NULL);
-	wnew = enc_to_utf16((char_u *)pszNewFile, NULL);
+	wold = (WCHAR*)enc_to_utf16((char_u *)pszOldFile, NULL);
+	wnew = (WCHAR*)enc_to_utf16((char_u *)pszNewFile, NULL);
 	if (wold != NULL && wnew != NULL)
 	    retval = mch_wrename(wold, wnew);
 	vim_free(wold);
@@ -2748,10 +2749,10 @@ mch_access(char *n, int p)
     WCHAR	*wn = NULL;
 
     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
-	wn = enc_to_utf16(n, NULL);
+	wn = (WCHAR*)enc_to_utf16((char_u*)n, NULL);
 #endif
 
-    if (mch_isdir(n))
+    if (mch_isdir((char_u*)n))
     {
 	char TempName[_MAX_PATH + 16] = "";
 #ifdef FEAT_MBYTE
@@ -2794,7 +2795,7 @@ mch_access(char *n, int p)
 		char		    *pch;
 		WIN32_FIND_DATA	    d;
 
-		vim_strncpy(TempName, n, _MAX_PATH);
+		vim_strncpy((char_u*)TempName, (char_u*)n, _MAX_PATH);
 		pch = TempName + STRLEN(TempName) - 1;
 		if (*pch != '\\' && *pch != '/')
 		    *++pch = '\\';
@@ -2877,7 +2878,7 @@ getout:
  * Version of open() that may use UTF-16 file name.
  */
     int
-mch_open(char *name, int flags, int mode)
+mch_open(const char *name, int flags, int mode)
 {
     /* _wopen() does not work with Borland C 5.5: creates a read-only file. */
 
@@ -2888,7 +2889,7 @@ mch_open(char *name, int flags, int mode)
  * Version of fopen() that may use UTF-16 file name.
  */
     FILE *
-mch_fopen(char *name, char *mode)
+mch_fopen(const char *name, const char *mode)
 {
     WCHAR	*wn, *wm;
     FILE	*f = NULL;
@@ -2907,8 +2908,8 @@ mch_fopen(char *name, char *mode)
 	else if (newMode == 'b')
 	    _set_fmode(_O_BINARY);
 # endif
-	wn = enc_to_utf16(name, NULL);
-	wm = enc_to_utf16(mode, NULL);
+	wn = (WCHAR*)enc_to_utf16((char_u*)name, NULL);
+	wm = (WCHAR*)enc_to_utf16((char_u*)mode, NULL);
 	if (wn != NULL && wm != NULL)
 	    f = _wfopen(wn, wm);
 	vim_free(wn);
@@ -2958,7 +2959,7 @@ copy_substream(HANDLE sh, void *context, WCHAR *to, WCHAR *substream, long len)
     HANDLE  hTo;
     WCHAR   *to_name;
 
-    to_name = malloc((wcslen(to) + wcslen(substream) + 1) * sizeof(WCHAR));
+    to_name = (WCHAR*)malloc((wcslen(to) + wcslen(substream) + 1) * sizeof(WCHAR));
     wcscpy(to_name, to);
     wcscat(to_name, substream);
 
@@ -2978,7 +2979,7 @@ copy_substream(HANDLE sh, void *context, WCHAR *to, WCHAR *substream, long len)
 	    todo = (DWORD)((size_t)(len - done) > sizeof(buf) ? sizeof(buf)
 						       : (size_t)(len - done));
 	    if (!BackupRead(sh, (LPBYTE)buf, todo, &readcnt,
-						       FALSE, FALSE, context)
+						       FALSE, FALSE, (void**)context)
 		    || readcnt != todo
 		    || !WriteFile(hTo, buf, todo, &written, NULL)
 		    || written != todo)
@@ -3008,8 +3009,8 @@ copy_infostreams(char_u *from, char_u *to)
     int			len;
 
     /* Convert the file names to wide characters. */
-    fromw = enc_to_utf16(from, NULL);
-    tow = enc_to_utf16(to, NULL);
+    fromw = (WCHAR*)enc_to_utf16(from, NULL);
+    tow = (WCHAR*)enc_to_utf16(to, NULL);
     if (fromw != NULL && tow != NULL)
     {
 	/* Open the file for reading. */
@@ -3301,7 +3302,7 @@ fix_arg_enc(void)
     for (i = 0; i < used_file_count; ++i)
     {
 	idx = used_file_indexes[i];
-	str = utf16_to_enc(ArglistW[idx], NULL);
+	str = utf16_to_enc((short_u*)ArglistW[idx], NULL);
 	if (str != NULL)
 	{
 #ifdef FEAT_DIFF

@@ -14,6 +14,13 @@
 #include "vim.h"
 #include "version.h"
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 #ifdef FEAT_EX_EXTRA
 static int linelen __ARGS((int *has_tab));
 #endif
@@ -7698,3 +7705,7 @@ ex_drop(exarg_T* eap)
     }
 }
 #endif
+
+
+#include "end_ns_vim.h"
+

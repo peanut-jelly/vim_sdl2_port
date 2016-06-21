@@ -11,6 +11,10 @@
  * For EBCDIC we have to use different values.
  */
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #ifndef EBCDIC
 
 /* IF_EB(ASCII_constant, EBCDIC_constant) */
@@ -186,3 +190,6 @@ extern char MetaCharTable[];
 # define PATHSEP	'/'
 # define PATHSEPSTR	"/"
 #endif
+
+#include "end_ns_vim.h"
+

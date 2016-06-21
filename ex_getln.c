@@ -13,6 +13,14 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 /*
  * Variables shared between getcmdline(), redrawcmdline() and others.
  * These need to be saved when using CTRL-R |, that's why they are in a
@@ -619,7 +627,7 @@ getcmdline(int firstc, long count, int indent)
 #endif
 		    if (vim_ispathsep(ccline.cmdbuff[j])
 #ifdef BACKSLASH_IN_FILENAME
-			    && vim_strchr(" *?[{`$%#", ccline.cmdbuff[j + 1])
+			    && vim_strchr((char_u*)" *?[{`$%#", ccline.cmdbuff[j + 1])
 			       == NULL
 #endif
 		       )
@@ -2193,6 +2201,8 @@ getexmodeline(int promptc, void* cookie, int indent)
     char_u	*p;
     int		prev_char;
 
+    long sw; // for later assignment which can be skipped by label jump for`redraw'
+
     /* Switch cursor on now.  This avoids that it happens after the "\n", which
      * confuses the system function that computes tabstops. */
     cursor_on();
@@ -2284,7 +2294,7 @@ getexmodeline(int promptc, void* cookie, int indent)
 
 	    if (c1 == Ctrl_T)
 	    {
-		long        sw = get_sw_value();
+		sw = get_sw_value();
 
 		p = (char_u *)line_ga.ga_data;
 		p[line_ga.ga_len] = NUL;
@@ -4960,7 +4970,7 @@ expand_shellcmd(
 	if (*e != NUL)
 	    ++e;
     }
-    *file = ga.ga_data;
+    *file = (char_u**)ga.ga_data;
     *num_file = ga.ga_len;
 
     vim_free(buf);
@@ -5049,7 +5059,7 @@ ExpandUserDefined(
     char_u      keep;
     garray_T	ga;
 
-    retstr = call_user_expand_func(call_func_retstr, xp, num_file, file);
+    retstr = (char_u*)call_user_expand_func(call_func_retstr, xp, num_file, file);
     if (retstr == NULL)
 	return FAIL;
 
@@ -5081,7 +5091,7 @@ ExpandUserDefined(
 	    ++e;
     }
     vim_free(retstr);
-    *file = ga.ga_data;
+    *file = (char_u**)ga.ga_data;
     *num_file = ga.ga_len;
     return OK;
 }
@@ -5099,7 +5109,7 @@ ExpandUserList(expand_T* xp, int* num_file, char_u*** file)
     listitem_T	*li;
     garray_T	ga;
 
-    retlist = call_user_expand_func(call_func_retlist, xp, num_file, file);
+    retlist = (list_T*)call_user_expand_func(call_func_retlist, xp, num_file, file);
     if (retlist == NULL)
 	return FAIL;
 
@@ -5119,7 +5129,7 @@ ExpandUserList(expand_T* xp, int* num_file, char_u*** file)
     }
     list_unref(retlist);
 
-    *file = ga.ga_data;
+    *file = (char_u**)ga.ga_data;
     *num_file = ga.ga_len;
     return OK;
 }
@@ -5192,7 +5202,7 @@ ExpandRTDir(char_u* pat, int* num_file, char_u*** file, char*dirnames[])
      * directories in dirnames. */
     remove_duplicates(&ga);
 
-    *file = ga.ga_data;
+    *file = (char_u**)ga.ga_data;
     *num_file = ga.ga_len;
     return OK;
 }
@@ -5327,15 +5337,15 @@ get_history_arg(expand_T* xp, int idx)
     //expand_T	*xp UNUSED;
     //int		idx;
 {
-    static char_u compl[2] = { NUL, NUL };
+    static char_u my_compl[2] = { NUL, NUL };
     char *short_names = ":=@>?/";
     int short_names_count = (int)STRLEN(short_names);
     int history_name_count = sizeof(history_names) / sizeof(char *) - 1;
 
     if (idx < short_names_count)
     {
-	compl[0] = (char_u)short_names[idx];
-	return compl;
+	my_compl[0] = (char_u)short_names[idx];
+	return my_compl;
     }
     if (idx < short_names_count + history_name_count)
 	return (char_u *)history_names[idx - short_names_count];
@@ -6556,7 +6566,7 @@ ex_window()
 	vim_free(ccline.cmdbuff);
 	if (cmdwin_result == K_XF1 || cmdwin_result == K_XF2) /* :qa[!] typed */
 	{
-	    char *p = (cmdwin_result == K_XF2) ? "qa" : "qa!";
+	    char *p = (char*)((cmdwin_result == K_XF2) ? "qa" : "qa!");
 
 	    if (histtype == HIST_CMD)
 	    {
@@ -6688,3 +6698,7 @@ script_get(exarg_T* eap, char_u* cmd)
 
     return (char_u *)ga.ga_data;
 }
+
+
+#include "end_ns_vim.h"
+

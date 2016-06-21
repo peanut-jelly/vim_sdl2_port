@@ -1178,7 +1178,7 @@ static PyInt RangeAssSlice(PyObject *, PyInt, PyInt, PyObject *);
  * -----------------------------------------------
  */
 
-static PySequenceMethods BufferAsSeq = {
+PySequenceMethods BufferAsSeq = {
     (PyInquiry)		BufferLength,	    /* sq_length,    len(x)   */
     (binaryfunc)	0,		    /* BufferConcat, sq_concat, x+y */
     (PyIntArgFunc)	0,		    /* BufferRepeat, sq_repeat, x*n */
@@ -1226,7 +1226,7 @@ BufferAssSlice(PyObject *self, PyInt lo, PyInt hi, PyObject *val)
     return RBAsSlice((BufferObject *)(self), lo, hi, val, 1, -1, NULL);
 }
 
-static PySequenceMethods RangeAsSeq = {
+PySequenceMethods RangeAsSeq = {
     (PyInquiry)		RangeLength,	      /* sq_length,    len(x)   */
     (binaryfunc)	0, /* RangeConcat, */ /* sq_concat,    x+y      */
     (PyIntArgFunc)	0, /* RangeRepeat, */ /* sq_repeat,    x*n      */
@@ -1322,7 +1322,7 @@ WindowGetattr(PyObject *self, char *name)
 /* Tab page list object - Definitions
  */
 
-static PySequenceMethods TabListAsSeq = {
+PySequenceMethods TabListAsSeq = {
     (PyInquiry)		TabListLength,	    /* sq_length,    len(x)   */
     (binaryfunc)	0,		    /* sq_concat,    x+y      */
     (PyIntArgFunc)	0,		    /* sq_repeat,    x*n      */
@@ -1340,7 +1340,7 @@ static PySequenceMethods TabListAsSeq = {
 /* Window list object - Definitions
  */
 
-static PySequenceMethods WinListAsSeq = {
+PySequenceMethods WinListAsSeq = {
     (PyInquiry)		WinListLength,	    /* sq_length,    len(x)   */
     (binaryfunc)	0,		    /* sq_concat,    x+y      */
     (PyIntArgFunc)	0,		    /* sq_repeat,    x*n      */
@@ -1363,7 +1363,7 @@ python_buffer_free(buf_T *buf)
 {
     if (BUF_PYTHON_REF(buf) != NULL)
     {
-	BufferObject *bp = BUF_PYTHON_REF(buf);
+	BufferObject *bp = (BufferObject*) BUF_PYTHON_REF(buf);
 	bp->buf = INVALID_BUFFER_VALUE;
 	BUF_PYTHON_REF(buf) = NULL;
     }
@@ -1375,7 +1375,7 @@ python_window_free(win_T *win)
 {
     if (WIN_PYTHON_REF(win) != NULL)
     {
-	WindowObject *wp = WIN_PYTHON_REF(win);
+	WindowObject *wp = (WindowObject*) WIN_PYTHON_REF(win);
 	wp->win = INVALID_WINDOW_VALUE;
 	WIN_PYTHON_REF(win) = NULL;
     }
@@ -1386,7 +1386,7 @@ python_tabpage_free(tabpage_T *tab)
 {
     if (TAB_PYTHON_REF(tab) != NULL)
     {
-	TabPageObject *tp = TAB_PYTHON_REF(tab);
+	TabPageObject *tp = (TabPageObject*) TAB_PYTHON_REF(tab);
 	tp->tab = INVALID_TABPAGE_VALUE;
 	TAB_PYTHON_REF(tab) = NULL;
     }
@@ -1460,19 +1460,19 @@ LineToString(const char *str)
     static PyObject *
 DictionaryGetattr(PyObject *self, char *name)
 {
-    DictionaryObject	*this = ((DictionaryObject *) (self));
+    DictionaryObject	*my_this = ((DictionaryObject *) (self));
 
     if (strcmp(name, "locked") == 0)
-	return PyInt_FromLong(this->dict->dv_lock);
+	return PyInt_FromLong(my_this->dict->dv_lock);
     else if (strcmp(name, "scope") == 0)
-	return PyInt_FromLong(this->dict->dv_scope);
+	return PyInt_FromLong(my_this->dict->dv_scope);
     else if (strcmp(name, "__members__") == 0)
 	return ObjectDir(NULL, DictionaryAttrs);
 
     return Py_FindMethod(DictionaryMethods, self, name);
 }
 
-static PySequenceMethods ListAsSeq = {
+PySequenceMethods ListAsSeq = {
     (PyInquiry)			ListLength,
     (binaryfunc)		0,
     (PyIntArgFunc)		0,
@@ -1501,10 +1501,10 @@ ListGetattr(PyObject *self, char *name)
     static PyObject *
 FunctionGetattr(PyObject *self, char *name)
 {
-    FunctionObject	*this = (FunctionObject *)(self);
+    FunctionObject	*my_this = (FunctionObject *)(self);
 
     if (strcmp(name, "name") == 0)
-	return PyString_FromString((char *)(this->name));
+	return PyString_FromString((char *)(my_this->name));
     else if (strcmp(name, "__members__") == 0)
 	return ObjectDir(NULL, FunctionAttrs);
     else

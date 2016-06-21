@@ -13,6 +13,14 @@
 
 #include "vim.h"
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #if defined(__TANDEM) || defined(__MINT__)
 # include <limits.h>		/* for SSIZE_MAX */
 #endif
@@ -322,6 +330,7 @@ readfile /*(fname, sfname, from, lines_to_skip, lines_to_read, eap, flags)*/
     int		using_b_fname;
 #endif
 
+    int incomplete_tail; // for later jump of `rewind_retry'
     curbuf->b_no_eol_lnum = 0;	/* in case it was set by the previous read */
 
     /*
@@ -1525,7 +1534,7 @@ retry:
 		 * another conversion.  Except for when there is no
 		 * alternative (help files).
 		 */
-		while ((iconv(iconv_fd, (void *)&fromp, &from_size,
+		while ((iconv(iconv_fd, &fromp, &from_size,
 							       &top, &to_size)
 			    == (size_t)-1 && ICONV_ERRNO != ICONV_EINVAL)
 						  || from_size > CONV_RESTLEN)
@@ -1965,7 +1974,7 @@ retry:
 	    }
 	    else if (enc_utf8 && !curbuf->b_p_bin)
 	    {
-		int  incomplete_tail = FALSE;
+		incomplete_tail = FALSE;
 
 		/* Reading UTF-8: Check if the bytes are valid UTF-8. */
 		for (p = ptr; ; ++p)
@@ -3822,9 +3831,9 @@ buf_write /*(buf, fname, sfname, start, end, eap, append, forceit,
 		     * file, we can't delete it then.  Keep trying for half a
 		     * second. */
 		    {
-			int try;
+			int my_try;
 
-			for (try = 0; try < 10; ++try)
+			for (my_try = 0; my_try < 10; ++my_try)
 			{
 			    if (mch_lstat((char *)IObuff, &st) < 0)
 				break;
@@ -5760,7 +5769,7 @@ buf_write_bytes /*(ip)*/
 	    /*
 	     * If iconv() has an error or there is not enough room, fail.
 	     */
-	    if ((iconv(ip->bw_iconv_fd, (void *)&from, &fromlen, &to, &tolen)
+	    if ((iconv(ip->bw_iconv_fd, &from, &fromlen, &to, &tolen)
 			== (size_t)-1 && ICONV_ERRNO != ICONV_EINVAL)
 						    || fromlen > CONV_RESTLEN)
 	    {
@@ -7612,10 +7621,10 @@ vim_tempname /*(extra_char)*/
     }
     strcpy(buf4, "VIM");
     buf4[2] = extra_char;   /* make it "VIa", "VIb", etc. */
-    if (GetTempFileName(szTempFile, buf4, 0, itmp) == 0)
+    if (GetTempFileName(szTempFile, buf4, 0, (char*)itmp) == 0)
 	return NULL;
     /* GetTempFileName() will create the file, we don't want that */
-    (void)DeleteFile(itmp);
+    (void)DeleteFile((char*)itmp);
 
     /* Backslashes in a temp file name cause problems when filtering with
      * "sh".  NOTE: This also checks 'shellcmdflag' to help those people who
@@ -10659,3 +10668,7 @@ write_eintr /*(fd, buf, bufsize)*/
     return ret;
 }
 #endif
+
+
+#include "end_ns_vim.h"
+

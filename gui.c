@@ -10,6 +10,16 @@
 
 #include "vim.h"
 #include "adapter_sdl2.h"
+#include "mock.h"
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 
 /* Structure containing all the GUI information */
 gui_T gui;
@@ -1441,7 +1451,7 @@ again:
 //info_push_message("resizing");
 disp_task_setcellsize_t cellsize ={DISP_TASK_SETCELLSIZE,
     gui.char_width, gui.char_height};
-display_push_task(&cellsize);
+display_push_task((disp_task_t*)&cellsize);
 }
 
 /*
@@ -5463,3 +5473,8 @@ gui_handle_drop /*(x, y, modifiers, fnames, count)*/
     entered = FALSE;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+

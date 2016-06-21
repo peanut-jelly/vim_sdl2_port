@@ -3117,7 +3117,7 @@ set_init_1()
 # endif
 	    || ((p = mch_getenv((char_u *)"COMSPEC")) != NULL && *p != NUL)
 # ifdef WIN3264
-	    || ((p = default_shell()) != NULL && *p != NUL)
+	    || ((p = (char_u*)default_shell()) != NULL && *p != NUL)
 # endif
 #endif
 	    )
@@ -3157,7 +3157,7 @@ set_init_1()
 		    if (ga.ga_len > 0)
 			STRCAT(ga.ga_data, ",");
 		    STRCAT(ga.ga_data, p);
-		    add_pathsep(ga.ga_data);
+		    add_pathsep((char_u*)ga.ga_data);
 		    STRCAT(ga.ga_data, "*");
 		    ga.ga_len += len;
 		}
@@ -3167,7 +3167,7 @@ set_init_1()
 	}
 	if (ga.ga_data != NULL)
 	{
-	    set_string_default("bsk", ga.ga_data);
+	    set_string_default("bsk", (char_u*)ga.ga_data);
 	    vim_free(ga.ga_data);
 	}
     }
@@ -3419,7 +3419,7 @@ set_init_1()
 		STRCPY(buf, "ja");
 	    else
 		buf[2] = NUL;		/* truncate to two-letter code */
-	    vim_setenv("LANG", buf);
+	    vim_setenv((char_u*)"LANG", (char_u*)buf);
 	}
     }
 # else

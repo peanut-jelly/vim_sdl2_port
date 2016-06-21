@@ -28,7 +28,7 @@ static void
 myWindow_draw()
 {
 const SDL_Surface* surface=iVim_getDisplaySurface();
-SDL_Texture* tex=SDL_CreateTextureFromSurface(gWindowRenderer, surface);
+SDL_Texture* tex=SDL_CreateTextureFromSurface(gWindowRenderer, (SDL_Surface*)surface);
 SDL_Rect rect={0,0,gWindow_w, gWindow_h};
 SDL_RenderCopy(gWindowRenderer, tex, &rect, &rect);
 SDL_RenderPresent(gWindowRenderer);
@@ -86,7 +86,11 @@ for (;;)
         resize(ww,hh);
     //if the display surface is not changed then do not redraw.
     if (dirty)
+        {
+        //iVim_log("myWindow_draw");
         myWindow_draw();
+        //iVim_log("/");
+        }
 
     int t1=SDL_GetTicks();
     int time_to_wait=30-(t1-t0);
@@ -136,9 +140,10 @@ if (gWindowRenderer==NULL)
     fnError("error creating gWindowRenderer");
 SDL_SetRenderDrawColor(gWindowRenderer, 0, 20, 10, 0xff);
 
-iVim_showDebugWindow(1);
+//iVim_showDebugWindow(1);
 
 // testing logger
+/*
 int i;
 static char mmm[100];
 for (i=0; i<100; i++)
@@ -146,6 +151,7 @@ for (i=0; i<100; i++)
     snprintf(mmm, 100, "i=%d", i);
     info_push_message(mmm);
     }
+    */
 }
 
 int main(int argc, char** argv)

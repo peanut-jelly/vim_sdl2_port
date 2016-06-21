@@ -25,6 +25,17 @@
 #include <pthread.h>
 #include "iVim.h"
 #include "vim.h"
+#include "mock.h"
+
+
+extern void send_setcellsize_to_adapter(int, int);
+extern void send_textarea_resize_to_adapter(int, int);
+extern void send_mousebuttondown_to_adapter(SDL_MouseButtonEvent);
+extern void send_mousebuttonup_or_move_to_adapter(SDL_Event);
+
+
+
+
 
 typedef struct tex_font
 {
@@ -423,7 +434,6 @@ if (!myDisplayRunning)
 static void
 myDisplay_init(int w, int h)
 {
-extern void send_setcellsize_to_adapter(int, int);
 
 /*
 gDisplay= 
@@ -546,9 +556,9 @@ int i=0;
 int byte_len=strlen(s);
 while (i<byte_len)
     {
-    int c=utf_ptr2char(s+i);
+    int c=utf_ptr2char((char_u*)s+i);
     int ncells = utf_char2cells(c);
-    int cl=utf_ptr2len(s+i);
+    int cl=utf_ptr2len((char_u*)s+i);
     int j;
     for (j=0; j<cl; j++)
         buf[j]=s[i+j];
@@ -577,7 +587,7 @@ int maxlen=200;
 display_extract_textout(textout,
         &x, &y, &w, &h,
         buf, &len, maxlen); 
-display_task_cleanup(textout);
+display_task_cleanup((disp_task_t*)textout);
 int sx=round(x*DISPLAY_W),
     sy=round(y*DISPLAY_H),
     sw=round(w*DISPLAY_W),
@@ -906,6 +916,7 @@ send_esc_to_adapter();
 static void
 myDisplay_draw()
 {
+//iVim_log("begin myDisplay_draw");
     /*
     int tt=SDL_GetTicks(),
         ch=(tt/50)%256;
@@ -921,49 +932,77 @@ myDisplay_draw()
         switch (task.type)
             {
             case DISP_TASK_TEXTOUT:
+                //iVim_log("_on_disp_textout");
                 _on_disp_textout(&task.textout);
+                //iVim_log("/");
                 break;
             case DISP_TASK_SCROLL:
+                //iVim_log("_on_disp_scroll");
                 _on_disp_scroll(&task.scroll);
+                //iVim_log("/");
                 break;
             case DISP_TASK_HOLLOWCURSOR:
+                //iVim_log("_on_disp_hollowcursor");
                 _on_disp_hollowcursor(&task.hollowcursor);
+                //iVim_log("/");
                 break;
             case DISP_TASK_PARTCURSOR:
+                //iVim_log("_on_disp_partcursor");
                 _on_disp_partcursor(&task.partcursor);
+                //iVim_log("/");
                 break;
             case DISP_TASK_SETCOLOR:
+                //iVim_log("_on_disp_setcolor");
                 _on_disp_setcolor(&task.setcolor);
+                //iVim_log("/");
                 break;
             case DISP_TASK_INVERTRECT:
+                //iVim_log("_on_disp_invertrect");
                 _on_disp_invertrect(&task.invertrect);
+                //iVim_log("/");
                 break;
             case DISP_TASK_CLEARRECT:
+                //iVim_log("_on_disp_clearrect");
                 _on_disp_clearrect(&task.clearrect);
+                //iVim_log("/");
                 break;
             case DISP_TASK_SETFONT:
+                //iVim_log("_on_disp_setfont");
                 _on_disp_setfont(&task.setfont);
+                //iVim_log("/");
                 break;
             case DISP_TASK_SETCELLSIZE:
+                //iVim_log("_on_disp_setcellsize");
                 _on_disp_setcellsize(&task.setcellsize);
+                //iVim_log("/");
                 break;
             case DISP_TASK_QUITVIM:
+                //iVim_log("_on_disp_quitvim");
                 _on_disp_quitvim();
+                //iVim_log("/");
                 break;
             case DISP_TASK_DRAWLINE:
+                //iVim_log("_on_disp_drawline");
                 _on_disp_drawline(&task.drawline);
+                //iVim_log("/");
                 break;
             case DISP_TASK_BEEP:
+                //iVim_log("_on_disp_beep");
                 _on_disp_beep();
+                //iVim_log("/");
                 break;
             case DISP_TASK_UNDERCURL:
+                //iVim_log("_on_disp_undercurl");
                 _on_disp_undercurl(&task.undercurl);
+                //iVim_log("/");
                 break;
             case DISP_TASK_FLUSH:
                 // do nothing
                 break;
             case DISP_TASK_REQUIREESC:
+                //iVim_log("_on_disp_require_esc");
                 _on_disp_require_esc();
+                //iVim_log("/");
                 break;
             default:
                 fnWarn("unknown display task");
@@ -987,6 +1026,7 @@ myDisplay_draw()
 
     SDL_DestroyTexture(tt);
     */
+    //iVim_log("end myDisplay_draw");
 }
 
 /*
@@ -1061,7 +1101,7 @@ void * fn_vim_thread(void *ud)
     VimMain(sdl_argc, sdl_argv);
 
     disp_task_quitvim_t quitvim = {DISP_TASK_QUITVIM};
-    display_push_task(&quitvim);
+    display_push_task((disp_task_t*)&quitvim);
 
     return 0;
 }
@@ -1076,10 +1116,12 @@ return 0;
 
 void iVim_onEvent(SDL_Event evnt)
 {
+iVim_log("iVim_onEvent");
 // i need to be sure that this event should be processed by vim,
 // which is to say, its source window is the vim display window,
 // or the specific adjusted area within the window.
 myDisplay_on_event(evnt);
+iVim_log("/");
 }
 
 const SDL_Surface* iVim_getDisplaySurface()
@@ -1106,14 +1148,20 @@ return 0;
 
 int iVim_flush()
 {
+iVim_log("iVim_flush");
 int dirty=display_has_task();
+//iVim_log("iVim_flush_myDisplay");
 myDisplay_draw();
+//iVim_log("/");
 
+//iVim_log("iVim_flush_myInfo");
 myInfo_clear();
 myInfo_draw();
 if (s_info_shown)
     myInfo_present();
+//iVim_log("/");
 
+iVim_log("/");
 return dirty;
 }
 

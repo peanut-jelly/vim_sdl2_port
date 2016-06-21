@@ -5407,8 +5407,8 @@ syn_compare_stub /*(v1, v2)*/
     const void	*v2
     )
 {
-    const short	*s1 = v1;
-    const short	*s2 = v2;
+    const short	*s1 = (const short*)v1;
+    const short	*s2 = (const short*)v2;
 
     return (*s1 > *s2 ? 1 : *s1 < *s2 ? -1 : 0);
 }

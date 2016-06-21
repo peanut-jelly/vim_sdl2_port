@@ -363,14 +363,15 @@ DIRSLASH = \\
 endif
 endif
 #CC := $(CROSS_COMPILE)gcc
-CC=gcc 
+#CC=gcc 
+CC=g++ 
 WINDRES := $(CROSS_COMPILE)windres
 WINDRES_CC = $(CC)
 
 #>>>>> end of choices
 ###########################################################################
 
-CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall #-std=c99 ####
+CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall #-std=c++11 ####
 WINDRES_FLAGS = --preprocessor="$(WINDRES_CC) -E -xc" -DRC_INVOKED
 
 ifdef GETTEXT
@@ -739,7 +740,8 @@ endif
 ###########################################################################
 INCL = vim.h feature.h os_win32.h os_dos.h ascii.h keymap.h term.h macros.h \
 	structs.h regexp.h option.h ex_cmds.h proto.h globals.h farsi.h \
-	gui.h
+	gui.h mock.h begin_ns_vim.h end_ns_vim.h \
+	assert_in_ns_vim.h assert_out_ns_vim.h 
 
 $(OUTDIR)/sdl2_misc.o: sdl2_misc.c adapter_sdl2.h iVim.h
 	$(CC) -c $(CFLAGS) sdl2_misc.c -o $@

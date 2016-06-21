@@ -1482,7 +1482,7 @@ cs_insert_filelist /*(fname, ppath, flags, sb)*/
     /* On windows 9x GetFileInformationByHandle doesn't work, so skip it */
     if (!mch_windows95())
     {
-	switch (win32_fileinfo(fname, &bhfi))
+	switch (win32_fileinfo((char_u*)fname, &bhfi))
 	{
 	case FILEINFO_ENC_FAIL:		/* enc_to_utf16() failed */
 	case FILEINFO_READ_FAIL:	/* CreateFile() failed */
@@ -1518,7 +1518,7 @@ cs_insert_filelist /*(fname, ppath, flags, sb)*/
 	    && csinfo[j].st_dev == sb->st_dev && csinfo[j].st_ino == sb->st_ino
 #else
 	    /* compare pathnames first */
-	    && ((fullpathcmp(csinfo[j].fname, fname, FALSE) & FPC_SAME)
+	    && ((fullpathcmp((char_u*)csinfo[j].fname, (char_u*)fname, FALSE) & FPC_SAME)
 		/* if not Windows 9x, test index file attributes too */
 		|| (!mch_windows95()
 		    && csinfo[j].nVolume == bhfi.dwVolumeSerialNumber
@@ -1551,7 +1551,7 @@ cs_insert_filelist /*(fname, ppath, flags, sb)*/
 	{
 	    /* Reallocate space for more connections. */
 	    csinfo_size *= 2;
-	    csinfo = vim_realloc(csinfo, sizeof(csinfo_T)*csinfo_size);
+	    csinfo = (csinfo_T*)vim_realloc(csinfo, sizeof(csinfo_T)*csinfo_size);
 	}
 	if (csinfo == NULL)
 	    return -1;

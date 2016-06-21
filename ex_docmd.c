@@ -13,6 +13,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static int	quitmore = 0;
 static int	ex_pressedreturn = FALSE;
 #ifndef FEAT_PRINTER
@@ -336,7 +345,7 @@ static void	ex_mkrc __ARGS((exarg_T *eap));
 static void	ex_mark __ARGS((exarg_T *eap));
 #ifdef FEAT_USR_CMDS
 static char_u	*uc_fun_cmd __ARGS((void));
-static char_u	*find_ucmd __ARGS((exarg_T *eap, char_u *p, int *full, expand_T *xp, int *compl));
+static char_u	*find_ucmd __ARGS((exarg_T *eap, char_u *p, int *full, expand_T *xp, int *my_compl));
 #endif
 #ifdef FEAT_EX_EXTRA
 static void	ex_normal __ARGS((exarg_T *eap));
@@ -1434,7 +1443,7 @@ do_cmdline(char_u* cmdline, char_u* (*fgetline)__ARGS((int, void*, int)),
 	    }
 	    else if (p != NULL)
 	    {
-		emsg(p);
+		emsg((char_u*)p);
 		vim_free(p);
 	    }
 	    vim_free(sourcing_name);
@@ -1640,7 +1649,7 @@ getline_equal(char_u* (*fgetline)__ARGS((int, void*, int)),
     while (gp == get_loop_line)
     {
 	gp = cp->getline;
-	cp = cp->cookie;
+	cp = (loop_cookie*)cp->cookie;
     }
     return gp == func;
 #else
@@ -1671,7 +1680,7 @@ getline_cookie(char_u* (*fgetline)__ARGS((int, void*, int)),
     while (gp == get_loop_line)
     {
 	gp = cp->getline;
-	cp = cp->cookie;
+	cp = (loop_cookie*)cp->cookie;
     }
     return cp;
 # else
@@ -2969,12 +2978,12 @@ find_command(exarg_T* eap, int* full)
  * Return NULL if there is no matching command.
  */
     static char_u *
-find_ucmd(exarg_T* eap, char_u* p, int* full, expand_T* xp, int* compl)
+find_ucmd(exarg_T* eap, char_u* p, int* full, expand_T* xp, int* my_compl)
     //exarg_T	*eap;
     //char_u	*p;	/* end of the command (possibly including count) */
     //int		*full;	/* set to TRUE for a full match */
     //expand_T	*xp;	/* used for completion, NULL otherwise */
-    //int		*compl;	/* completion flags or NULL */
+    //int		*my_compl;	/* completion flags or NULL */
 {
     int		len = (int)(p - eap->cmd);
     int		j, k, matchlen = 0;
@@ -3031,8 +3040,8 @@ find_ucmd(exarg_T* eap, char_u* p, int* full, expand_T* xp, int* compl)
 		    eap->useridx = j;
 
 # ifdef FEAT_CMDL_COMPL
-		    if (compl != NULL)
-			*compl = uc->uc_compl;
+		    if (my_compl != NULL)
+			*my_compl = uc->uc_compl;
 #  ifdef FEAT_EVAL
 		    if (xp != NULL)
 		    {
@@ -3188,7 +3197,7 @@ set_one_cmd_context(expand_T* xp, char_u* buff)
     int			len = 0;
     exarg_T		ea;
 #if defined(FEAT_USR_CMDS) && defined(FEAT_CMDL_COMPL)
-    int			compl = EXPAND_NOTHING;
+    int			my_compl = EXPAND_NOTHING;
 #endif
 #ifdef FEAT_CMDL_COMPL
     int			delim;
@@ -3299,7 +3308,7 @@ set_one_cmd_context(expand_T* xp, char_u* buff)
 	    ea.cmd = cmd;
 	    p = find_ucmd(&ea, p, NULL, xp,
 # if defined(FEAT_CMDL_COMPL)
-		    &compl
+		    &my_compl
 # else
 		    NULL
 # endif
@@ -3538,8 +3547,8 @@ set_one_cmd_context(expand_T* xp, char_u* buff)
 		++xp->xp_pattern;
 #if defined(FEAT_USR_CMDS) && defined(FEAT_CMDL_COMPL)
 		/* Avoid that the assignment uses EXPAND_FILES again. */
-		if (compl != EXPAND_USER_DEFINED && compl != EXPAND_USER_LIST)
-		    compl = EXPAND_ENV_VARS;
+		if (my_compl != EXPAND_USER_DEFINED && my_compl != EXPAND_USER_LIST)
+		    my_compl = EXPAND_ENV_VARS;
 #endif
 	    }
 	}
@@ -3864,18 +3873,18 @@ set_one_cmd_context(expand_T* xp, char_u* buff)
 #ifdef FEAT_USR_CMDS
 	case CMD_USER:
 	case CMD_USER_BUF:
-	    if (compl != EXPAND_NOTHING)
+	    if (my_compl != EXPAND_NOTHING)
 	    {
 		/* XFILE: file names are handled above */
 		if (!(ea.argt & XFILE))
 		{
 # ifdef FEAT_MENU
-		    if (compl == EXPAND_MENUS)
+		    if (my_compl == EXPAND_MENUS)
 			return set_context_in_menu_cmd(xp, cmd, arg, forceit);
 # endif
-		    if (compl == EXPAND_COMMANDS)
+		    if (my_compl == EXPAND_COMMANDS)
 			return arg;
-		    if (compl == EXPAND_MAPPINGS)
+		    if (my_compl == EXPAND_MAPPINGS)
 			return set_context_in_map_cmd(xp, (char_u *)"map",
 					 arg, forceit, FALSE, FALSE, CMD_map);
 		    /* Find start of last argument. */
@@ -3891,7 +3900,7 @@ set_one_cmd_context(expand_T* xp, char_u* buff)
 		    }
 		    xp->xp_pattern = arg;
 		}
-		xp->xp_context = compl;
+		xp->xp_context = my_compl;
 	    }
 	    break;
 #endif
@@ -5282,9 +5291,9 @@ get_command_name(expand_T* xp, int idx)
 #endif
 
 #if defined(FEAT_USR_CMDS) || defined(PROTO)
-static int	uc_add_command __ARGS((char_u *name, size_t name_len, char_u *rep, long argt, long def, int flags, int compl, char_u *compl_arg, int force));
+static int	uc_add_command __ARGS((char_u *name, size_t name_len, char_u *rep, long argt, long def, int flags, int my_compl, char_u *compl_arg, int force));
 static void	uc_list __ARGS((char_u *name, size_t name_len));
-static int	uc_scan_attr __ARGS((char_u *attr, size_t len, long *argt, long *def, int *flags, int *compl, char_u **compl_arg));
+static int	uc_scan_attr __ARGS((char_u *attr, size_t len, long *argt, long *def, int *flags, int *my_compl, char_u **compl_arg));
 static char_u	*uc_split_args __ARGS((char_u *arg, size_t *lenp));
 static size_t	uc_check_code __ARGS((char_u *code, size_t len, char_u *buf, ucmd_T *cmd, exarg_T *eap, char_u **split_buf, size_t *split_len));
 
@@ -5296,7 +5305,7 @@ uc_add_command(
         long argt, 
         long def, 
         int flags, 
-        int compl, 
+        int my_compl, 
         char_u* compl_arg, 
         int force)
     //char_u	*name;
@@ -5305,7 +5314,7 @@ uc_add_command(
     //long	argt;
     //long	def;
     //int		flags;
-    //int		compl;
+    //int		my_compl;
     //char_u	*compl_arg;
     //int		force;
 {
@@ -5394,7 +5403,7 @@ uc_add_command(
     cmd->uc_rep = rep_buf;
     cmd->uc_argt = argt;
     cmd->uc_def = def;
-    cmd->uc_compl = compl;
+    cmd->uc_compl = my_compl;
 #ifdef FEAT_EVAL
     cmd->uc_scriptID = current_SID;
 # ifdef FEAT_CMDL_COMPL
@@ -5618,14 +5627,14 @@ uc_scan_attr(
         long* argt, 
         long* def, 
         int* flags, 
-        int* compl, 
+        int* my_compl, 
         char_u** compl_arg)
     //char_u	*attr;
     //size_t	len;
     //long	*argt;
     //long	*def;
     //int		*flags;
-    //int		*compl;
+    //int		*my_compl;
     //char_u	**compl_arg;
 {
     char_u	*p;
@@ -5741,7 +5750,7 @@ invalid_count:
 		return FAIL;
 	    }
 
-	    if (parse_compl_arg(val, (int)vallen, compl, argt, compl_arg)
+	    if (parse_compl_arg(val, (int)vallen, my_compl, argt, compl_arg)
 								      == FAIL)
 		return FAIL;
 	}
@@ -5771,7 +5780,7 @@ ex_command(exarg_T* eap)
     long    argt = 0;
     long    def = -1;
     int	    flags = 0;
-    int	    compl = EXPAND_NOTHING;
+    int	    my_compl = EXPAND_NOTHING;
     char_u  *compl_arg = NULL;
     int	    has_attr = (eap->arg[0] == '-');
     int	    name_len;
@@ -5783,7 +5792,7 @@ ex_command(exarg_T* eap)
     {
 	++p;
 	end = skiptowhite(p);
-	if (uc_scan_attr(p, end - p, &argt, &def, &flags, &compl, &compl_arg)
+	if (uc_scan_attr(p, end - p, &argt, &def, &flags, &my_compl, &compl_arg)
 		== FAIL)
 	    return;
 	p = skipwhite(end);
@@ -5823,7 +5832,7 @@ ex_command(exarg_T* eap)
 	return;
     }
     else
-	uc_add_command(name, end - name, p, argt, def, flags, compl, compl_arg,
+	uc_add_command(name, end - name, p, argt, def, flags, my_compl, compl_arg,
 								eap->forceit);
 }
 
@@ -11215,7 +11224,7 @@ put_eol(FILE* fd)
  * Return FAIL for a write error.
  */
     int
-put_line(FILE* fd, char* s)
+put_line(FILE* fd, const char* s)
     //FILE	*fd;
     //char	*s;
 {
@@ -11578,3 +11587,8 @@ ex_folddo(exarg_T* eap)
     ml_clearmarked();	   /* clear rest of the marks */
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+

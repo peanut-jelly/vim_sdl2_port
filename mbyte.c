@@ -470,7 +470,7 @@ enc_canon_props /*(name)*/
 	CPINFO	cpinfo;
 
 	/* Get info on this codepage to find out what it is. */
-	if (GetCPInfo(atoi(name + 2), &cpinfo) != 0)
+	if (GetCPInfo(atoi((const char*)name + 2), &cpinfo) != 0)
 	{
 	    if (cpinfo.MaxCharSize == 1) /* some single-byte encoding */
 		return ENC_8BIT;
@@ -532,7 +532,7 @@ mb_init()
 	CPINFO	cpinfo;
 
 	/* Get info on this codepage to find out what it is. */
-	if (GetCPInfo(atoi(p_enc + 2), &cpinfo) != 0)
+	if (GetCPInfo(atoi((const char*)p_enc + 2), &cpinfo) != 0)
 	{
 	    if (cpinfo.MaxCharSize == 1)
 	    {
@@ -544,7 +544,7 @@ mb_init()
 		    && (cpinfo.LeadByte[0] != 0 || cpinfo.LeadByte[1] != 0))
 	    {
 		/* must be a DBCS encoding, check below */
-		enc_dbcs_new = atoi(p_enc + 2);
+		enc_dbcs_new = atoi((const char*)p_enc + 2);
 	    }
 	    else
 		goto codepage_invalid;
@@ -568,7 +568,7 @@ codepage_invalid:
 #ifdef WIN3264
 	/* Windows: accept only valid codepage numbers, check below. */
 	if (p_enc[6] != 'c' || p_enc[7] != 'p'
-				      || (enc_dbcs_new = atoi(p_enc + 8)) == 0)
+				      || (enc_dbcs_new = atoi((const char *)p_enc + 8)) == 0)
 	    return e_invarg;
 #else
 	/* Unix: accept any "2byte-" name, assume current locale. */
@@ -2579,7 +2579,7 @@ utf_class /*(c)*/
     {
 	unsigned short first;
 	unsigned short last;
-	unsigned short class;
+	unsigned short my_class;
     } classes[] =
     {
 	{0x037e, 0x037e, 1},		/* Greek question mark */
@@ -2668,7 +2668,7 @@ utf_class /*(c)*/
 	else if (classes[mid].first > c)
 	    top = mid - 1;
 	else
-	    return (int)classes[mid].class;
+	    return (int)classes[mid].my_class;
     }
 
     /* most other characters are "word" characters */
@@ -4387,7 +4387,7 @@ iconv_string /*(vcp, str, slen, unconvlenp, resultlenp)*/
 	tolen = len - done - 2;
 	/* Avoid a warning for systems with a wrong iconv() prototype by
 	 * casting the second argument to void *. */
-	if (iconv(vcp->vc_fd, (void *)&from, &fromlen, &to, &tolen)
+	if (iconv(vcp->vc_fd, &from, &fromlen, &to, &tolen)
 								!= (size_t)-1)
 	{
 	    /* Finished, append a NUL. */
@@ -4498,7 +4498,7 @@ get_iconv_import_func(HINSTANCE hInst, const char *funcname)
 		continue;
 	    pImpName = (PIMAGE_IMPORT_BY_NAME)(pImage
 					+ (UINT_PTR)(pINT->u1.AddressOfData));
-	    if (strcmp(pImpName->Name, funcname) == 0)
+	    if (strcmp((const char*)pImpName->Name, funcname) == 0)
 		return (void *)pIAT->u1.Function;
 	}
     }
@@ -4536,13 +4536,18 @@ iconv_enabled /*(verbose)*/
 	return FALSE;
     }
 
-    iconv	= (void *)GetProcAddress(hIconvDLL, "libiconv");
-    iconv_open	= (void *)GetProcAddress(hIconvDLL, "libiconv_open");
-    iconv_close	= (void *)GetProcAddress(hIconvDLL, "libiconv_close");
-    iconvctl	= (void *)GetProcAddress(hIconvDLL, "libiconvctl");
-    iconv_errno	= get_iconv_import_func(hIconvDLL, "_errno");
+    iconv	= (size_t (*)(iconv_t, const char**, size_t*, char**, size_t*))
+        GetProcAddress(hIconvDLL, "libiconv");
+    iconv_open	= (void* (*)(const char*, const char*))
+        GetProcAddress(hIconvDLL, "libiconv_open");
+    iconv_close	= (int (*)(iconv_t))
+        GetProcAddress(hIconvDLL, "libiconv_close");
+    iconvctl	= (int (*)(iconv_t, int, void*))
+        GetProcAddress(hIconvDLL, "libiconvctl");
+    iconv_errno	= (int* (*)())
+        get_iconv_import_func(hIconvDLL, "_errno");
     if (iconv_errno == NULL)
-	iconv_errno = (void *)GetProcAddress(hMsvcrtDLL, "_errno");
+	iconv_errno = (int*(*)())GetProcAddress(hMsvcrtDLL, "_errno");
     if (iconv == NULL || iconv_open == NULL || iconv_close == NULL
 	    || iconvctl == NULL || iconv_errno == NULL)
     {
@@ -6452,7 +6457,7 @@ string_convert_ext /*(vcp, ptr, lenp, unconvlenp)*/
 	    {
 		tmp_len = MultiByteToWideChar(vcp->vc_cpfrom,
 					unconvlenp ? MB_ERR_INVALID_CHARS : 0,
-					ptr, len, 0, 0);
+					(const char*)ptr, len, 0, 0);
 		if (tmp_len == 0
 			&& GetLastError() == ERROR_NO_UNICODE_TRANSLATION)
 		{
@@ -6472,14 +6477,14 @@ string_convert_ext /*(vcp, ptr, lenp, unconvlenp)*/
 	    if (vcp->vc_cpfrom == 0)
 		utf8_to_utf16(ptr, len, tmp, unconvlenp);
 	    else
-		MultiByteToWideChar(vcp->vc_cpfrom, 0, ptr, len, tmp, tmp_len);
+		MultiByteToWideChar(vcp->vc_cpfrom, 0, (char*)ptr, len, (WCHAR*)tmp, tmp_len);
 
 	    /* 2. ucs-2  ->  codepage/UTF-8. */
 	    if (vcp->vc_cpto == 0)
 		retlen = utf16_to_utf8(tmp, tmp_len, NULL);
 	    else
 		retlen = WideCharToMultiByte(vcp->vc_cpto, 0,
-						    tmp, tmp_len, 0, 0, 0, 0);
+						    (WCHAR*)tmp, tmp_len, 0, 0, 0, 0);
 	    retval = alloc(retlen + 1);
 	    if (retval != NULL)
 	    {
@@ -6487,7 +6492,7 @@ string_convert_ext /*(vcp, ptr, lenp, unconvlenp)*/
 		    utf16_to_utf8(tmp, tmp_len, retval);
 		else
 		    WideCharToMultiByte(vcp->vc_cpto, 0,
-					  tmp, tmp_len, retval, retlen, 0, 0);
+					  (WCHAR*)tmp, tmp_len, (char*)retval, retlen, 0, 0);
 		retval[retlen] = NUL;
 		if (lenp != NULL)
 		    *lenp = retlen;

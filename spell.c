@@ -5268,9 +5268,9 @@ spell_print_tree(wordnode_T *root)
  * Returns an afffile_T, NULL for complete failure.
  */
     static afffile_T *
-spell_read_aff(spin, fname)
-    spellinfo_T	*spin;
-    char_u	*fname;
+spell_read_aff(spellinfo_T* spin, char_u* fname)
+    //spellinfo_T	*spin;
+    //char_u	*fname;
 {
     FILE	*fd;
     afffile_T	*aff;
@@ -5551,7 +5551,7 @@ spell_read_aff(spin, fname)
 	    {
 		/* Turn flag "c" into COMPOUNDRULE compatible string "c+",
 		 * "Na" into "Na+", "1234" into "1234+". */
-		p = getroom(spin, STRLEN(items[1]) + 2, FALSE);
+		p = (char_u*)getroom(spin, STRLEN(items[1]) + 2, FALSE);
 		if (p != NULL)
 		{
 		    STRCPY(p, items[1]);
@@ -5577,7 +5577,7 @@ spell_read_aff(spin, fname)
 		    l = (int)STRLEN(items[1]) + 1;
 		    if (compflags != NULL)
 			l += (int)STRLEN(compflags) + 1;
-		    p = getroom(spin, l, FALSE);
+		    p = (char_u*)getroom(spin, l, FALSE);
 		    if (p != NULL)
 		    {
 			if (compflags != NULL)
@@ -6031,7 +6031,7 @@ spell_read_aff(spin, fname)
 			c = *p++;
 #endif
 			if ((spin->si_map.ga_len > 0
-				    && vim_strchr(spin->si_map.ga_data, c)
+				    && vim_strchr((char_u*)spin->si_map.ga_data, c)
 								      != NULL)
 				|| vim_strchr(p, c) != NULL)
 			    smsg((char_u *)_("Duplicate character in MAP in %s line %d"),
@@ -6386,7 +6386,7 @@ process_compflags /*(spin, aff, compflags)*/
     len = (int)STRLEN(compflags) + 1;
     if (spin->si_compflags != NULL)
 	len += (int)STRLEN(spin->si_compflags) + 1;
-    p = getroom(spin, len, FALSE);
+    p = (char_u*)getroom(spin, len, FALSE);
     if (p == NULL)
 	return;
     if (spin->si_compflags != NULL)
@@ -9004,7 +9004,7 @@ sug_filltable /*(spin, node, startwordnr, gap)*/
 	    ((char_u *)gap->ga_data)[gap->ga_len++] = NUL;
 
 	    if (ml_append_buf(spin->si_spellbuf, (linenr_T)wordnr,
-				     gap->ga_data, gap->ga_len, TRUE) == FAIL)
+				     (char_u*)gap->ga_data, gap->ga_len, TRUE) == FAIL)
 		return -1;
 	    ++wordnr;
 
@@ -11238,7 +11238,7 @@ someerror:
 			break;
 		}
 		if (ml_append_buf(slang->sl_sugbuf, (linenr_T)wordnr,
-					 ga.ga_data, ga.ga_len, TRUE) == FAIL)
+					 (char_u*)ga.ga_data, ga.ga_len, TRUE) == FAIL)
 		    goto someerror;
 	    }
 	    ga_clear(&ga);
@@ -16393,7 +16393,7 @@ expand_spelling /*(lnum, pat, matchp)*/
     garray_T	ga;
 
     spell_suggest_list(&ga, pat, 100, spell_expand_need_cap, TRUE);
-    *matchp = ga.ga_data;
+    *matchp = (char_u**)ga.ga_data;
     return ga.ga_len;
 }
 #endif

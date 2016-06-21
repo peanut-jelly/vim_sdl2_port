@@ -13,6 +13,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #if defined(FEAT_EVAL) || defined(PROTO)
 
 static void	free_msglist __ARGS((struct msglist *l));
@@ -403,7 +412,7 @@ do_intthrow(struct condstack* cstack)
 	    /* An interrupt exception replaces any user or error exception. */
 	    discard_current_exception();
 	}
-	if (throw_exception("Vim:Interrupt", ET_INTERRUPT, NULL) != FAIL)
+	if (throw_exception((void*)"Vim:Interrupt", ET_INTERRUPT, NULL) != FAIL)
 	    do_throw(cstack);
     }
 
@@ -506,7 +515,7 @@ throw_exception(void* value, int type, char_u* cmdname)
 	}
     }
     else
-	excp->value = value;
+	excp->value = (char_u*)value;
 
     excp->type = type;
     excp->throw_name = vim_strsave(sourcing_name == NULL
@@ -1854,7 +1863,7 @@ ex_endtry(exarg_T* eap)
 	    if (pending == CSTP_RETURN)
 		rettv = cstack->cs_rettv[idx];
 	    else if (pending & CSTP_THROW)
-		current_exception = cstack->cs_exception[idx];
+		current_exception = (except_T*)cstack->cs_exception[idx];
 	}
 
 	/*
@@ -2295,3 +2304,7 @@ has_loop_cmd(char_u* p)
 }
 
 #endif /* FEAT_EVAL */
+
+
+#include "end_ns_vim.h"
+

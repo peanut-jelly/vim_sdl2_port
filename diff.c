@@ -13,6 +13,9 @@
 
 #include "vim.h"
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 #if defined(FEAT_DIFF) || defined(PROTO)
 
 static int	diff_busy = FALSE;	/* ex_diffgetput() is busy */
@@ -2658,3 +2661,6 @@ diff_lnum_win(linenr_T lnum, win_T *wp)
 #endif
 
 #endif	/* FEAT_DIFF */
+
+#include "end_ns_vim.h"
+

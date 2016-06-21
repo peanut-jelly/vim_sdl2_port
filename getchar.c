@@ -17,6 +17,16 @@
  */
 
 #include "vim.h"
+#include "mock.h"
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 
 /*
  * These buffers are used for storing:
@@ -5435,3 +5445,8 @@ add_map /*(map, mode)*/
     p_cpo = cpo_save;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+

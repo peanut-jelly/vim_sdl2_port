@@ -13,6 +13,12 @@
 
 #include "vim.h"
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #if defined(FEAT_EVAL) || defined(PROTO)
 
 #ifdef AMIGA
@@ -1141,7 +1147,7 @@ var_redir_stop()
 	{
 	    ga_append(&redir_ga, NUL);  /* Append the trailing NUL. */
 	    tv.v_type = VAR_STRING;
-	    tv.vval.v_string = redir_ga.ga_data;
+	    tv.vval.v_string = (char_u*)redir_ga.ga_data;
 	    /* Call get_lval() again, if it's inside a Dict or List it may
 	     * have changed. */
 	    redir_endp = get_lval(redir_varname, NULL, redir_lval,
@@ -10511,7 +10517,7 @@ filter_map(typval_T* argvars, typval_T* rettv, int map)
     int		rem;
     int		todo;
     char_u	*ermsg = (char_u *)(map ? "map()" : "filter()");
-    char	*arg_errmsg = (map ? N_("map() argument")
+    const char_u	*arg_errmsg = (const char_u*)(map ? N_("map() argument")
 				   : N_("filter() argument"));
     int		save_did_emsg;
     int		idx = 0;
@@ -14764,7 +14770,7 @@ f_readfile(typval_T* argvars, typval_T* rettv)
 		    /* Change "prev" buffer to be the right size.  This way
 		     * the bytes are only copied once, and very long lines are
 		     * allocated only once.  */
-		    if ((s = vim_realloc(prev, prevlen + len + 1)) != NULL)
+		    if ((s = (char_u*)vim_realloc(prev, prevlen + len + 1)) != NULL)
 		    {
 			mch_memmove(s + prevlen, start, len);
 			s[prevlen + len] = NUL;
@@ -14861,8 +14867,8 @@ f_readfile(typval_T* argvars, typval_T* rettv)
 		    long growmin  = (long)((p - start) * 2 + prevlen);
 		    prevsize = grow50pc > growmin ? grow50pc : growmin;
 		}
-		newprev = prev == NULL ? alloc(prevsize)
-						: vim_realloc(prev, prevsize);
+		newprev = (char_u*)(prev == NULL ? alloc(prevsize)
+						: vim_realloc(prev, prevsize));
 		if (newprev == NULL)
 		{
 		    do_outofmem_msg((long_u)prevsize);
@@ -15163,7 +15169,7 @@ f_remote_peek(typval_T* argvars, typval_T* rettv)
 	return;		/* type error; errmsg already given */
     }
 # ifdef WIN32
-    sscanf(serverid, SCANF_HEX_LONG_U, &n);
+    sscanf((const char*)serverid, SCANF_HEX_LONG_U, &n);
     if (n == 0)
 	rettv->vval.v_number = -1;
     else
@@ -15211,7 +15217,7 @@ f_remote_read(typval_T* argvars, typval_T* rettv)
 	/* The server's HWND is encoded in the 'id' parameter */
 	long_u		n = 0;
 
-	sscanf(serverid, SCANF_HEX_LONG_U, &n);
+	sscanf((const char*)serverid, SCANF_HEX_LONG_U, &n);
 	if (n != 0)
 	    r = serverGetReply((HWND)n, FALSE, TRUE, TRUE);
 	if (r == NULL)
@@ -18559,7 +18565,7 @@ error:
     ga_grow(&ga, 1);
     ga_append(&ga, NUL);
 
-    rettv->vval.v_string = ga.ga_data;
+    rettv->vval.v_string = (char_u*)ga.ga_data;
 }
 
 #ifdef FEAT_FLOAT
@@ -18840,7 +18846,7 @@ f_winrestcmd(typval_T* argvars, typval_T* rettv)
     }
     ga_append(&ga, NUL);
 
-    rettv->vval.v_string = ga.ga_data;
+    rettv->vval.v_string = (char_u*)ga.ga_data;
 #else
     rettv->vval.v_string = NULL;
 #endif
@@ -23721,7 +23727,7 @@ get_short_pathname(
     char_u	*newbuf;
 
     len = *fnamelen;
-    l = GetShortPathName(*fnamep, *fnamep, len);
+    l = GetShortPathName((char*)*fnamep, (char*)*fnamep, len);
     if (l > len - 1)
     {
 	/* If that doesn't work (not enough space), then save the string
@@ -23734,7 +23740,7 @@ get_short_pathname(
 	*fnamep = *bufp = newbuf;
 
 	/* Really should always succeed, as the buffer is big enough. */
-	l = GetShortPathName(*fnamep, *fnamep, l+1);
+	l = GetShortPathName((char*)*fnamep, (char*)*fnamep, l+1);
     }
 
     *fnamelen = l;
@@ -24033,7 +24039,7 @@ repeat:
 	    p = alloc(_MAX_PATH + 1);
 	    if (p != NULL)
 	    {
-		if (GetLongPathName(*fnamep, p, MAXPATHL))
+		if (GetLongPathName((char*)*fnamep, (char*)p, MAXPATHL))
 		{
 		    vim_free(*bufp);
 		    *bufp = *fnamep = p;
@@ -24421,3 +24427,6 @@ do_string_sub(char_u* str, char_u* pat, char_u* sub, char_u* flags)
 }
 
 #endif /* defined(FEAT_MODIFY_FNAME) || defined(FEAT_EVAL) */
+
+#include "end_ns_vim.h"
+

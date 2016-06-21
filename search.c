@@ -236,8 +236,8 @@ get_search_pat()
  * Returns the allocated string, NULL when out of memory.
  */
     char_u *
-reverse_text(s)
-    char_u *s;
+reverse_text(char_u* s)
+    //char_u *s;
 {
     unsigned	len;
     unsigned	s_i, rev_i;
@@ -1022,8 +1022,8 @@ searchit /*(win, buf, pos, dir, pat, count, options, pat_use, stop_lnum, tm)*/
 
 #ifdef FEAT_EVAL
     void
-set_search_direction(cdir)
-    int		cdir;
+set_search_direction(int cdir)
+    //int		cdir;
 {
     spats[0].off.dir = cdir;
 }

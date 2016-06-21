@@ -51,7 +51,7 @@ int find_cmdline_var __ARGS((char_u *src, int *usedlen));
 char_u *eval_vars __ARGS((char_u *src, char_u *srcstart, int *usedlen, linenr_T *lnump, char_u **errormsg, int *escaped));
 char_u *expand_sfile __ARGS((char_u *arg));
 int put_eol __ARGS((FILE *fd));
-int put_line __ARGS((FILE *fd, char *s));
+int put_line __ARGS((FILE *fd, const char *s));
 void dialog_msg __ARGS((char_u *buff, char *format, char_u *fname));
 char_u *get_behave_arg __ARGS((expand_T *xp, int idx));
 /* vim: set ft=c : */

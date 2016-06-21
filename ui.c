@@ -83,24 +83,24 @@ ui_inchar_undo /*(s, len)*/
     int		len
     )
 {
-    char_u  *new;
+    char_u  *my_new;
     int	    newlen;
 
     newlen = len;
     if (ta_str != NULL)
 	newlen += ta_len - ta_off;
-    new = alloc(newlen);
-    if (new != NULL)
+    my_new = alloc(newlen);
+    if (my_new != NULL)
     {
 	if (ta_str != NULL)
 	{
-	    mch_memmove(new, ta_str + ta_off, (size_t)(ta_len - ta_off));
-	    mch_memmove(new + ta_len - ta_off, s, (size_t)len);
+	    mch_memmove(my_new, ta_str + ta_off, (size_t)(ta_len - ta_off));
+	    mch_memmove(my_new + ta_len - ta_off, s, (size_t)len);
 	    vim_free(ta_str);
 	}
 	else
-	    mch_memmove(new, s, (size_t)len);
-	ta_str = new;
+	    mch_memmove(my_new, s, (size_t)len);
+	ta_str = my_new;
 	ta_len = newlen;
 	ta_off = 0;
     }

@@ -13,6 +13,10 @@
 
 #include "vim.h"
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #if defined(FEAT_CRYPT)
 
 #define ARRAY_LENGTH(A)      (sizeof(A)/sizeof(A[0]))
@@ -684,3 +688,6 @@ blowfish_self_test()
 }
 
 #endif /* FEAT_CRYPT */
+
+#include "end_ns_vim.h"
+

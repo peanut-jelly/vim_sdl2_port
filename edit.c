@@ -13,6 +13,11 @@
 
 #include "vim.h"
 
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #ifdef FEAT_INS_EXPAND
 /*
  * definitions used for CTRL-X submode
@@ -39,7 +44,7 @@
 
 static char *ctrl_x_msgs[] =
 {
-    N_(" Keyword completion (^N^P)"), /* ctrl_x_mode == 0, ^P/^N compl. */
+    N_(" Keyword completion (^N^P)"), /* ctrl_x_mode == 0, ^P/^N m_compl. */
     N_(" ^X mode (^]^D^E^F^I^K^L^N^O^Ps^U^V^Y)"),
     NULL,
     N_(" Whole line completion (^L^N^P)"),
@@ -2851,20 +2856,25 @@ pum_wanted()
     static int
 pum_enough_matches()
 {
-    compl_T     *compl;
+    //int *m_compl;
+    //compl_S* m_compl;
     int		i;
+    compl_T *m_compl;
 
+#ifdef m_compl
+#error herefaf
+#endif
     /* Don't display the popup menu if there are no matches or there is only
      * one (ignoring the original text). */
-    compl = compl_first_match;
+    m_compl = compl_first_match;
     i = 0;
     do
     {
-	if (compl == NULL
-		      || ((compl->cp_flags & ORIGINAL_TEXT) == 0 && ++i == 2))
+	if (m_compl == NULL
+		      || ((m_compl->cp_flags & ORIGINAL_TEXT) == 0 && ++i == 2))
 	    break;
-	compl = compl->cp_next;
-    } while (compl != compl_first_match);
+	m_compl = m_compl->cp_next;
+    } while (m_compl != compl_first_match);
 
     if (strstr((char *)p_cot, "menuone") != NULL)
 	return (i >= 1);
@@ -2878,7 +2888,7 @@ pum_enough_matches()
     void
 ins_compl_show_pum()
 {
-    compl_T     *compl;
+    compl_T     *m_compl;
     compl_T     *shown_compl = NULL;
     int		did_find_shown_match = FALSE;
     int		shown_match_ok = FALSE;
@@ -2902,17 +2912,17 @@ ins_compl_show_pum()
     {
 	/* Need to build the popup menu list. */
 	compl_match_arraysize = 0;
-	compl = compl_first_match;
+	m_compl = compl_first_match;
 	if (compl_leader != NULL)
 	    lead_len = (int)STRLEN(compl_leader);
 	do
 	{
-	    if ((compl->cp_flags & ORIGINAL_TEXT) == 0
+	    if ((m_compl->cp_flags & ORIGINAL_TEXT) == 0
 		    && (compl_leader == NULL
-			|| ins_compl_equal(compl, compl_leader, lead_len)))
+			|| ins_compl_equal(m_compl, compl_leader, lead_len)))
 		++compl_match_arraysize;
-	    compl = compl->cp_next;
-	} while (compl != NULL && compl != compl_first_match);
+	    m_compl = m_compl->cp_next;
+	} while (m_compl != NULL && m_compl != compl_first_match);
 	if (compl_match_arraysize == 0)
 	    return;
 	compl_match_array = (pumitem_T *)alloc_clear(
@@ -2926,51 +2936,51 @@ ins_compl_show_pum()
 		shown_match_ok = TRUE;
 
 	    i = 0;
-	    compl = compl_first_match;
+	    m_compl = compl_first_match;
 	    do
 	    {
-		if ((compl->cp_flags & ORIGINAL_TEXT) == 0
+		if ((m_compl->cp_flags & ORIGINAL_TEXT) == 0
 			&& (compl_leader == NULL
-			    || ins_compl_equal(compl, compl_leader, lead_len)))
+			    || ins_compl_equal(m_compl, compl_leader, lead_len)))
 		{
 		    if (!shown_match_ok)
 		    {
-			if (compl == compl_shown_match || did_find_shown_match)
+			if (m_compl == compl_shown_match || did_find_shown_match)
 			{
 			    /* This item is the shown match or this is the
 			     * first displayed item after the shown match. */
-			    compl_shown_match = compl;
+			    compl_shown_match = m_compl;
 			    did_find_shown_match = TRUE;
 			    shown_match_ok = TRUE;
 			}
 			else
 			    /* Remember this displayed match for when the
 			     * shown match is just below it. */
-			    shown_compl = compl;
+			    shown_compl = m_compl;
 			cur = i;
 		    }
 
-		    if (compl->cp_text[CPT_ABBR] != NULL)
+		    if (m_compl->cp_text[CPT_ABBR] != NULL)
 			compl_match_array[i].pum_text =
-						     compl->cp_text[CPT_ABBR];
+						     m_compl->cp_text[CPT_ABBR];
 		    else
-			compl_match_array[i].pum_text = compl->cp_str;
-		    compl_match_array[i].pum_kind = compl->cp_text[CPT_KIND];
-		    compl_match_array[i].pum_info = compl->cp_text[CPT_INFO];
-		    if (compl->cp_text[CPT_MENU] != NULL)
+			compl_match_array[i].pum_text = m_compl->cp_str;
+		    compl_match_array[i].pum_kind = m_compl->cp_text[CPT_KIND];
+		    compl_match_array[i].pum_info = m_compl->cp_text[CPT_INFO];
+		    if (m_compl->cp_text[CPT_MENU] != NULL)
 			compl_match_array[i++].pum_extra =
-						     compl->cp_text[CPT_MENU];
+						     m_compl->cp_text[CPT_MENU];
 		    else
-			compl_match_array[i++].pum_extra = compl->cp_fname;
+			compl_match_array[i++].pum_extra = m_compl->cp_fname;
 		}
 
-		if (compl == compl_shown_match)
+		if (m_compl == compl_shown_match)
 		{
 		    did_find_shown_match = TRUE;
 
 		    /* When the original text is the shown match don't set
 		     * compl_shown_match. */
-		    if (compl->cp_flags & ORIGINAL_TEXT)
+		    if (m_compl->cp_flags & ORIGINAL_TEXT)
 			shown_match_ok = TRUE;
 
 		    if (!shown_match_ok && shown_compl != NULL)
@@ -2981,8 +2991,8 @@ ins_compl_show_pum()
 			shown_match_ok = TRUE;
 		    }
 		}
-		compl = compl->cp_next;
-	    } while (compl != NULL && compl != compl_first_match);
+		m_compl = m_compl->cp_next;
+	    } while (m_compl != NULL && m_compl != compl_first_match);
 
 	    if (!shown_match_ok)    /* no displayed match at all */
 		cur = -1;
@@ -6482,7 +6492,7 @@ auto_format(int trailblank, int prev_line)
     pos_T	pos;
     colnr_T	len;
     char_u	*old;
-    char_u	*new, *pnew;
+    char_u	*m_new, *pnew;
     int		wasatend;
     int		cc;
 
@@ -6561,11 +6571,11 @@ auto_format(int trailblank, int prev_line)
      * formatted. */
     if (!wasatend && has_format_option(FO_WHITE_PAR))
     {
-	new = ml_get_curline();
-	len = (colnr_T)STRLEN(new);
+	m_new = ml_get_curline();
+	len = (colnr_T)STRLEN(m_new);
 	if (curwin->w_cursor.col == len)
 	{
-	    pnew = vim_strnsave(new, len + 2);
+	    pnew = vim_strnsave(m_new, len + 2);
 	    pnew[len] = ' ';
 	    pnew[len + 1] = NUL;
 	    ml_replace(curwin->w_cursor.lnum, pnew, FALSE);
@@ -10251,3 +10261,6 @@ do_insert_char_pre(int c)
     return res;
 }
 #endif
+
+#include "end_ns_vim.h"
+

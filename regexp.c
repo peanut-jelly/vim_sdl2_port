@@ -342,11 +342,11 @@ toggle_Magic /*(x)*/
 
 /* Used for an error (down from) vim_regcomp(): give the error message, set
  * rc_did_emsg and return NULL */
-#define EMSG_RET_NULL(m) return (EMSG(m), rc_did_emsg = TRUE, (void *)NULL)
+#define EMSG_RET_NULL(m,T) return (EMSG(m), rc_did_emsg = TRUE, (T)NULL)
 #define EMSG_RET_FAIL(m) return (EMSG(m), rc_did_emsg = TRUE, FAIL)
-#define EMSG2_RET_NULL(m, c) return (EMSG2((m), (c) ? "" : "\\"), rc_did_emsg = TRUE, (void *)NULL)
+#define EMSG2_RET_NULL(m, c, T) return (EMSG2((m), (c) ? "" : "\\"), rc_did_emsg = TRUE, (T)NULL)
 #define EMSG2_RET_FAIL(m, c) return (EMSG2((m), (c) ? "" : "\\"), rc_did_emsg = TRUE, FAIL)
-#define EMSG_ONE_RET_NULL EMSG2_RET_NULL(_("E369: invalid item in %s%%[]"), reg_magic == MAGIC_ALL)
+#define EMSG_ONE_RET_NULL(T) EMSG2_RET_NULL(_("E369: invalid item in %s%%[]"), reg_magic == MAGIC_ALL, T)
 
 #define MAX_LIMIT	(32767L << 16L)
 
@@ -738,8 +738,8 @@ static int	read_limits __ARGS((long *, long *));
 static void	regtail __ARGS((char_u *, char_u *));
 static void	regoptail __ARGS((char_u *, char_u *));
 
-static regengine_T bt_regengine;
-static regengine_T nfa_regengine;
+//static regengine_T bt_regengine;
+extern regengine_T nfa_regengine;
 
 /*
  * Return TRUE if compiled regular expression "prog" can match a line break.
@@ -1324,162 +1324,6 @@ skip_regexp /*(startp, dirc, magic, newp)*/
 static regprog_T  *bt_regcomp __ARGS((char_u *expr, int re_flags));
 static void bt_regfree __ARGS((regprog_T *prog));
 
-/*
- * bt_regcomp() - compile a regular expression into internal code for the
- * traditional back track matcher.
- * Returns the program in allocated space.  Returns NULL for an error.
- *
- * We can't allocate space until we know how big the compiled form will be,
- * but we can't compile it (and thus know how big it is) until we've got a
- * place to put the code.  So we cheat:  we compile it twice, once with code
- * generation turned off and size counting turned on, and once "for real".
- * This also means that we don't allocate space until we are sure that the
- * thing really will compile successfully, and we never have to move the
- * code and thus invalidate pointers into it.  (Note that it has to be in
- * one piece because vim_free() must be able to free it all.)
- *
- * Whether upper/lower case is to be ignored is decided when executing the
- * program, it does not matter here.
- *
- * Beware that the optimization-preparation code in here knows about some
- * of the structure of the compiled regexp.
- * "re_flags": RE_MAGIC and/or RE_STRING.
- */
-    static regprog_T *
-bt_regcomp /*(expr, re_flags)*/
-    (
-    char_u	*expr,
-    int		re_flags
-    )
-{
-    bt_regprog_T    *r;
-    char_u	*scan;
-    char_u	*longest;
-    int		len;
-    int		flags;
-
-    if (expr == NULL)
-	EMSG_RET_NULL(_(e_null));
-
-    init_class_tab();
-
-    /*
-     * First pass: determine size, legality.
-     */
-    regcomp_start(expr, re_flags);
-    regcode = JUST_CALC_SIZE;
-    regc(REGMAGIC);
-    if (reg(REG_NOPAREN, &flags) == NULL)
-	return NULL;
-
-    /* Small enough for pointer-storage convention? */
-#ifdef SMALL_MALLOC		/* 16 bit storage allocation */
-    if (regsize >= 65536L - 256L)
-	EMSG_RET_NULL(_("E339: Pattern too long"));
-#endif
-
-    /* Allocate space. */
-    r = (bt_regprog_T *)lalloc(sizeof(bt_regprog_T) + regsize, TRUE);
-    if (r == NULL)
-	return NULL;
-
-    /*
-     * Second pass: emit code.
-     */
-    regcomp_start(expr, re_flags);
-    regcode = r->program;
-    regc(REGMAGIC);
-    if (reg(REG_NOPAREN, &flags) == NULL || reg_toolong)
-    {
-	vim_free(r);
-	if (reg_toolong)
-	    EMSG_RET_NULL(_("E339: Pattern too long"));
-	return NULL;
-    }
-
-    /* Dig out information for optimizations. */
-    r->regstart = NUL;		/* Worst-case defaults. */
-    r->reganch = 0;
-    r->regmust = NULL;
-    r->regmlen = 0;
-    r->regflags = regflags;
-    if (flags & HASNL)
-	r->regflags |= RF_HASNL;
-    if (flags & HASLOOKBH)
-	r->regflags |= RF_LOOKBH;
-#ifdef FEAT_SYN_HL
-    /* Remember whether this pattern has any \z specials in it. */
-    r->reghasz = re_has_z;
-#endif
-    scan = r->program + 1;	/* First BRANCH. */
-    if (OP(regnext(scan)) == END)   /* Only one top-level choice. */
-    {
-	scan = OPERAND(scan);
-
-	/* Starting-point info. */
-	if (OP(scan) == BOL || OP(scan) == RE_BOF)
-	{
-	    r->reganch++;
-	    scan = regnext(scan);
-	}
-
-	if (OP(scan) == EXACTLY)
-	{
-#ifdef FEAT_MBYTE
-	    if (has_mbyte)
-		r->regstart = (*mb_ptr2char)(OPERAND(scan));
-	    else
-#endif
-		r->regstart = *OPERAND(scan);
-	}
-	else if ((OP(scan) == BOW
-		    || OP(scan) == EOW
-		    || OP(scan) == NOTHING
-		    || OP(scan) == MOPEN + 0 || OP(scan) == NOPEN
-		    || OP(scan) == MCLOSE + 0 || OP(scan) == NCLOSE)
-		 && OP(regnext(scan)) == EXACTLY)
-	{
-#ifdef FEAT_MBYTE
-	    if (has_mbyte)
-		r->regstart = (*mb_ptr2char)(OPERAND(regnext(scan)));
-	    else
-#endif
-		r->regstart = *OPERAND(regnext(scan));
-	}
-
-	/*
-	 * If there's something expensive in the r.e., find the longest
-	 * literal string that must appear and make it the regmust.  Resolve
-	 * ties in favor of later strings, since the regstart check works
-	 * with the beginning of the r.e. and avoiding duplication
-	 * strengthens checking.  Not a strong reason, but sufficient in the
-	 * absence of others.
-	 */
-	/*
-	 * When the r.e. starts with BOW, it is faster to look for a regmust
-	 * first. Used a lot for "#" and "*" commands. (Added by mool).
-	 */
-	if ((flags & SPSTART || OP(scan) == BOW || OP(scan) == EOW)
-							  && !(flags & HASNL))
-	{
-	    longest = NULL;
-	    len = 0;
-	    for (; scan != NULL; scan = regnext(scan))
-		if (OP(scan) == EXACTLY && STRLEN(OPERAND(scan)) >= (size_t)len)
-		{
-		    longest = OPERAND(scan);
-		    len = (int)STRLEN(OPERAND(scan));
-		}
-	    r->regmust = longest;
-	    r->regmlen = len;
-	}
-    }
-#ifdef BT_REGEXP_DUMP
-    regdump(expr, r);
-#endif
-    r->engine = &bt_regengine;
-    return (regprog_T *)r;
-}
 
 /*
  * Free a compiled regexp program, returned by bt_regcomp().
@@ -1568,7 +1412,7 @@ reg /*(paren, flagp)*/
     {
 	/* Make a ZOPEN node. */
 	if (regnzpar >= NSUBEXP)
-	    EMSG_RET_NULL(_("E50: Too many \\z("));
+	    EMSG_RET_NULL(_("E50: Too many \\z("), char_u*);
 	parno = regnzpar;
 	regnzpar++;
 	ret = regnode(ZOPEN + parno);
@@ -1579,7 +1423,7 @@ reg /*(paren, flagp)*/
     {
 	/* Make a MOPEN node. */
 	if (regnpar >= NSUBEXP)
-	    EMSG2_RET_NULL(_("E51: Too many %s("), reg_magic == MAGIC_ALL);
+	    EMSG2_RET_NULL(_("E51: Too many %s("), reg_magic == MAGIC_ALL, char_u*);
 	parno = regnpar;
 	++regnpar;
 	ret = regnode(MOPEN + parno);
@@ -1636,20 +1480,20 @@ reg /*(paren, flagp)*/
     {
 #ifdef FEAT_SYN_HL
 	if (paren == REG_ZPAREN)
-	    EMSG_RET_NULL(_("E52: Unmatched \\z("));
+	    EMSG_RET_NULL(_("E52: Unmatched \\z("), char_u*);
 	else
 #endif
 	    if (paren == REG_NPAREN)
-	    EMSG2_RET_NULL(_(e_unmatchedpp), reg_magic == MAGIC_ALL);
+	    EMSG2_RET_NULL(_(e_unmatchedpp), reg_magic == MAGIC_ALL, char_u*);
 	else
-	    EMSG2_RET_NULL(_(e_unmatchedp), reg_magic == MAGIC_ALL);
+	    EMSG2_RET_NULL(_(e_unmatchedp), reg_magic == MAGIC_ALL, char_u*);
     }
     else if (paren == REG_NOPAREN && peekchr() != NUL)
     {
 	if (curchr == Magic(')'))
-	    EMSG2_RET_NULL(_(e_unmatchedpar), reg_magic == MAGIC_ALL);
+	    EMSG2_RET_NULL(_(e_unmatchedpar), reg_magic == MAGIC_ALL, char_u*);
 	else
-	    EMSG_RET_NULL(_(e_trailing));	/* "Can't happen". */
+	    EMSG_RET_NULL(_(e_trailing), char_u*);	/* "Can't happen". */
 	/* NOTREACHED */
     }
     /*
@@ -1874,7 +1718,7 @@ regpiece /*(flagp)*/
 		}
 		if (lop == END)
 		    EMSG2_RET_NULL(_("E59: invalid character after %s@"),
-						      reg_magic == MAGIC_ALL);
+                            reg_magic == MAGIC_ALL, char_u*);
 		/* Look behind must match with behind_pos. */
 		if (lop == BEHIND || lop == NOBEHIND)
 		{
@@ -1915,7 +1759,7 @@ regpiece /*(flagp)*/
 	    {
 		if (num_complex_braces >= 10)
 		    EMSG2_RET_NULL(_("E60: Too many complex %s{...}s"),
-						      reg_magic == MAGIC_ALL);
+                            reg_magic == MAGIC_ALL, char_u*);
 		reginsert(BRACE_COMPLEX + num_complex_braces, ret);
 		regoptail(ret, regnode(BACK));
 		regoptail(ret, ret);
@@ -1935,7 +1779,7 @@ regpiece /*(flagp)*/
 	else
 	    sprintf((char *)IObuff, _("E62: Nested %s%c"),
 		reg_magic == MAGIC_ALL ? "" : "\\", no_Magic(peekchr()));
-	EMSG_RET_NULL(IObuff);
+	EMSG_RET_NULL(IObuff, char_u*);
     }
 
     return ret;
@@ -2054,7 +1898,7 @@ regatom /*(flagp)*/
       case Magic('U'):
 	p = vim_strchr(classchars, no_Magic(c));
 	if (p == NULL)
-	    EMSG_RET_NULL(_("E63: invalid use of \\_"));
+	    EMSG_RET_NULL(_("E63: invalid use of \\_"), char_u*);
 #ifdef FEAT_MBYTE
 	/* When '.' is followed by a composing char ignore the dot, so that
 	 * the composing char is matched here. */
@@ -2087,7 +1931,7 @@ regatom /*(flagp)*/
 
       case Magic('('):
 	if (one_exactly)
-	    EMSG_ONE_RET_NULL;
+	    EMSG_ONE_RET_NULL(char_u*);
 	ret = reg(REG_PAREN, &flags);
 	if (ret == NULL)
 	    return NULL;
@@ -2099,8 +1943,8 @@ regatom /*(flagp)*/
       case Magic('&'):
       case Magic(')'):
 	if (one_exactly)
-	    EMSG_ONE_RET_NULL;
-	EMSG_RET_NULL(_(e_internal));	/* Supposed to be caught earlier. */
+	    EMSG_ONE_RET_NULL(char_u*);
+	EMSG_RET_NULL(_(e_internal), char_u*);	/* Supposed to be caught earlier. */
 	/* NOTREACHED */
 
       case Magic('='):
@@ -2113,7 +1957,7 @@ regatom /*(flagp)*/
 	sprintf((char *)IObuff, _("E64: %s%c follows nothing"),
 		(c == '*' ? reg_magic >= MAGIC_ON : reg_magic == MAGIC_ALL)
 		? "" : "\\", c);
-	EMSG_RET_NULL(IObuff);
+	EMSG_RET_NULL(IObuff, char_u*);
 	/* NOTREACHED */
 
       case Magic('~'):		/* previous substitute pattern */
@@ -2134,7 +1978,7 @@ regatom /*(flagp)*/
 		}
 	    }
 	    else
-		EMSG_RET_NULL(_(e_nopresub));
+		EMSG_RET_NULL(_(e_nopresub), char_u*);
 	    break;
 
       case Magic('1'):
@@ -2166,7 +2010,7 @@ regatom /*(flagp)*/
 					      && (p[2] == '!' || p[2] == '='))
 			    break;
 		    if (*p == NUL)
-			EMSG_RET_NULL(_("E65: Illegal back reference"));
+			EMSG_RET_NULL(_("E65: Illegal back reference"), char_u*);
 		}
 		ret = regnode(BACKREF + refnum);
 	    }
@@ -2179,9 +2023,9 @@ regatom /*(flagp)*/
 	    {
 #ifdef FEAT_SYN_HL
 		case '(': if (reg_do_extmatch != REX_SET)
-			      EMSG_RET_NULL(_(e_z_not_allowed));
+			      EMSG_RET_NULL(_(e_z_not_allowed), char_u*);
 			  if (one_exactly)
-			      EMSG_ONE_RET_NULL;
+			      EMSG_ONE_RET_NULL(char_u*);
 			  ret = reg(REG_ZPAREN, &flags);
 			  if (ret == NULL)
 			      return NULL;
@@ -2198,7 +2042,7 @@ regatom /*(flagp)*/
 		case '7':
 		case '8':
 		case '9': if (reg_do_extmatch != REX_USE)
-			      EMSG_RET_NULL(_(e_z1_not_allowed));
+			      EMSG_RET_NULL(_(e_z1_not_allowed), char_u*);
 			  ret = regnode(ZREF + c - '0');
 			  re_has_z = REX_USE;
 			  break;
@@ -2210,7 +2054,7 @@ regatom /*(flagp)*/
 		case 'e': ret = regnode(MCLOSE + 0);
 			  break;
 
-		default:  EMSG_RET_NULL(_("E68: Invalid character after \\z"));
+		default:  EMSG_RET_NULL(_("E68: Invalid character after \\z"), char_u*);
 	    }
 	}
 	break;
@@ -2223,7 +2067,7 @@ regatom /*(flagp)*/
 		/* () without a back reference */
 		case '(':
 		    if (one_exactly)
-			EMSG_ONE_RET_NULL;
+			EMSG_ONE_RET_NULL(char_u*);
 		    ret = reg(REG_NPAREN, &flags);
 		    if (ret == NULL)
 			return NULL;
@@ -2252,7 +2096,7 @@ regatom /*(flagp)*/
 		 * branch which matches nothing. */
 		case '[':
 			  if (one_exactly)	/* doesn't nest */
-			      EMSG_ONE_RET_NULL;
+			      EMSG_ONE_RET_NULL(char_u*);
 			  {
 			      char_u	*lastbranch;
 			      char_u	*lastnode = NULL;
@@ -2263,7 +2107,7 @@ regatom /*(flagp)*/
 			      {
 				  if (c == NUL)
 				      EMSG2_RET_NULL(_(e_missing_sb),
-						      reg_magic == MAGIC_ALL);
+                                              reg_magic == MAGIC_ALL, char_u*);
 				  br = regnode(BRANCH);
 				  if (ret == NULL)
 				      ret = br;
@@ -2279,7 +2123,7 @@ regatom /*(flagp)*/
 			      }
 			      if (ret == NULL)
 				  EMSG2_RET_NULL(_(e_empty_sb),
-						      reg_magic == MAGIC_ALL);
+                                          reg_magic == MAGIC_ALL, char_u*);
 			      lastbranch = regnode(BRANCH);
 			      br = regnode(NOTHING);
 			      if (ret != JUST_CALC_SIZE)
@@ -2324,7 +2168,7 @@ regatom /*(flagp)*/
 			      if (i < 0)
 				  EMSG2_RET_NULL(
 					_("E678: Invalid character after %s%%[dxouU]"),
-					reg_magic == MAGIC_ALL);
+                                        reg_magic == MAGIC_ALL, char_u*);
 #ifdef FEAT_MBYTE
 			      if (use_multibytecode(i))
 				  ret = regnode(MULTIBYTECODE);
@@ -2395,7 +2239,7 @@ regatom /*(flagp)*/
 			  }
 
 			  EMSG2_RET_NULL(_("E71: Invalid character after %s%%"),
-						      reg_magic == MAGIC_ALL);
+                                  reg_magic == MAGIC_ALL, char_u*);
 	    }
 	}
 	break;
@@ -2469,14 +2313,14 @@ collection:
 				endc = coll_get_char();
 
 			    if (startc > endc)
-				EMSG_RET_NULL(_(e_invrange));
+				EMSG_RET_NULL(_(e_invrange), char_u*);
 #ifdef FEAT_MBYTE
 			    if (has_mbyte && ((*mb_char2len)(startc) > 1
 						 || (*mb_char2len)(endc) > 1))
 			    {
 				/* Limit to a range of 256 chars */
 				if (endc > startc + 256)
-				    EMSG_RET_NULL(_(e_invrange));
+				    EMSG_RET_NULL(_(e_invrange), char_u*);
 				while (++startc <= endc)
 				    regmbc(startc);
 			    }
@@ -2683,13 +2527,13 @@ collection:
 		regc(NUL);
 		prevchr_len = 1;	/* last char was the ']' */
 		if (*regparse != ']')
-		    EMSG_RET_NULL(_(e_toomsbra));	/* Cannot happen? */
+		    EMSG_RET_NULL(_(e_toomsbra), char_u*);	/* Cannot happen? */
 		skipchr();	    /* let's be friends with the lexer again */
 		*flagp |= HASWIDTH | SIMPLE;
 		break;
 	    }
 	    else if (reg_strict)
-		EMSG2_RET_NULL(_(e_missingbracket), reg_magic > MAGIC_OFF);
+		EMSG2_RET_NULL(_(e_missingbracket), reg_magic > MAGIC_OFF, char_u*);
 	}
 	/* FALLTHROUGH */
 
@@ -6310,27 +6154,6 @@ regnext /*(p)*/
 	return p + offset;
 }
 
-/*
- * Check the regexp program for its magic number.
- * Return TRUE if it's wrong.
- */
-    static int
-prog_magic_wrong()
-{
-    regprog_T	*prog;
-
-    prog = REG_MULTI ? reg_mmatch->regprog : reg_match->regprog;
-    if (prog->engine == &nfa_regengine)
-	/* For NFA matcher we don't check the magic */
-	return FALSE;
-
-    if (UCHARAT(((bt_regprog_T *)prog)->program) != REGMAGIC)
-    {
-	EMSG(_(e_re_corr));
-	return TRUE;
-    }
-    return FALSE;
-}
 
 /*
  * Cleanup the subexpressions, if this wasn't done yet.
@@ -8063,10 +7886,167 @@ static regengine_T bt_regengine =
 #endif
 };
 
+/*
+ * bt_regcomp() - compile a regular expression into internal code for the
+ * traditional back track matcher.
+ * Returns the program in allocated space.  Returns NULL for an error.
+ *
+ * We can't allocate space until we know how big the compiled form will be,
+ * but we can't compile it (and thus know how big it is) until we've got a
+ * place to put the code.  So we cheat:  we compile it twice, once with code
+ * generation turned off and size counting turned on, and once "for real".
+ * This also means that we don't allocate space until we are sure that the
+ * thing really will compile successfully, and we never have to move the
+ * code and thus invalidate pointers into it.  (Note that it has to be in
+ * one piece because vim_free() must be able to free it all.)
+ *
+ * Whether upper/lower case is to be ignored is decided when executing the
+ * program, it does not matter here.
+ *
+ * Beware that the optimization-preparation code in here knows about some
+ * of the structure of the compiled regexp.
+ * "re_flags": RE_MAGIC and/or RE_STRING.
+ */
+    static regprog_T *
+bt_regcomp /*(expr, re_flags)*/
+    (
+    char_u	*expr,
+    int		re_flags
+    )
+{
+    bt_regprog_T    *r;
+    char_u	*scan;
+    char_u	*longest;
+    int		len;
+    int		flags;
+
+    if (expr == NULL)
+	EMSG_RET_NULL(_(e_null), regprog_T*);
+
+    init_class_tab();
+
+    /*
+     * First pass: determine size, legality.
+     */
+    regcomp_start(expr, re_flags);
+    regcode = JUST_CALC_SIZE;
+    regc(REGMAGIC);
+    if (reg(REG_NOPAREN, &flags) == NULL)
+	return NULL;
+
+    /* Small enough for pointer-storage convention? */
+#ifdef SMALL_MALLOC		/* 16 bit storage allocation */
+    if (regsize >= 65536L - 256L)
+	EMSG_RET_NULL(_("E339: Pattern too long"));
+#endif
+
+    /* Allocate space. */
+    r = (bt_regprog_T *)lalloc(sizeof(bt_regprog_T) + regsize, TRUE);
+    if (r == NULL)
+	return NULL;
+
+    /*
+     * Second pass: emit code.
+     */
+    regcomp_start(expr, re_flags);
+    regcode = r->program;
+    regc(REGMAGIC);
+    if (reg(REG_NOPAREN, &flags) == NULL || reg_toolong)
+    {
+	vim_free(r);
+	if (reg_toolong)
+	    EMSG_RET_NULL(_("E339: Pattern too long"), regprog_T*);
+	return NULL;
+    }
+
+    /* Dig out information for optimizations. */
+    r->regstart = NUL;		/* Worst-case defaults. */
+    r->reganch = 0;
+    r->regmust = NULL;
+    r->regmlen = 0;
+    r->regflags = regflags;
+    if (flags & HASNL)
+	r->regflags |= RF_HASNL;
+    if (flags & HASLOOKBH)
+	r->regflags |= RF_LOOKBH;
+#ifdef FEAT_SYN_HL
+    /* Remember whether this pattern has any \z specials in it. */
+    r->reghasz = re_has_z;
+#endif
+    scan = r->program + 1;	/* First BRANCH. */
+    if (OP(regnext(scan)) == END)   /* Only one top-level choice. */
+    {
+	scan = OPERAND(scan);
+
+	/* Starting-point info. */
+	if (OP(scan) == BOL || OP(scan) == RE_BOF)
+	{
+	    r->reganch++;
+	    scan = regnext(scan);
+	}
+
+	if (OP(scan) == EXACTLY)
+	{
+#ifdef FEAT_MBYTE
+	    if (has_mbyte)
+		r->regstart = (*mb_ptr2char)(OPERAND(scan));
+	    else
+#endif
+		r->regstart = *OPERAND(scan);
+	}
+	else if ((OP(scan) == BOW
+		    || OP(scan) == EOW
+		    || OP(scan) == NOTHING
+		    || OP(scan) == MOPEN + 0 || OP(scan) == NOPEN
+		    || OP(scan) == MCLOSE + 0 || OP(scan) == NCLOSE)
+		 && OP(regnext(scan)) == EXACTLY)
+	{
+#ifdef FEAT_MBYTE
+	    if (has_mbyte)
+		r->regstart = (*mb_ptr2char)(OPERAND(regnext(scan)));
+	    else
+#endif
+		r->regstart = *OPERAND(regnext(scan));
+	}
+
+	/*
+	 * If there's something expensive in the r.e., find the longest
+	 * literal string that must appear and make it the regmust.  Resolve
+	 * ties in favor of later strings, since the regstart check works
+	 * with the beginning of the r.e. and avoiding duplication
+	 * strengthens checking.  Not a strong reason, but sufficient in the
+	 * absence of others.
+	 */
+	/*
+	 * When the r.e. starts with BOW, it is faster to look for a regmust
+	 * first. Used a lot for "#" and "*" commands. (Added by mool).
+	 */
+	if ((flags & SPSTART || OP(scan) == BOW || OP(scan) == EOW)
+							  && !(flags & HASNL))
+	{
+	    longest = NULL;
+	    len = 0;
+	    for (; scan != NULL; scan = regnext(scan))
+		if (OP(scan) == EXACTLY && STRLEN(OPERAND(scan)) >= (size_t)len)
+		{
+		    longest = OPERAND(scan);
+		    len = (int)STRLEN(OPERAND(scan));
+		}
+	    r->regmust = longest;
+	    r->regmlen = len;
+	}
+    }
+#ifdef BT_REGEXP_DUMP
+    regdump(expr, r);
+#endif
+    r->engine = &bt_regengine;
+    return (regprog_T *)r;
+}
+
 
 #include "regexp_nfa.c"
 
-static regengine_T nfa_regengine =
+regengine_T nfa_regengine =
 {
     nfa_regcomp,
     nfa_regfree,
@@ -8080,6 +8060,29 @@ static regengine_T nfa_regengine =
     ,(char_u *)""
 #endif
 };
+
+/*
+ * Check the regexp program for its magic number.
+ * Return TRUE if it's wrong.
+ */
+    static int
+prog_magic_wrong()
+{
+    regprog_T	*prog;
+
+    prog = REG_MULTI ? reg_mmatch->regprog : reg_match->regprog;
+    if (prog->engine == &nfa_regengine)
+	/* For NFA matcher we don't check the magic */
+	return FALSE;
+
+    if (UCHARAT(((bt_regprog_T *)prog)->program) != REGMAGIC)
+    {
+	EMSG(_(e_re_corr));
+	return TRUE;
+    }
+    return FALSE;
+}
+
 
 /* Which regexp engine to use? Needed for vim_regcomp().
  * Must match with 'regexpengine'. */

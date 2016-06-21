@@ -26,6 +26,12 @@
  *    long name of the command.
  */
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #ifdef RANGE
 # undef RANGE			/* SASC on Amiga defines it */
 #endif
@@ -1202,3 +1208,7 @@ struct exarg
 #define EXFLAG_PRINT	0x04	/* 'p': print */
 
 #endif
+
+
+#include "end_ns_vim.h"
+

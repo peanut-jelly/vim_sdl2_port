@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 enum adapter_event_type
 {
     ADAPT_EVENT_BLINK,
@@ -230,9 +230,7 @@ extern int num_string_cells(char* start, char* end);
 #define myGetGValue(c) (((c)>>8)&0xff)
 #define myGetBValue(c) ((c)&0xff)
 
-#ifdef __cplusplus
-}
-#endif
 
+#include "end_ns_vim.h"
 #endif //_ADAPTER_SDL2_H_
 

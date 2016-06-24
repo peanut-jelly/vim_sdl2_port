@@ -13,6 +13,17 @@
 
 #include "vim.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 #if defined(FEAT_QUICKFIX) || defined(PROTO)
 
 struct dir_stack_T
@@ -4355,3 +4366,8 @@ ex_helpgrep /*(eap)*/
 }
 
 #endif /* FEAT_QUICKFIX */
+
+
+#include "end_ns_vim.h"
+
+

@@ -3,6 +3,12 @@
 
 #include <stdarg.h>
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #define Warn(msg) \
      do { \
         char _errMsg[200]; \
@@ -28,5 +34,8 @@ extern void fnWarn2(const char* msg1, const char* msg2);
 extern void fnWarnf(const char* fmt, ...);
 extern void fnErrorf(const char* fmt, ...);
 
+
+
+#include "end_ns_vim.h"
 #endif // _MOCK_H_
 

@@ -13,6 +13,17 @@
 
 #include "vim.h"
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 /*
  * Structure that stores information about a highlight group.
  * The ID of a highlight group is also called group ID.  It is the index in
@@ -10062,3 +10073,8 @@ free_highlight_fonts()
 /**************************************
  *  End of Highlighting stuff	      *
  **************************************/
+
+
+
+#include "end_ns_vim.h"
+

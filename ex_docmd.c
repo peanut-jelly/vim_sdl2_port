@@ -503,8 +503,12 @@ static void	ex_folddo __ARGS((exarg_T *eap));
  * Declare cmdnames[].
  */
 #define DO_DECLARE_EXCMD
+#include "end_ns_vim.h"
+
 #include "ex_cmds.h"
 
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
 /*
  * Table used to quickly search for a command, based on its first character.
  */

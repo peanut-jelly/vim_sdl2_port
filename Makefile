@@ -371,7 +371,8 @@ WINDRES_CC = $(CC)
 #>>>>> end of choices
 ###########################################################################
 
-CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall #-std=c++11 ####
+CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall -mthreads #-std=c++11 
+
 WINDRES_FLAGS = --preprocessor="$(WINDRES_CC) -E -xc" -DRC_INVOKED
 
 ifdef GETTEXT
@@ -708,10 +709,6 @@ all: $(TARGET) ## vimrun.exe xxd/xxd.exe  GvimExt/gvimext.dll
 $(TARGET): $(OUTDIR) $(OBJ)
 	$(CC) $(CFLAGS) $(LFLAGS) -o $@ $(OBJ) $(LIB) -lole32 -luuid $(LUA_LIB) $(MZSCHEME_LIBDIR) $(MZSCHEME_LIB) $(PYTHONLIB) $(PYTHON3LIB) $(RUBYLIB)
 
-upx: exes
-	upx gvim.exe
-	upx vim.exe
-
 mpress: exes
 	mpress gvim.exe
 	mpress vim.exe
@@ -830,12 +827,15 @@ ifneq (sh.exe, $(SHELL))
 	@echo creating pathdef.c
 	@echo '/* pathdef.c */' > pathdef.c
 	@echo '#include "vim.h"' >> pathdef.c
+	@echo '#include "assert_out_ns_vim.h"' >> pathdef.c
+	@echo '#include "begin_ns_vim.h"' >> pathdef.c
 	@echo 'char_u *default_vim_dir = (char_u *)"$(VIMRCLOC)";' >> pathdef.c
 	@echo 'char_u *default_vimruntime_dir = (char_u *)"$(VIMRUNTIMEDIR)";' >> pathdef.c
 	@echo 'char_u *all_cflags = (char_u *)"$(CC) $(CFLAGS)";' >> pathdef.c
 	@echo 'char_u *all_lflags = (char_u *)"$(CC) $(CFLAGS) $(LFLAGS) -o $(TARGET) $(LIB) -lole32 -luuid $(LUA_LIB) $(MZSCHEME_LIBDIR) $(MZSCHEME_LIB) $(PYTHONLIB) $(PYTHON3LIB) $(RUBYLIB)";' >> pathdef.c
 	@echo 'char_u *compiled_user = (char_u *)"$(USERNAME)";' >> pathdef.c
 	@echo 'char_u *compiled_sys = (char_u *)"$(USERDOMAIN)";' >> pathdef.c
+	@echo '#include "end_ns_vim.h"' >> pathdef.c
 else
 	@echo creating pathdef.c
 	@echo /* pathdef.c */ > pathdef.c

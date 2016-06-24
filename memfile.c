@@ -57,6 +57,8 @@
  */
 #ifdef AMIGA
 # ifdef FEAT_ARP
+
+#error in amiga
 extern int dos2;			/* this is in os_amiga.c */
 # endif
 # ifdef SASC
@@ -65,7 +67,25 @@ extern int dos2;			/* this is in os_amiga.c */
 # endif
 #endif
 
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
+
+
+
 #define MEMFILE_PAGE_SIZE 4096		/* default page size */
+
 
 static long_u	total_mem_used = 0;	/* total memory used for memfiles */
 
@@ -1642,3 +1662,7 @@ mf_hash_grow /*(mht)*/
 
     return OK;
 }
+
+
+#include "end_ns_vim.h"
+

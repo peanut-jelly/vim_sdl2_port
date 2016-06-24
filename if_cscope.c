@@ -20,6 +20,17 @@
 #endif
 #include "if_cscope.h"
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static void	    cs_usage_msg __ARGS((csid_e x));
 static int	    cs_add __ARGS((exarg_T *eap));
 static void	    cs_stat_emsg __ARGS((char *fname));
@@ -2684,3 +2695,6 @@ cs_end()
 #endif	/* FEAT_CSCOPE */
 
 /* the end */
+
+#include "end_ns_vim.h"
+

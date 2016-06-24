@@ -29,6 +29,15 @@
 #define	CSCOPE_DBFILE		"cscope.out"
 #define	CSCOPE_PROMPT		">> "
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 /*
  * s 0name	Find this C symbol
  * g 1name	Find this definition
@@ -81,6 +90,9 @@ typedef enum {
     Print
 } mcmd_e;
 
+
+
+#include "end_ns_vim.h"
 
 #endif	/* FEAT_CSCOPE */
 

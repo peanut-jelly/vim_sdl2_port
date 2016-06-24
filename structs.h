@@ -15,10 +15,23 @@
  * valid in include files.  Has been fixed in version 6.58.
  */
 #if defined(SASC) && SASC < 658
+#error SASC in use
 typedef long		linenr_T;
 typedef int		colnr_T;
 typedef unsigned short	short_u;
 #endif
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 
 /*
  * position in file or buffer
@@ -69,6 +82,18 @@ typedef struct frame_S		frame_T;
 typedef int			scid_T;		/* script ID */
 typedef struct file_buffer	buf_T;  /* forward declaration */
 
+
+
+
+
+
+
+#include "end_ns_vim.h"
+
+
+
+
+
 /*
  * This is here because regexp.h needs pos_T and below regprog_T is used.
  */
@@ -86,6 +111,22 @@ typedef struct file_buffer	buf_T;  /* forward declaration */
 # endif
 # define guicolor_T int		/* avoid error in prototypes */
 #endif
+
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
 
 /*
  * marks: positions in a file
@@ -916,6 +957,16 @@ typedef struct attr_entry
     } ae_u;
 } attrentry_T;
 
+
+
+
+
+#include "end_ns_vim.h"
+
+
+
+
+
 #ifdef USE_ICONV
 # ifdef HAVE_ICONV_H
 #  include <iconv.h>
@@ -923,9 +974,11 @@ typedef struct attr_entry
 #  if defined(MACOS_X)
 #   include <sys/errno.h>
 #   define EILSEQ ENOENT /* MacOS X does not have EILSEQ */
+#error here in structs.h, MACOS_X defined
 typedef struct _iconv_t *iconv_t;
 #  else
 #   if defined(MACOS_CLASSIC)
+#error MACOS_CLASSIC defined
 typedef struct _iconv_t *iconv_t;
 #    define EINVAL	22
 #    define E2BIG	7
@@ -939,6 +992,18 @@ typedef struct _iconv_t *iconv_t;
 typedef void *iconv_t;
 # endif
 #endif
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 
 /*
  * Used for the typeahead buffer: typebuf.
@@ -2540,3 +2605,11 @@ typedef struct {
   UINT32_T state[8];
   char_u   buffer[64];
 } context_sha256_T;
+
+
+
+
+#include "end_ns_vim.h"
+
+
+

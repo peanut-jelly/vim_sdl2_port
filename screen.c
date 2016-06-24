@@ -89,6 +89,21 @@
 
 #include "vim.h"
 
+
+
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #define MB_FILLER_CHAR '<'  /* character used when a double-width character
 			     * doesn't fit. */
 
@@ -10617,3 +10632,8 @@ screen_screenrow()
 {
     return screen_cur_row;
 }
+
+
+#include "end_ns_vim.h"
+
+

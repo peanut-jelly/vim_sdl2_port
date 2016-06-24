@@ -49,8 +49,20 @@
 #endif
 
 #if defined(SASC) || defined(__amigaos4__)
+#error SASC || __amigaos4__
 # include <proto/dos.h>	    /* for Open() and Close() */
 #endif
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 
 typedef struct block0		ZERO_BL;    /* contents of the first block */
 typedef struct pointer_block	PTR_BL;	    /* contents of a pointer block */
@@ -5411,3 +5423,9 @@ goto_byte /*(cnt)*/
 # endif
 }
 #endif
+
+
+
+
+#include "end_ns_vim.h"
+

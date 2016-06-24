@@ -311,6 +311,18 @@
 # include <time.h>	/* for time_t */
 #endif
 
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+    
+
 #define MAXWLEN 250		/* Assume max. word len is this many bytes.
 				   Some places assume a word length fits in a
 				   byte, thus it can't be above 255. */
@@ -16397,5 +16409,9 @@ expand_spelling /*(lnum, pat, matchp)*/
     return ga.ga_len;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
 
 #endif  /* FEAT_SPELL */

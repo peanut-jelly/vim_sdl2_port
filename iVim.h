@@ -11,6 +11,12 @@
 
 #include <SDL2/SDL.h>
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 extern int iVim_init(int w, int h, int argc, char** argv);
 
 /* @func iVim_setLogger
@@ -56,4 +62,5 @@ extern int iVim_quit();
 extern void iVim_showDebugWindow(int shown);
 
 
+#include "end_ns_vim.h"
 #endif

@@ -21,6 +21,15 @@
 
 
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 void send_keydown_to_adapter(SDL_KeyboardEvent key)
 {
 extern void process_sdl_key(int scancode, int k_modifiers);
@@ -182,3 +191,7 @@ k.keysym= (SDL_Keysym)
     };
 send_keydown_to_adapter(k);
 }
+
+
+#include "end_ns_vim.h"
+

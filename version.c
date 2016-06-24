@@ -27,6 +27,17 @@
 
 #include "version.h"
 
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 char		*Version = VIM_VERSION_SHORT;
 static char	*mediumVersion = VIM_VERSION_MEDIUM;
 
@@ -1415,3 +1426,9 @@ ex_intro /*(eap)*/
     intro_message(TRUE);
     wait_return(TRUE);
 }
+
+
+
+#include "end_ns_vim.h"
+
+

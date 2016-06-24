@@ -14,6 +14,16 @@
 
 #include "vim.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #if defined(FEAT_MENU) || defined(PROTO)
 
 #define MENUDEPTH   10		/* maximum depth of menus */
@@ -2651,3 +2661,8 @@ menu_translate_tab_and_shift /*(arg_start)*/
 }
 
 #endif /* FEAT_MENU */
+
+
+
+#include "end_ns_vim.h"
+

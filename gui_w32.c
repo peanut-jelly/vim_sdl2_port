@@ -51,6 +51,9 @@
  */
 #include "gui_w48.c"
 
+
+
+
 #ifdef FEAT_XPM_W32
 # include "xpm_w32.h"
 #endif
@@ -184,6 +187,16 @@
 #endif
 
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #ifdef FEAT_BEVAL
 # define ID_BEVAL_TOOLTIP   200
 # define BEVAL_TEXT_LEN	    MAXPATHL
@@ -194,6 +207,15 @@
 # undef  UINT_PTR
 # define UINT_PTR UINT
 #endif
+
+
+
+
+
+
+
+
+
 
 static void make_tooltip __ARGS((BalloonEval *beval, char *text, POINT pt));
 static void delete_tooltip __ARGS((BalloonEval *beval));
@@ -1504,5 +1526,9 @@ gui_mch_set_foreground(void)
 // do nothing
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
 
 

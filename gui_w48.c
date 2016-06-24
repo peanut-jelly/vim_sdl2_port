@@ -124,6 +124,16 @@
 # define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #endif
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static void _OnPaint( HWND hwnd);
 static int gui_mswin_get_menu_height(int fix_window);
 
@@ -2032,4 +2042,8 @@ _OnScroll(
 }
 
 #endif // 0
+
+
+#include "end_ns_vim.h"
+
 

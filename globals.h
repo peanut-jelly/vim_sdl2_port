@@ -1620,6 +1620,15 @@ EXTERN FILE *time_fd INIT(= NULL);  /* where to write startup timing */
 EXTERN int ignored;
 EXTERN char *ignoredp;
 
+
+
+#include "end_ns_vim.h"
+
+
+
+
+
+
 /*
  * Optional Farsi support.  Include it here, so EXTERN and INIT are defined.
  */
@@ -1634,6 +1643,12 @@ EXTERN char *ignoredp;
 # include "arabic.h"
 #endif
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
 // MYCHANGE 2016 Feb. 3 
 extern int myVimRunning;
 

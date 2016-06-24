@@ -77,6 +77,8 @@
 # define PyObject Py_ssize_t
 # define PyThreadState Py_ssize_t
 # define PyTypeObject Py_ssize_t
+
+#error no FEAT_PYTHON
 struct PyMethodDef { Py_ssize_t a; };
 # define PySequenceMethods Py_ssize_t
 #endif
@@ -116,6 +118,7 @@ struct PyMethodDef { Py_ssize_t a; };
 #endif
 
 # if defined(DYNAMIC_PYTHON) || defined(PROTO)
+#error this part is not included.
 #  ifndef DYNAMIC_PYTHON
 #   define HINSTANCE long_u		/* for generating prototypes */
 #  endif
@@ -293,6 +296,8 @@ struct PyMethodDef { Py_ssize_t a; };
 #  define PyCObject_FromVoidPtr dll_PyCObject_FromVoidPtr
 #  define PyCObject_AsVoidPtr dll_PyCObject_AsVoidPtr
 # endif
+
+
 
 /*
  * Pointers for dynamic link
@@ -750,6 +755,18 @@ get_exceptions(void)
     Py_XDECREF(exmod);
 }
 #endif /* DYNAMIC_PYTHON */
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
+
 
 static int initialised = 0;
 #define PYINITIALISED initialised
@@ -1546,3 +1563,9 @@ set_ref_in_python (int copyID)
 {
     set_ref_in_py(copyID);
 }
+
+
+
+#include "end_ns_vim.h"
+
+

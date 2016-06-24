@@ -4,6 +4,9 @@
 
 #include "mock.h"
 
+
+using namespace vim;
+
 static SDL_Window* gWindow=NULL;
 static SDL_Renderer* gWindowRenderer=NULL;
 static int gWindow_w, gWindow_h;

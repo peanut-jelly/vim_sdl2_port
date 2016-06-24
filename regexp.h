@@ -13,6 +13,16 @@
 #ifndef _REGEXP_H
 #define _REGEXP_H
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 /*
  * The number of sub-matches is limited to 10.
  * The first one (index 0) is the whole match, referenced with "\0".
@@ -159,5 +169,10 @@ struct regengine
     char_u	*expr;
 #endif
 };
+
+
+
+
+#include "end_ns_vim.h"
 
 #endif	/* _REGEXP_H */

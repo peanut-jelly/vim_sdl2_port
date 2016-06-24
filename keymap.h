@@ -6,6 +6,11 @@
  * Do ":help credits" in Vim to see a list of people who contributed.
  */
 
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
 /*
  * Keycode definitions for special keys.
  *
@@ -497,3 +502,8 @@ enum key_extra
  * This is a total of 6 tokens, and is currently the longest one possible.
  */
 #define MAX_KEY_CODE_LEN    6
+
+
+
+#include "end_ns_vim.h"
+

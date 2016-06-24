@@ -14,6 +14,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 /*
  * Number of registers.
  *	0 = unnamed register, for normal yanks and puts
@@ -6933,3 +6942,8 @@ cursor_pos_info()
 	p_shm = p;
     }
 }
+
+
+
+#include "end_ns_vim.h"
+

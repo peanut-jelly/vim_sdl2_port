@@ -13,6 +13,11 @@
 
 #include "vim.h"
 
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 /*
  * This file contains routines to maintain and manipulate marks.
  */
@@ -1893,3 +1898,7 @@ copy_viminfo_marks /*(virp, fp_out, count, eof, flags)*/
     vim_free(name_buf);
 }
 #endif /* FEAT_VIMINFO */
+
+
+#include "end_ns_vim.h"
+

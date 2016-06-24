@@ -13,6 +13,17 @@
 
 #include "vim.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 /*
  * Structure to hold pointers to various items in a tag line.
  */
@@ -3973,3 +3984,9 @@ get_tags /*(list, pat)*/
     return ret;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+
+

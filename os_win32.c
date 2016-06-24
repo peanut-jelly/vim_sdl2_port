@@ -89,6 +89,20 @@
 # define IO_REPARSE_TAG_SYMLINK		0xA000000C
 #endif
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
+
 /* Record all output and all keyboard & mouse input */
 /* #define MCH_WRITE_DUMP */
 
@@ -3353,3 +3367,9 @@ fix_arg_enc(void)
     set_alist_count();
 }
 #endif
+
+
+
+
+#include "end_ns_vim.h"
+

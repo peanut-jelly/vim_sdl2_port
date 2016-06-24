@@ -16,8 +16,6 @@
 
 
 
-#include "assert_out_ns_vim.h"
-#include "begin_ns_vim.h"
 
 static int toF_Xor_X_ __ARGS((int c));
 static int F_is_TyE __ARGS((int c));
@@ -2321,6 +2319,5 @@ farsi_fkey(cmdarg_T* cap)
 }
 
 
-#include "end_ns_vim.h"
 
 

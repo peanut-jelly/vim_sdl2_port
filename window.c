@@ -9,6 +9,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static int path_is_url __ARGS((char_u *p));
 #if defined(FEAT_WINDOWS) || defined(PROTO)
 static void win_init __ARGS((win_T *newp, win_T *oldp, int flags));
@@ -7214,4 +7223,8 @@ frame_check_width /*(topfrp, width)*/
     return TRUE;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
 

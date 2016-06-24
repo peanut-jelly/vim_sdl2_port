@@ -41,7 +41,6 @@ static long hash_count_perturb = 0;	/* count number of "misses" */
 /* Magic value for algorithm that walks through the array. */
 #define PERTURB_SHIFT 5
 
-static int hash_may_resize __ARGS((hashtab_T *ht, int minitems));
 
 #if 0 /* currently not used */
 /*
@@ -59,6 +58,18 @@ hash_create()
     return ht;
 }
 #endif
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+static int hash_may_resize __ARGS((hashtab_T *ht, int minitems));
 
 /*
  * Initialize an empty hash table.
@@ -525,3 +536,7 @@ hash_hash /*(key)*/
 }
 
 #endif
+
+
+#include "end_ns_vim.h"
+

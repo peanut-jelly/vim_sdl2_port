@@ -13,6 +13,18 @@
  */
 
 #include "vim.h"
+#include "mock.h"
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 
 #ifdef FEAT_VISUAL
 /*
@@ -568,7 +580,6 @@ find_command /*(cmdchar)*/
     return idx;
 }
 
-#include "mock.h"
 /*
  * Execute a command in Normal mode.
  */
@@ -9875,3 +9886,9 @@ nv_cursorhold /*(cap)*/
     cap->retval |= CA_COMMAND_BUSY;	/* don't call edit() now */
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+
+

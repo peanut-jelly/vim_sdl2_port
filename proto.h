@@ -7,6 +7,15 @@
  * Do ":help credits" in Vim to see a list of people who contributed.
  */
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 /*
  * proto.h: include the (automatically generated) function prototypes
  */
@@ -295,3 +304,9 @@ void clip_mch_set_selection(VimClipboard *cbd);
 # define _PROTO_H
 #endif
 #endif /* !PROTO && !NOPROTO */
+
+
+
+
+#include "end_ns_vim.h"
+

@@ -46,6 +46,15 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 #ifdef DEBUG
 /* show/save debugging data when BT engine is used */
 # define BT_REGEXP_DUMP
@@ -8249,3 +8258,8 @@ vim_regexec_multi /*(rmp, win, buf, lnum, col, tm)*/
 {
     return rmp->regprog->engine->regexec_multi(rmp, win, buf, lnum, col, tm);
 }
+
+
+#include "end_ns_vim.h"
+
+

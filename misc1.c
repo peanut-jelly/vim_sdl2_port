@@ -14,6 +14,16 @@
 #include "vim.h"
 #include "version.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static char_u *vim_version_dir __ARGS((char_u *vimdir));
 static char_u *remove_tail __ARGS((char_u *p, char_u *pend, char_u *name));
 #if defined(FEAT_CMDL_COMPL)
@@ -11210,3 +11220,8 @@ goto_im()
 {
     return (p_im && stuff_empty() && typebuf_typed());
 }
+
+
+
+#include "end_ns_vim.h"
+

@@ -12,6 +12,16 @@
 
 #include "vim.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 static void save_re_pat __ARGS((int idx, char_u *pat, int magic));
 #ifdef FEAT_EVAL
 static void set_vv_searchforward __ARGS((void));
@@ -5693,3 +5703,8 @@ wvsp_one /*(fp, idx, s, sc)*/
     }
 }
 #endif /* FEAT_VIMINFO */
+
+
+
+#include "end_ns_vim.h"
+

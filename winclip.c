@@ -38,6 +38,13 @@
 # include "winclip.pro"
 #endif
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 /*
  * When generating prototypes for Win32 on Unix, these lines make the syntax
  * errors disappear.  They do not need to be correct.
@@ -801,3 +808,10 @@ acp_to_enc /*(str, str_size, out, outlen)*/
     }
 }
 #endif
+
+
+
+
+#include "end_ns_vim.h"
+
+

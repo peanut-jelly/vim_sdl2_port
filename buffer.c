@@ -26,6 +26,8 @@
  */
 
 #include "vim.h"
+#include "mock.h"
+#include "version.h"		/* for version number */
 
 
 #include "assert_out_ns_vim.h"
@@ -1600,7 +1602,6 @@ do_autochdir()
  * functions for dealing with the buffer list
  */
 
-#include "mock.h"
 /*
  * Add a file name to the buffer list.  Return a pointer to the buffer.
  * If the same file name already exists return a pointer to that buffer.
@@ -5071,7 +5072,6 @@ do_modelines(int flags)
     --entered;
 }
 
-#include "version.h"		/* for version number */
 
 /*
  * chk_modeline() - check a single line for a mode string

@@ -18,6 +18,14 @@
 
 #include <SDL2/sdl.h>
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 #define _DisplayWarningMessage(heading, msg) \
     do { \
         char __buf_Error[ERROR_LENGTH]; \
@@ -1917,4 +1925,8 @@ static void _OnDropFiles()
 {
 Error("dropping files on me");
 }
+
+
+
+#include "end_ns_vim.h"
 

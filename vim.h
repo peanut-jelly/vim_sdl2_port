@@ -383,6 +383,19 @@
 
 #define NUMBUFLEN 30	    /* length of a buffer to store a number in ASCII */
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
 /*
  * Shorthand for unsigned variables. Many systems, but not all, have u_char
  * already defined, so we use char_u to avoid trouble.
@@ -456,7 +469,20 @@ typedef unsigned long u8char_T;	    /* long should be 32 bits or more */
 # endif
 #endif
 
+
+
+
+
+#include "end_ns_vim.h"
+#include "assert_out_ns_vim.h"
+
+
+
+
+
+
 #ifndef UNIX		    /* For Unix this is included in os_unix.h */
+#include <stdarg.h>
 # include <stdio.h>
 # include <ctype.h>
 #endif
@@ -555,6 +581,13 @@ typedef unsigned long u8char_T;	    /* long should be 32 bits or more */
 # define USE_IM_CONTROL
 #endif
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 /*
  * For dynamically loaded gettext library.  Currently, only for Win32.
  */
@@ -569,6 +602,10 @@ extern char *(*dyn_libintl_bindtextdomain)(const char *domainname, const char *d
 extern char *(*dyn_libintl_bind_textdomain_codeset)(const char *domainname, const char *codeset);
 extern char *(*dyn_libintl_textdomain)(const char *domainname);
 #endif
+
+
+#include "end_ns_vim.h"
+
 
 
 /*
@@ -1220,6 +1257,14 @@ extern char *(*dyn_libintl_textdomain)(const char *domainname);
 #define SID_ERROR	-5	/* option was reset because of an error */
 #define SID_NONE	-6	/* don't set scriptID */
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 /*
  * Events for autocommands.
  */
@@ -1387,6 +1432,14 @@ typedef enum
 #ifndef UINT32_T
 typedef UINT32_TYPEDEF UINT32_T;
 #endif
+
+
+
+
+
+#include "end_ns_vim.h"
+
+
 
 /*
  * Operator IDs; The order must correspond to opchars[] in ops.c!
@@ -1585,6 +1638,14 @@ typedef UINT32_TYPEDEF UINT32_T;
 # define PERROR(msg)		    perror(msg)
 #endif
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 typedef long	linenr_T;		/* line number type */
 typedef int	colnr_T;		/* column number type */
 typedef unsigned short disptick_T;	/* display tick type */
@@ -1718,6 +1779,16 @@ typedef struct timeval proftime_T;
 #else
 typedef int proftime_T;	    /* dummy for function prototypes */
 #endif
+
+
+
+
+
+#include "end_ns_vim.h"
+
+
+
+
 
 /* Include option.h before structs.h, because the number of window-local and
  * buffer-local options is used there. */
@@ -1896,6 +1967,22 @@ typedef int proftime_T;	    /* dummy for function prototypes */
 #  endif
 # endif
 
+
+
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 /* Info about selected text */
 typedef struct VimClipboard
 {
@@ -1933,7 +2020,13 @@ typedef struct VimClipboard
 typedef int VimClipboard;	/* This is required for the prototypes. */
 #endif
 
+
+#include "end_ns_vim.h"
+
+
+
 #ifdef __BORLANDC__
+#error __BORLANDC__ defined
 /* work around a bug in the Borland 'stat' function: */
 # include <io.h>	    /* for access() */
 
@@ -2248,3 +2341,4 @@ typedef int VimClipboard;	/* This is required for the prototypes. */
 #define AUTOLOAD_CHAR '#'
 
 #endif /* VIM__H */
+

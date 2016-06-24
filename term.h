@@ -13,12 +13,26 @@
  */
 
 #if defined(SASC) && SASC < 658
+
+#error SASC in use
 /*
  * The SAS C compiler has a bug that makes typedefs being forgot in include
  * files.  Has been fixed in version 6.58.
  */
 typedef unsigned char char_u;
 #endif
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 
 /*
  * Index of the termcap codes in the term_strings array.
@@ -164,3 +178,8 @@ extern char_u *(term_strings[]);    /* current terminal strings */
 #define TMODE_COOK  0	/* terminal mode for external cmds and Ex mode */
 #define TMODE_SLEEP 1	/* terminal mode for sleeping (cooked but no echo) */
 #define TMODE_RAW   2	/* terminal mode for Normal and Insert mode */
+
+
+
+#include "end_ns_vim.h"
+

@@ -24,6 +24,19 @@
 # include "winclip.pro"
 #endif
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
     void
 ui_write /*(s, len)*/
     (
@@ -1980,6 +1993,7 @@ check_row /*(row)*/
  */
 
 #if defined(FEAT_XCLIPBOARD) || defined(FEAT_GUI_X11) || defined(PROTO)
+#error X clipboard in use.
 # include <X11/Xatom.h>
 # include <X11/Intrinsic.h>
 
@@ -3366,3 +3380,9 @@ im_save_status /*(psave)*/
     }
 }
 #endif
+
+
+
+
+#include "end_ns_vim.h"
+

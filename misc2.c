@@ -14,6 +14,21 @@
 
 #include "adapter_sdl2.h"
 
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
+
 static char_u	*username = NULL; /* cached result of mch_get_user_name() */
 
 static char_u	*ff_expand_buffer = NULL; /* used for expanding filenames */
@@ -6894,3 +6909,9 @@ has_non_ascii /*(s)*/
     return FALSE;
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+
+

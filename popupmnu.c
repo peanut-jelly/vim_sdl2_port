@@ -12,6 +12,13 @@
  */
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 #if defined(FEAT_INS_EXPAND) || defined(PROTO)
 
 static pumitem_T *pum_array = NULL;	/* items of displayed pum */
@@ -731,3 +738,8 @@ pum_get_height()
 }
 
 #endif
+
+
+
+#include "end_ns_vim.h"
+

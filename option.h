@@ -10,6 +10,16 @@
  * option.h: definition of global variables for settable options
  */
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 /*
  * Default values for 'errorformat'.
  * The "%f|%l| %m" one is used for when the contents of the quickfix window is
@@ -1109,3 +1119,8 @@ enum
     , WV_WRAP
     , WV_COUNT	    /* must be the last one */
 };
+
+
+
+#include "end_ns_vim.h"
+

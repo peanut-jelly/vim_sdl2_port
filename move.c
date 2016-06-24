@@ -19,6 +19,25 @@
 
 #include "vim.h"
 
+
+
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
+
+
 static void comp_botline __ARGS((win_T *wp));
 static int scrolljump_value __ARGS((void));
 static int check_top_offset __ARGS((void));
@@ -2975,3 +2994,7 @@ do_check_cursorbind()
     curbuf = old_curbuf;
 }
 #endif /* FEAT_CURSORBIND */
+
+
+#include "end_ns_vim.h"
+

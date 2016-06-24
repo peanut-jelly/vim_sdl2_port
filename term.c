@@ -50,6 +50,20 @@
 
 #undef tgetstr
 
+
+
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 /*
  * Here are the builtin termcap entries.  They are not stored as complete
  * structures with all entries, as such a structure is too big.
@@ -5979,3 +5993,7 @@ update_tcap /*(attr)*/
     }
 }
 #endif
+
+
+#include "end_ns_vim.h"
+

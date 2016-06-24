@@ -23,6 +23,17 @@
 #error Alternative vararg funcitons are removed. <2016 June 21>
 #endif
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 static int other_sourcing_name __ARGS((void));
 static char_u *get_emsg_source __ARGS((void));
 static char_u *get_emsg_lnum __ARGS((void));
@@ -4934,3 +4945,5 @@ vim_vsnprintf(char* str, size_t str_m, const char* fmt, va_list ap,
 }
 
 #endif /* PROTO */
+
+#include "end_ns_vim.h"

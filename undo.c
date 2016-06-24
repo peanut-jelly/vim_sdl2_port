@@ -83,6 +83,17 @@
 
 #include "vim.h"
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
 static void u_unch_branch __ARGS((u_header_T *uhp));
 static u_entry_T *u_get_headentry __ARGS((void));
 static void u_getbot __ARGS((void));
@@ -3457,3 +3468,12 @@ u_eval_tree /*(first_uhp, list)*/
     }
 }
 #endif
+
+
+
+#include "end_ns_vim.h"
+
+
+
+
+

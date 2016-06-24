@@ -121,6 +121,18 @@
 # endif
 #endif
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
 #if defined(FEAT_MBYTE) || defined(PROTO)
 
 static int enc_canon_search __ARGS((char_u *name));
@@ -6506,3 +6518,7 @@ string_convert_ext /*(vcp, ptr, lenp, unconvlenp)*/
     return retval;
 }
 #endif
+
+
+#include "end_ns_vim.h"
+

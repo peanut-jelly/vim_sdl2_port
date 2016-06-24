@@ -34,6 +34,17 @@
 #define IN_OPTION_C
 #include "vim.h"
 
+
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
 /*
  * The options that are local to a window or buffer have "indir" set to one of
  * these values.  Special values:
@@ -11998,3 +12009,7 @@ find_mps_values /*(initc, findc, backwards, switchit)*/
 	    ++ptr;
     }
 }
+
+
+
+#include "end_ns_vim.h"

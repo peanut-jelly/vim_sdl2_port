@@ -28,6 +28,14 @@
 #include "mock.h"
 
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
 extern void send_setcellsize_to_adapter(int, int);
 extern void send_textarea_resize_to_adapter(int, int);
 extern void send_mousebuttondown_to_adapter(SDL_MouseButtonEvent);
@@ -1190,4 +1198,8 @@ void iVim_log(const char* msg)
 // s_logger 's responsbility to perform locking.
 if (s_logger) s_logger(msg);
 }
+
+
+
+#include "end_ns_vim.h"
 

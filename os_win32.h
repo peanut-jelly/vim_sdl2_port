@@ -94,6 +94,7 @@
 #include <time.h>
 #include <sys/types.h>
 
+
 #ifndef STRICT
 # define STRICT
 #endif
@@ -166,9 +167,13 @@
 # define TRACE3(sz, p1, p2, p3) Trace(_T(sz), p1, p2, p3)
 # define TRACE4(sz, p1, p2, p3, p4) Trace(_T(sz), p1, p2, p3, p4)
 
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
 /* In debug version, writes trace messages to debug stream */
 void __cdecl
 Trace(char *pszFormat, ...);
+#include "end_ns_vim.h"
 
 #else /* !_DEBUG */
 
@@ -203,10 +208,15 @@ Trace(char *pszFormat, ...);
 /* Enable common dialogs input unicode from IME if possible. */
 #ifdef FEAT_MBYTE
     /* The variables are defined in os_win32.c. */
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
 extern LRESULT (WINAPI *pDispatchMessage)(CONST MSG *);
 extern BOOL (WINAPI *pGetMessage)(LPMSG, HWND, UINT, UINT);
 extern BOOL (WINAPI *pIsDialogMessage)(HWND, LPMSG);
 extern BOOL (WINAPI *pPeekMessage)(LPMSG, HWND, UINT, UINT, UINT);
+#include "end_ns_vim.h"
+
 #else
 # define pDispatchMessage DispatchMessage
 # define pGetMessage GetMessage
@@ -215,3 +225,7 @@ extern BOOL (WINAPI *pPeekMessage)(LPMSG, HWND, UINT, UINT, UINT);
 #endif
 
 #endif /* PROTO */
+
+
+
+

@@ -12,6 +12,7 @@
  */
 
 #include "vim.h"
+#include "mock.h"
 
 
 #include "assert_out_ns_vim.h"
@@ -2181,7 +2182,6 @@ ins_ctrl_x()
     }
 }
 
-#include "mock.h"
 /*
  * Return TRUE if the 'dict' or 'tsr' option can be used.
  */

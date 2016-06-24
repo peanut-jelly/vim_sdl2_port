@@ -22,6 +22,14 @@
 
 #include "vim.h"
 
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
 #if defined(FEAT_CRYPT) || defined(FEAT_PERSISTENT_UNDO)
 
 static void sha256_process __ARGS((context_sha256_T *ctx, char_u data[64]));
@@ -451,3 +459,7 @@ sha2_seed /*(header, header_len, salt, salt_len)*/
 }
 
 #endif /* FEAT_CRYPT */
+
+
+#include "end_ns_vim.h"
+

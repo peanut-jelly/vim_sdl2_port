@@ -33,6 +33,18 @@
 #define	WIN_VER	    2	    /* "-O" vertically split windows */
 #define	WIN_TABS    3	    /* "-p" windows on tab pages */
 
+
+
+
+
+#include "assert_out_ns_vim.h"
+#include "begin_ns_vim.h"
+
+
+
+
+
+
 /* Struct for various parameters passed between main() and other functions. */
 typedef struct
 {
@@ -315,7 +327,6 @@ main
     exec_on_server(&params);
 #endif
 
-#include "mock.h"
     //fnWarn(argv[0]);
     /*
      * Figure out the way to work from the command name argv[0].
@@ -3985,6 +3996,11 @@ serverConvert /*(client_enc, data, tofree)*/
 }
 #endif
 
+
+
+
+
+
 /*
  * When FEAT_FKMAP is defined, also compile the Farsi source code.
  */
@@ -3998,3 +4014,9 @@ serverConvert /*(client_enc, data, tofree)*/
 #if defined(FEAT_ARABIC) || defined(PROTO)
 # include "arabic.c"
 #endif
+
+
+
+#include "end_ns_vim.h"
+
+

@@ -7,6 +7,9 @@
 
 using namespace vim;
 
+
+static bool debug_mode=false;
+
 static SDL_Window* gWindow=NULL;
 static SDL_Renderer* gWindowRenderer=NULL;
 static int gWindow_w, gWindow_h;
@@ -30,12 +33,14 @@ SDL_RenderClear(gWindowRenderer);
 static void
 myWindow_draw()
 {
+iVim_log("( myWindow_draw");
 const SDL_Surface* surface=iVim_getDisplaySurface();
 SDL_Texture* tex=SDL_CreateTextureFromSurface(gWindowRenderer, (SDL_Surface*)surface);
 SDL_Rect rect={0,0,gWindow_w, gWindow_h};
 SDL_RenderCopy(gWindowRenderer, tex, &rect, &rect);
 SDL_RenderPresent(gWindowRenderer);
 SDL_DestroyTexture(tex);
+iVim_log(")");
 }
 
 static int
@@ -67,9 +72,14 @@ SDL_Event evnt;
 
 for (;;)
     {
+    iVim_log("(mainloop enter)");
     int t0=SDL_GetTicks();
+    iVim_setTicks(t0);
+
     // maybe :q
     if (!iVim_running()) break;
+
+    iVim_log("(mainloop before SDL_PollEvent)");
     while(SDL_PollEvent(&evnt))
         {
         if (myEventSourceWindowID(evnt)==SDL_GetWindowID(gWindow))
@@ -77,6 +87,8 @@ for (;;)
             iVim_onEvent(evnt);
             }
         }
+    
+    iVim_log("(mainloop before iVim_flush)");
     int dirty=iVim_flush();
     if (dirty) 
         num_dirty++;
@@ -87,6 +99,8 @@ for (;;)
     iVim_getDisplaySize(&ww, &hh);
     if (ww!=gWindow_w || hh!=gWindow_h)
         resize(ww,hh);
+
+    iVim_log("(mainloop before dirty)");
     //if the display surface is not changed then do not redraw.
     if (dirty)
         {
@@ -95,10 +109,12 @@ for (;;)
         //iVim_log("/");
         }
 
+    //iVim_log("(mainloop before delay)");
     int t1=SDL_GetTicks();
     int time_to_wait=30-(t1-t0);
     if (time_to_wait>0)
         SDL_Delay(time_to_wait);
+    iVim_log("(mainloop end)");
     }
 FILE* fout=fopen("dirty.log", "w");
 fprintf(fout, "num_dirty=%d num_clean=%d\n", num_dirty, num_clean);
@@ -109,10 +125,13 @@ static void log_vim(const char* msg)
 {
 static pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
 
-pthread_mutex_lock(&mutex);
-fprintf(s_log_file, "%s\n", msg);
-fflush(s_log_file);
-pthread_mutex_unlock(&mutex);
+if (debug_mode)
+    {
+    pthread_mutex_lock(&mutex);
+    fprintf(s_log_file, "%s\n", msg);
+    fflush(s_log_file);
+    pthread_mutex_unlock(&mutex);
+    }
 }
 
 static void init(int w, int h)
@@ -143,18 +162,10 @@ if (gWindowRenderer==NULL)
     fnError("error creating gWindowRenderer");
 SDL_SetRenderDrawColor(gWindowRenderer, 0, 20, 10, 0xff);
 
+SDL_StopTextInput();
+
 //iVim_showDebugWindow(1);
 
-// testing logger
-/*
-int i;
-static char mmm[100];
-for (i=0; i<100; i++)
-    {
-    snprintf(mmm, 100, "i=%d", i);
-    info_push_message(mmm);
-    }
-    */
 }
 
 int main(int argc, char** argv)

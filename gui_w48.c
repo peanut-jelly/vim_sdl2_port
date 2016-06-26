@@ -392,6 +392,8 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1);
 static Uint32 
 _OnBlinkTimer_sdl(Uint32 interval, void *ud)
 {
+//info_push_messagef("blink sdl called @%d", SDL_GetTicks());
+
 adapter_event_t evnt;
 evnt.type=ADAPT_EVENT_BLINK;
 evnt.func=myBlinkCallback_sdl;
@@ -405,17 +407,35 @@ return 0; // stop current timer.
 static void 
 myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
 {
+//info_push_messagef("blink w48 @%d", SDL_GetTicks());
+
     if (blink_state == BLINK_ON)
         {
         gui_undraw_cursor();
         blink_state = BLINK_OFF;
-        blink_timer = SDL_AddTimer(blink_offtime, _OnBlinkTimer_sdl, 0);
+        //blink_timer = SDL_AddTimer(blink_offtime, _OnBlinkTimer_sdl, 0);
+        disp_task_addtimer_t addtimer=
+            {
+            .type=DISP_TASK_ADDTIMER,
+            .time_to_delay=blink_offtime,
+            .ud=NULL,
+            .callback=_OnBlinkTimer_sdl
+            };
+        display_push_task((disp_task_t*)&addtimer);
         }
     else
         {
         gui_update_cursor(TRUE, FALSE);
         blink_state = BLINK_ON;
-        blink_timer = SDL_AddTimer(blink_ontime, _OnBlinkTimer_sdl, 0);
+        //blink_timer = SDL_AddTimer(blink_ontime, _OnBlinkTimer_sdl, 0);
+        disp_task_addtimer_t addtimer=
+            {
+            .type=DISP_TASK_ADDTIMER,
+            .time_to_delay=blink_ontime,
+            .ud=NULL,
+            .callback=_OnBlinkTimer_sdl
+            };
+        display_push_task((disp_task_t*)&addtimer);
         }
 }
 
@@ -423,12 +443,23 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
     static void
 gui_sdl_rm_blink_timer(void)
 {
+/*
 if (blink_timer!=0)
     {
-    SDL_RemoveTimer(blink_timer);
+
+    //SDL_RemoveTimer(blink_timer);
     blink_timer=0;
     }
+    */
 
+disp_task_addtimer_t addtimer=
+    {
+    .type=DISP_TASK_ADDTIMER, // change blink timer
+    .time_to_delay=-1, // set to -1 to remove
+    .ud=NULL,
+    .callback=NULL
+    };
+display_push_task((disp_task_t*)&addtimer);
 }
 
 /*
@@ -452,7 +483,16 @@ gui_mch_start_blink(void)
 {
     if (blink_waittime && blink_ontime && blink_offtime && gui.in_focus)
     {
-    blink_timer=SDL_AddTimer(blink_waittime, _OnBlinkTimer_sdl, 0);
+    //blink_timer=SDL_AddTimer(blink_waittime, _OnBlinkTimer_sdl, 0);
+    disp_task_addtimer_t addtimer=
+        {
+        .type=DISP_TASK_ADDTIMER,
+        .time_to_delay=blink_waittime,
+        .ud=NULL,
+        .callback=_OnBlinkTimer_sdl
+        };
+    display_push_task((disp_task_t*)&addtimer);
+
     blink_state=BLINK_ON;
     gui_update_cursor(TRUE,FALSE);
     }
@@ -551,7 +591,7 @@ int modifiers = sdl_kmod_to_vim_modifiers(sdlModKey);
 int keyFlags = 0;
 
     static LONG	s_prevTime = 0;
-    LONG    currentTime = SDL_GetTicks();
+    LONG    currentTime = display_getTicks();//SDL_GetTicks();
     int	    button = -1;
     int	    repeated_click;
 
@@ -1125,8 +1165,11 @@ gui_mch_draw_hollow_cursor(guicolor_T color)
     // inform sdl to draw a hollow cursor.
     disp_task_hollowcursor_t hollow;
     hollow.type=DISP_TASK_HOLLOWCURSOR;
-    hollow.color=(SDL_Color){myGetRValue(color), myGetGValue(color), 
-        myGetBValue(color), 0xff};
+    hollow.color=(SDL_Color)
+        {
+        myGetRValue(color), myGetGValue(color), 
+            myGetBValue(color), 0xff
+        };
     int ncell=1;
     if (mb_lefthalve(gui.row, gui.col))
         ncell=2;
@@ -1499,7 +1542,15 @@ gui_mch_wait_for_chars(int wtime)
 	/* Don't do anything while processing a (scroll) message. */
 	if (s_busy_processing)
 	    return FAIL;
-	s_wait_timer = SDL_AddTimer(wtime, _OnTimer_sdl, 0);
+	//s_wait_timer = SDL_AddTimer(wtime, _OnTimer_sdl, 0);
+        disp_task_addtimer_t addtimer=
+            {
+            .type=DISP_TASK_ADDTIMER2,
+            .time_to_delay=wtime,
+            .ud=NULL,
+            .callback=_OnTimer_sdl
+            };
+        display_push_task((disp_task_t*)&addtimer);
     }
 
     allow_scrollbar = TRUE;
@@ -1534,9 +1585,22 @@ gui_mch_wait_for_chars(int wtime)
 
 	    if (input_available())
             {
-            if (s_wait_timer != 0 && !s_timed_out)
+            // I commented out the `s_wait_timer!=0` because the timer handle
+            // is moved to sdl core thread, and the s_wait_timer here will 
+            // always be zero.
+            // The functionality of SAFELY-KILL-TIMER is in sdl2_misc.c
+            if (/* s_wait_timer != 0 && */ !s_timed_out)
                 {
-                SDL_RemoveTimer(s_wait_timer);
+                //SDL_RemoveTimer(s_wait_timer);
+
+                disp_task_addtimer_t addtimer=
+                    {
+                    .type=DISP_TASK_ADDTIMER2, // for wait timer
+                    .time_to_delay= -1, // -1 to remove
+                    .ud=NULL,
+                    .callback= NULL
+                    };
+                display_push_task((disp_task_t*)&addtimer);
                 s_wait_timer = 0;
                 }
             allow_scrollbar = FALSE;

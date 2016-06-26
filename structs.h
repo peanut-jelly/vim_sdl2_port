@@ -1381,6 +1381,7 @@ typedef struct {
 } synblock_T;
 
 
+typedef _off_t off_t;
 /*
  * buffer: structure that holds information about one file
  *

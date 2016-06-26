@@ -371,7 +371,7 @@ WINDRES_CC = $(CC)
 #>>>>> end of choices
 ###########################################################################
 
-CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall -mthreads #-std=c++11 
+CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall -mthreads -g #-std=c++11 
 
 WINDRES_FLAGS = --preprocessor="$(WINDRES_CC) -E -xc" -DRC_INVOKED
 
@@ -570,7 +570,7 @@ OBJ = \
 	$(OUTDIR)/version.o \
 	$(OUTDIR)/window.o \
 	$(OUTDIR)/adapter_sdl2.o $(OUTDIR)/sdl2_misc.o $(OUTDIR)/sdl2_misc2.o \
-	$(OUTDIR)/main.o
+	#$(OUTDIR)/main.o #this is used to create excutable, and i decide the $(OBJ) used mainly for the lib.
 	#$(OUTDIR)/vimrc.o \
 	#$(OUTDIR)/hardcopy.o \
 
@@ -632,6 +632,8 @@ endif
 ifdef MZSCHEME
 MZSCHEME_SUFFIX = Z
 endif
+
+TARGET_LIB:=libgvim.a
 
 ifeq ($(GUI),yes)
 TARGET := gvim$(DEBUG_SUFFIX).exe
@@ -704,10 +706,15 @@ endif
 DEFINES+=-DDYNAMIC_ICONV
 endif
 
-all: $(TARGET) ## vimrun.exe xxd/xxd.exe  GvimExt/gvimext.dll
+all: $(TARGET) $(TARGET_LIB) ## vimrun.exe xxd/xxd.exe  GvimExt/gvimext.dll
 
-$(TARGET): $(OUTDIR) $(OBJ)
-	$(CC) $(CFLAGS) $(LFLAGS) -o $@ $(OBJ) $(LIB) -lole32 -luuid $(LUA_LIB) $(MZSCHEME_LIBDIR) $(MZSCHEME_LIB) $(PYTHONLIB) $(PYTHON3LIB) $(RUBYLIB)
+$(TARGET_LIB):  $(OUTDIR) $(OBJ) 
+	rm $@
+	ar rcs $@ $(OBJ)
+
+
+$(TARGET): $(OUTDIR) $(TARGET_LIB) $(OUTDIR)/main.o 
+	$(CC) $(CFLAGS) $(LFLAGS) -o $@ $(OUTDIR)/main.o $(TARGET_LIB) $(LIB) -lole32 -luuid $(LUA_LIB) $(MZSCHEME_LIBDIR) $(MZSCHEME_LIB) $(PYTHONLIB) $(PYTHON3LIB) $(RUBYLIB)
 
 mpress: exes
 	mpress gvim.exe

@@ -12,6 +12,7 @@
  */
 
 #include "vim.h"
+#include <sys/stat.h>
 
 #include "assert_out_ns_vim.h"
 #include "begin_ns_vim.h"

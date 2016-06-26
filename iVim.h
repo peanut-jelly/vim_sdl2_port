@@ -38,8 +38,12 @@ extern void iVim_setLogger(void (*f)(const char*));
  * multithreaded environment has locking capacity.
  */
 extern void iVim_log(const char* msg);
+extern void iVim_logf(const char* fstr, ...);
 
 extern void iVim_onEvent(SDL_Event evnt);
+
+// used to send timestamp to vim core thread.
+extern void iVim_setTicks(int milisec);
 
 /* @func iVim_flush
  * returns 1 if surface is dirty (need redraw), 0 otherwise.
@@ -59,7 +63,7 @@ extern int iVim_running();
 
 extern int iVim_quit();
 
-extern void iVim_showDebugWindow(int shown);
+extern void iVim_showDebugWindow(bool shown);
 
 
 #include "end_ns_vim.h"

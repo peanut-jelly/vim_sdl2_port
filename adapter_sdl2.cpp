@@ -11,6 +11,8 @@
 #include "assert_out_ns_vim.h"
 #include "begin_ns_vim.h"
 
+static VimEventQueue _the_vim_event_queue;
+VimEventQueue* VimEventQueue::mInstance=NULL;
 
 using std::queue;
 using std::string;

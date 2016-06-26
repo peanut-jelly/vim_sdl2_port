@@ -2,6 +2,8 @@
 #define _ADAPTER_SDL2_H_
 
 #include <SDL2/SDL.h>
+#include <assert.h>
+#include <pthread.h>
 
 #include "assert_out_ns_vim.h"
 #include "begin_ns_vim.h"
@@ -36,6 +38,33 @@ extern int adapter_poll_event(adapter_event_t* pevnt);
 extern int adapter_get_event(adapter_event_t* pevnt); // blocking
 extern void adapter_wait_for_event(); // blocking
 
+typedef adapter_event_t VIM_Event;
+/* Event queue consumed by vim core, working in the same thread as vim core.
+ * Other threads can push events into this queue because this class is using
+ * lock internally.
+ */
+class VimEventQueue //singlton
+{
+public:
+    static VimEventQueue* get();
+
+    VimEventQueue() {
+        assert(mInstance==NULL); // user must not call this!
+        mInstance=this;
+    }
+
+    bool hasEvent();
+    void pushEvent(VIM_Event evnt);
+    bool pollEvent(VIM_Event* evnt);
+    void getEvent(VIM_Event* evnt);
+    void waitForEvent();
+private:
+    void lock();
+    void unlock();
+
+    static VimEventQueue* mInstance;
+};
+
 extern int info_has_message();
 extern void info_push_message(const char *msg);
 extern void info_push_messagef(const char* msg, ...);
@@ -64,7 +93,9 @@ enum display_task_type
     DISP_TASK_BEEP,
     DISP_TASK_UNDERCURL,
     DISP_TASK_FLUSH,
-    DISP_TASK_REQUIREESC
+    DISP_TASK_REQUIREESC,
+    DISP_TASK_ADDTIMER, // for blink timer (blink_timer @ gui_w48.c)
+    DISP_TASK_ADDTIMER2 // for wait timer (s_wait_timer @ gui_w48.c)
 };
 
 typedef struct disp_task_textout_t
@@ -181,6 +212,14 @@ typedef struct disp_task_requireesc_t
     Uint32 type;
 } disp_task_requireesc_t;
 
+typedef struct disp_task_addtimer_t
+{
+    Uint32 type;
+    int time_to_delay;
+    void* ud;
+    SDL_TimerCallback callback;
+} disp_task_addtimer_t;
+
 typedef union disp_task_t
 {
     Uint32 type;
@@ -200,12 +239,17 @@ typedef union disp_task_t
     disp_task_undercurl_t undercurl;
     disp_task_flush_t flush;
     disp_task_requireesc_t requireesc;
+    disp_task_addtimer_t addtimer;
 } disp_task_t;
 
 extern int display_has_task();
 extern void display_push_task(const disp_task_t *task);
 extern int display_poll_task(disp_task_t* task);
 extern void display_task_cleanup(disp_task_t *task);
+
+// this function is called from vim core thread, so this cannot call SDL_*
+// functions.
+extern int display_getTicks();
 
 // helper initializers.
 extern void 

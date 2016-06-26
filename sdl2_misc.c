@@ -559,6 +559,7 @@ switch (e.type)
 static void
 draw_string_char_by_char(TTF_Font* font, int x, int y, const char* s)
 {
+iVim_log("( draw_string_char_by_char");
 static char buf[20];
 int i=0;
 int byte_len=strlen(s);
@@ -572,22 +573,42 @@ while (i<byte_len)
         buf[j]=s[i+j];
     buf[cl]=0;
     i+=cl;
+
+    iVim_logf("( in:char_by_char char=0x%x, ncells=%d, nbytes_of_char=%d)",
+            c,ncells, cl);
+
+    if (gDisplayFontCur==gFont_zh)
+        iVim_log("(current_font=zh)");
+    else
+        iVim_log("(current_font=en)");
+
+    iVim_log("( TTF_RenderUTF8_Blended");
     // buf is prepared then do rendering.
+    SDL_Color transparent={};
     SDL_Surface *sf=TTF_RenderUTF8_Blended(gDisplayFontCur
             , buf, //color_velvet);
-                gDisplayColorFG);
+                gDisplayColorFG); //, transparent);
+    iVim_log(")");
+
     if (sf==NULL)
         fnWarn("error rendering text");
     SDL_Rect dstRect={x,y,ncells*gDisplay_cell_w, gDisplay_cell_h};
+
+    iVim_log("( SDL_BlitSurface");
     SDL_BlitSurface(sf, NULL, gDisplayTargetCur_surf, &dstRect);
+    iVim_log(")");
+
     SDL_FreeSurface(sf);
     x+=ncells*gDisplay_cell_w;
     }
+iVim_log(")");
 }
 
 static void
 _on_disp_textout(disp_task_textout_t* textout)
 {
+
+iVim_log("( _on_disp_textout");
 static char buf[200];
 double x,y,w,h;
 int len;
@@ -613,17 +634,22 @@ SDL_Rect dstRect=
 if (gDisplayFontCur==NULL)
     fnWarn("null font");
 
+iVim_log("( on_textout here label_1 )");
 // bold/italic font need to be drawn char by char because 
 // it will contain extra paddings between chars if i directly
 // pass the whole string to TTF_Render*
+// And chinese charsrendered with TTF_RenderUTF8_* cannot fix into the space
+// of two cells perfectly, so I have to render chinese chars one by one.
 if (gDisplayFontCur!=gDisplayFontNormal[0] 
         //&& gDisplayFontCur!=gDisplayFontWide[0]
         ) 
     {
+    //if (gDisplayFontCur==gFont_zh)
+        //fnWarn("using chinese font --> char by char");
     draw_string_char_by_char(gDisplayFontCur, sx, sy, buf);
     return;
     }
-else
+else // normal english chars, not bold or italic.
     {
     SDL_Surface *sf=TTF_RenderUTF8_Blended(gDisplayFontCur
             , buf, //color_velvet);
@@ -635,6 +661,8 @@ else
     SDL_FreeSurface(sf);
     //display_restore_color();
     }
+
+iVim_log(")");
 }
 
 
@@ -921,6 +949,53 @@ extern void send_esc_to_adapter();
 send_esc_to_adapter();
 }
 
+static Uint32 m_blink_timer=0;
+
+static void
+_on_disp_addtimer__blink_timer(disp_task_addtimer_t* addtimer)
+{
+int time_to_delay=addtimer->time_to_delay;
+if (time_to_delay==-1 && m_blink_timer!=0) // remove the timer if alive
+    {
+    SDL_RemoveTimer(m_blink_timer);
+    m_blink_timer=0;
+    }
+else
+    {
+    //assert(m_blink_timer==0); should not check this, because when the
+    //timer is triggered, this variable `m_blink_timer` is not cleared
+    //to zero. The callback function is in gui_w48.c
+    //
+    //Also note that the timer is automatically shut down because that
+    //callback is designed to return zero deliberately.
+
+    m_blink_timer=SDL_AddTimer(time_to_delay, addtimer->callback, NULL);
+    }
+}
+
+static Uint32 m_wait_timer=0;
+
+static void
+_on_disp_addtimer__wait_timer(disp_task_addtimer_t* addtimer)
+{
+int time_to_delay=addtimer->time_to_delay;
+if (time_to_delay==-1 && m_wait_timer!=0) // remove the timer if alive
+    {
+    SDL_RemoveTimer(m_wait_timer);
+    m_wait_timer=0;
+    }
+else
+    {
+    //assert(m_wait_timer==0); should not check this, because when the
+    //timer is triggered, this variable `m_wait_timer` is not cleared
+    //to zero. The callback function is in gui_w48.c
+    //
+    //Also note that the timer is automatically shut down because that
+    //callback is designed to return zero deliberately.
+    //
+    m_wait_timer=SDL_AddTimer(time_to_delay, addtimer->callback, NULL);
+    }
+}
 static void
 myDisplay_draw()
 {
@@ -1011,6 +1086,12 @@ myDisplay_draw()
                 //iVim_log("_on_disp_require_esc");
                 _on_disp_require_esc();
                 //iVim_log("/");
+                break;
+            case DISP_TASK_ADDTIMER:
+                _on_disp_addtimer__blink_timer(&task.addtimer);
+                break;
+            case DISP_TASK_ADDTIMER2:
+                _on_disp_addtimer__wait_timer(&task.addtimer);
                 break;
             default:
                 fnWarn("unknown display task");
@@ -1124,17 +1205,19 @@ return 0;
 
 void iVim_onEvent(SDL_Event evnt)
 {
-iVim_log("iVim_onEvent");
+iVim_log("( iVim_onEvent");
 // i need to be sure that this event should be processed by vim,
 // which is to say, its source window is the vim display window,
 // or the specific adjusted area within the window.
 myDisplay_on_event(evnt);
-iVim_log("/");
+iVim_log(")");
 }
 
 const SDL_Surface* iVim_getDisplaySurface()
 {
+iVim_log("( iVim_getDisplaySurface");
 return gDisplayTargetCur_surf;
+iVim_log(")");
 }
 
 void iVim_getDisplaySize(int* pw, int* ph)
@@ -1156,7 +1239,7 @@ return 0;
 
 int iVim_flush()
 {
-iVim_log("iVim_flush");
+iVim_log("( iVim_flush");
 int dirty=display_has_task();
 //iVim_log("iVim_flush_myDisplay");
 myDisplay_draw();
@@ -1169,7 +1252,7 @@ if (s_info_shown)
     myInfo_present();
 //iVim_log("/");
 
-iVim_log("/");
+iVim_log(")");
 return dirty;
 }
 
@@ -1178,7 +1261,7 @@ int iVim_running()
 return mySDLrunning;
 }
 
-void iVim_showDebugWindow(int shown)
+void iVim_showDebugWindow(bool shown)
 {
 if (shown)
     SDL_ShowWindow(gInfo);
@@ -1199,7 +1282,32 @@ void iVim_log(const char* msg)
 if (s_logger) s_logger(msg);
 }
 
+void iVim_logf(const char* fstr, ...)
+{
+const int buf_size=256;
+static char buf[buf_size+10];
 
+va_list arg;
+va_start(arg, fstr);
+if (s_logger)
+    {
+    vsnprintf(buf, buf_size, fstr, arg);
+    s_logger(buf);
+    }
+va_end(arg);
+}
+
+static int m_milisec=0;
+
+void iVim_setTicks(int milisec)
+{
+m_milisec=milisec;
+}
+
+int display_getTicks()
+{
+return m_milisec;
+}
 
 #include "end_ns_vim.h"
 

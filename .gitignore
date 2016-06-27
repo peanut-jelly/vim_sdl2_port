@@ -223,3 +223,4 @@ gvim.exe
 libgvim.a
 *.exe
 *.exe
+pathdef.c

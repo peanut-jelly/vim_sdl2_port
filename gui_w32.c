@@ -1371,8 +1371,7 @@ gui_mch_draw_string(
         // utf-8 string is here.
         if (!is_valid_utf8((char*)text, (char*)text+len))
             Warn("not valid utf8.");
-        int u8len=utf8_distance((char*)text, (char*)text+len);
-        int na=num_ascii_chars((char*)text, (char*)text+len);
+        //int u8len=utf8_distance((char*)text, (char*)text+len);
         int ncell=mb_string2cells(text, len); // number of screen cells need
         disp_task_textout_t textout;
         display_fill_textout(&textout, 
@@ -1445,7 +1444,7 @@ gui_mch_draw_string(
             //info_push_message("ExtTextOut 2479");
             if (!is_valid_utf8((char*)text, (char*)text+len))
                 Warn("not valid utf8.");
-            int u8len=utf8_distance((char*)text, (char*)text+len);
+            //int u8len=utf8_distance((char*)text, (char*)text+len);
             int ncell=mb_string2cells(text, len);
             disp_task_textout_t textout;
             display_fill_textout(&textout, 

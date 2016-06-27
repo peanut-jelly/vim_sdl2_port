@@ -263,10 +263,13 @@ display_extract_textout(disp_task_textout_t *textout,
 extern void
 display_set_font(Uint32 which, Uint32 flags);
 
-extern int is_valid_utf8(const char* start, const char* end);
+extern bool is_valid_utf8(const char* start, const char* end);
+
 extern int utf8_distance(const char* start, const char* end);
+
+// num_utf8_chars is the same as utf8_distance.
 extern int num_utf8_chars(const char* start, const char* end);
-extern int num_ascii_chars(const char* start, const char* end);
+
 extern int utf8_ptr2char(char* ptr);
 extern int num_string_cells(char* start, char* end);
 #define myRGB(r,g,b) ((((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff))

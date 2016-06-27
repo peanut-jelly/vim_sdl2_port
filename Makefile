@@ -371,7 +371,10 @@ WINDRES_CC = $(CC)
 #>>>>> end of choices
 ###########################################################################
 
-CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall -mthreads -g #-std=c++11 
+# <2016 Jun.27> If use -O, gvim will exit with errorcode 9 without 
+# starting the window, don't know why.
+
+CFLAGS = -Iproto $(DEFINES) -pipe -w -march=$(ARCH) -Wall -mthreads #-O -std=c++11 
 
 WINDRES_FLAGS = --preprocessor="$(WINDRES_CC) -E -xc" -DRC_INVOKED
 
@@ -709,7 +712,6 @@ endif
 all: $(TARGET) $(TARGET_LIB) ## vimrun.exe xxd/xxd.exe  GvimExt/gvimext.dll
 
 $(TARGET_LIB):  $(OUTDIR) $(OBJ) 
-	rm $@
 	ar rcs $@ $(OBJ)
 
 

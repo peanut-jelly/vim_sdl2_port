@@ -251,12 +251,27 @@ display_push_task((disp_task_t*)&setfont);
 }
 
 
-int is_valid_utf8(const char* start, const char* end)
+
+
+
+
+
+/* UTF8 related part
+ * I don't want to call vim functions defined in mbyte.c, because vim core
+ * is run in a separate thread, and this may cause race problem.
+ * But the lucky thing is, many of the mbyte functions I need here is 
+ * read-only, so they are safe.
+ * However, I need to make sure a function is read-only before using it.
+ * So I will try not to call vim mbyte functions.
+ *
+ * Now the only vim mbyte function used here is `mb_string2cells`
+ */
+
+
+
+bool is_valid_utf8(const char* start, const char* end)
 {
-if (utf8::find_invalid(start, end)==end)
-    return 1;
-else
-    return 0;
+return utf8::find_invalid(start, end)==end;
 }
 
 int utf8_distance(const char* start, const char* end)
@@ -264,7 +279,7 @@ int utf8_distance(const char* start, const char* end)
 return utf8::distance(start, end);
 }
 
-int mb_string2cells(unsigned char* p, int len);
+int mb_string2cells(unsigned char* p, int len);// @ mbyte.c
 
 int num_string_cells(char* start, char* end)
 {
@@ -277,23 +292,12 @@ int num_utf8_chars(const char* start, const char* end)
 return utf8_distance(start, end);
 }
 
-int num_ascii_chars(const char* start, const char* end)
-{
-const char *ch=start;
-int n=0;
-while (ch<end)
-    {
-    if (*ch>0) n++;
-    ch++;
-    }
-return n;
-}
-
-int utf_ptr2char(unsigned char* p);
+//int utf_ptr2char(unsigned char* p); // @mbyte.c
 int utf8_ptr2char(char* ptr)
 {
 // call vim routine
-return utf_ptr2char((unsigned char*)ptr);
+//return utf_ptr2char((unsigned char*)ptr);
+return utf8::peek_next(ptr, ptr+4); // atmost 4 bytes
 }
 
 #include "end_ns_vim.h"

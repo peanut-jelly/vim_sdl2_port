@@ -8,7 +8,7 @@
 using namespace vim;
 
 
-static bool debug_mode=false;
+static bool debug_mode=true;
 
 static SDL_Window* gWindow=NULL;
 static SDL_Renderer* gWindowRenderer=NULL;

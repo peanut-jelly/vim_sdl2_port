@@ -954,22 +954,67 @@ static Uint32 m_blink_timer=0;
 static void
 _on_disp_addtimer__blink_timer(disp_task_addtimer_t* addtimer)
 {
+iVim_logf("(on_disp_addtimer_blink_timer @ %d, delay=%d, m_blink_timer=%d)", 
+        SDL_GetTicks(), addtimer->time_to_delay, m_blink_timer);
+
 int time_to_delay=addtimer->time_to_delay;
-if (time_to_delay==-1 && m_blink_timer!=0) // remove the timer if alive
+
+/* XXX A important thing is that when focus is lost, vim core thread will
+ * send two shut_down_blink_timer to DisplayEventQueue, make sure my following
+ * code can handle that.
+ */
+/* XXX A new bug found at 2016 Jun.28
+ * when vim core thread requires to remove the blink timer, 
+ * the timer is not immediately shutdown, and can still fire a new 
+ * flip_blink_state (a.k. disp_task_addtimer) event into DisplayEventQ.
+ *
+ *    flip[1]                               flip[2]                 
+ *     |                                     |                      
+ * |---------------------------------------------------------|
+ *                      |        |                                  
+ *                shutdown     start                                
+ *
+ * This is the real case, `flip[2]` appeared in the DisplayEventQueue, and
+ * the three events, `shutdown`, `start`, and `flip[2]` has to be processed
+ * in one call to `iVim_flush`.
+ * The key point is that I can't have precise timestamp on those events,
+ * because I cannot call `SDL_GetTicks` in vim core thread.
+ * The only thing reliable is the order in which those timer events appear
+ * in DisplayEventQ.
+ * So it is impossiable to determine precisely which timer event is 
+ * already dead (remember no precise timestamp available).
+ *
+ * So I need to make a compromise, which is, specific to the blink timer,
+ * if a timer is alive, then the attempt to add new timer should be ignored.
+ * This can work because blink timer events are `flipping`, instead of explicit
+ * `open/closing`. As a result, the cursor may have a very fast blink (at most
+ * once), and then the blink interval becomes normal.
+ */
+if (time_to_delay==-1) // remove the timer if alive
     {
-    SDL_RemoveTimer(m_blink_timer);
-    m_blink_timer=0;
+    if (m_blink_timer!=0)
+        {
+        SDL_RemoveTimer(m_blink_timer);
+        m_blink_timer=0;
+        }
     }
-else
+else // add a timer
     {
-    //assert(m_blink_timer==0); should not check this, because when the
-    //timer is triggered, this variable `m_blink_timer` is not cleared
-    //to zero. The callback function is in gui_w48.c
+    // The following assertion can not always hold, see the explanations
+    // above. [A new bug found at 2016 Jun.28]
+    //assert(m_blink_timer==0);
+
+    //`m_blink_timer` will be reset to zero when this timer expires, see
+    //the callback function definition in gui_w48.c
     //
     //Also note that the timer is automatically shut down because that
     //callback is designed to return zero deliberately.
 
-    m_blink_timer=SDL_AddTimer(time_to_delay, addtimer->callback, NULL);
+    if (m_blink_timer==0)
+        {
+        m_blink_timer=
+            SDL_AddTimer(time_to_delay, addtimer->callback, &m_blink_timer);
+        }
     }
 }
 
@@ -979,21 +1024,25 @@ static void
 _on_disp_addtimer__wait_timer(disp_task_addtimer_t* addtimer)
 {
 int time_to_delay=addtimer->time_to_delay;
-if (time_to_delay==-1 && m_wait_timer!=0) // remove the timer if alive
+if (time_to_delay==-1) // remove the timer if alive
     {
-    SDL_RemoveTimer(m_wait_timer);
-    m_wait_timer=0;
+    if ( m_wait_timer!=0)
+        {
+        SDL_RemoveTimer(m_wait_timer);
+        m_wait_timer=0;
+        }
     }
-else
+else // add a wait timer
     {
-    //assert(m_wait_timer==0); should not check this, because when the
-    //timer is triggered, this variable `m_wait_timer` is not cleared
-    //to zero. The callback function is in gui_w48.c
+    assert(m_wait_timer==0);
+
+    //`m_wait_timer` will be reset to zero when this timer expires, see
+    //the callback function definition in gui_w48.c
     //
     //Also note that the timer is automatically shut down because that
     //callback is designed to return zero deliberately.
-    //
-    m_wait_timer=SDL_AddTimer(time_to_delay, addtimer->callback, NULL);
+
+    m_wait_timer=SDL_AddTimer(time_to_delay, addtimer->callback, &m_wait_timer);
     }
 }
 static void

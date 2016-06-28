@@ -17,6 +17,8 @@
 #include <string.h>
 #include <stdarg.h>
 #include "adapter_sdl2.h"
+#include "iVim.h"
+
 #define Warn(msg) \
      do { \
         char _errMsg[200]; \
@@ -377,6 +379,7 @@ static long_u		blink_waittime = 700;
 static long_u		blink_ontime = 400;
 static long_u		blink_offtime = 250;
 static UINT		blink_timer = 0;
+static bool s_blink_timer_on=false;
 
     void
 gui_mch_set_blinking(long wait, long on, long off)
@@ -399,6 +402,12 @@ evnt.type=ADAPT_EVENT_BLINK;
 evnt.func=myBlinkCallback_sdl;
 evnt.user_data0 = evnt.user_data1 = 0;
 adapter_push_event(evnt);
+
+int* p=(int*)ud;
+// ud is the address of the timer handle in sdl2_misc.c
+if (p!=NULL)
+    *p=0;
+
 return 0; // stop current timer.
 }
 
@@ -411,9 +420,15 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
 
     if (blink_state == BLINK_ON)
         {
+        iVim_logf("(blink timer on => off @ %d)", display_getTicks());
+
         gui_undraw_cursor();
         blink_state = BLINK_OFF;
         //blink_timer = SDL_AddTimer(blink_offtime, _OnBlinkTimer_sdl, 0);
+
+        assert(s_blink_timer_on==true);
+        s_blink_timer_on=false;
+        
         disp_task_addtimer_t addtimer=
             {
             .type=DISP_TASK_ADDTIMER,
@@ -425,9 +440,15 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
         }
     else
         {
+        iVim_logf("(blink timer off => on @ %d)", display_getTicks());
+
         gui_update_cursor(TRUE, FALSE);
         blink_state = BLINK_ON;
         //blink_timer = SDL_AddTimer(blink_ontime, _OnBlinkTimer_sdl, 0);
+
+        assert(s_blink_timer_on==false);
+        s_blink_timer_on=true;
+
         disp_task_addtimer_t addtimer=
             {
             .type=DISP_TASK_ADDTIMER,
@@ -443,6 +464,10 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
     static void
 gui_sdl_rm_blink_timer(void)
 {
+
+// maybe called when blink timer is off.
+if (s_blink_timer_on)
+    s_blink_timer_on=false;
 /*
 if (blink_timer!=0)
     {
@@ -451,6 +476,8 @@ if (blink_timer!=0)
     blink_timer=0;
     }
     */
+
+iVim_logf("(shutdown blink timer @ %d)", display_getTicks());
 
 disp_task_addtimer_t addtimer=
     {
@@ -484,6 +511,12 @@ gui_mch_start_blink(void)
     if (blink_waittime && blink_ontime && blink_offtime && gui.in_focus)
     {
     //blink_timer=SDL_AddTimer(blink_waittime, _OnBlinkTimer_sdl, 0);
+
+    assert(s_blink_timer_on==false);
+    s_blink_timer_on=true;
+
+    iVim_logf("(start blink timer @ %d)", display_getTicks());
+
     disp_task_addtimer_t addtimer=
         {
         .type=DISP_TASK_ADDTIMER,
@@ -513,7 +546,13 @@ evnt.type=ADAPT_EVENT_TIMER;
 evnt.func=myTimerCallback;
 evnt.user_data0 = evnt.user_data1 = 0;
 adapter_push_event(evnt);
-return 0;
+
+int* p=(int*)ud;
+// ud is the address of the timer handle in sdl2_misc.c
+if (p!=NULL)
+    *p=0;
+
+return 0; // tell sdl to automatically remove this timer.
 }
 
 /* original requirements are: */
@@ -1532,7 +1571,9 @@ gui_mch_update(void)
     int
 gui_mch_wait_for_chars(int wtime)
 {
-    MSG		msg;
+iVim_logf("(gui_mch_wait_for_chars @ %d)", display_getTicks());
+
+    //MSG		msg;
     int		focus;
 
     s_timed_out = FALSE;
@@ -1562,11 +1603,18 @@ gui_mch_wait_for_chars(int wtime)
 	    /* Stop or start blinking when focus changes */
 	    if (gui.in_focus != focus)
 	    {
+
 	        if (gui.in_focus)
-	    	gui_mch_start_blink();
+                    {
+                    //iVim_logf("(mch_wait_char focus changed out=>in %d)", display_getTicks());
+                    gui_mch_start_blink();
+                    }
 	        else
-	    	gui_mch_stop_blink();
-	        focus = gui.in_focus;
+                    {
+                    //iVim_logf("(mch_wait_char focus changed in=>out %d)", display_getTicks());
+                    gui_mch_stop_blink();
+                    }
+                focus = gui.in_focus;
 	    }
 
 	    if (s_need_activate)
@@ -1616,6 +1664,7 @@ gui_mch_wait_for_chars(int wtime)
     }
     allow_scrollbar = FALSE;
     return FAIL;
+
 }
 
 /*

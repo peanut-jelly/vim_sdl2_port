@@ -950,15 +950,10 @@ send_esc_to_adapter();
 }
 
 static Uint32 m_blink_timer=0;
+static int m_blink_timer_state = disp_task_blinktimer_t::BLINK_OFF;
 
-static void
-_on_disp_addtimer__blink_timer(disp_task_addtimer_t* addtimer)
-{
-iVim_logf("(on_disp_addtimer_blink_timer @ %d, delay=%d, m_blink_timer=%d)", 
-        SDL_GetTicks(), addtimer->time_to_delay, m_blink_timer);
 
-int time_to_delay=addtimer->time_to_delay;
-
+/* Things about blink timer */
 /* XXX A important thing is that when focus is lost, vim core thread will
  * send two shut_down_blink_timer to DisplayEventQueue, make sure my following
  * code can handle that.
@@ -984,55 +979,79 @@ int time_to_delay=addtimer->time_to_delay;
  * So it is impossiable to determine precisely which timer event is 
  * already dead (remember no precise timestamp available).
  *
- * So I need to make a compromise, which is, specific to the blink timer,
- * if a timer is alive, then the attempt to add new timer should be ignored.
- * This can work because blink timer events are `flipping`, instead of explicit
- * `open/closing`. As a result, the cursor may have a very fast blink (at most
- * once), and then the blink interval becomes normal.
+ * So I made a FSM to ignore pending blink timer flip requests, and the most
+ * important thing, a shutdown request can really stop the blink timer, until
+ * the next start request comes.
+ *
  */
-if (time_to_delay==-1) // remove the timer if alive
+static void
+_on_disp_blink_timer(disp_task_blinktimer_t* blinktimer)
+{
+iVim_logf("(on_disp_addtimer_blink_timer @ %d, delay=%d, m_blink_timer=%d)", 
+        SDL_GetTicks(), blinktimer->time_to_delay, m_blink_timer);
+
+int action = blinktimer->timer_action;
+int time_to_delay=blinktimer->time_to_delay;
+
+// check if expired, don't want to put this into timer callback.
+if (m_blink_timer_state== disp_task_blinktimer_t::BLINK_ON_DELAY
+        && m_blink_timer==0) // expired
     {
-    if (m_blink_timer!=0)
+    m_blink_timer_state =  disp_task_blinktimer_t::BLINK_ON_EXPIRED;
+    }
+
+// real FSM goes here.
+// Actions not checked in each state are simply ignored.
+if (m_blink_timer_state== disp_task_blinktimer_t::BLINK_OFF)
+    {
+    // this state only accept START
+    if (action== disp_task_blinktimer_t::START)
         {
-        SDL_RemoveTimer(m_blink_timer);
-        m_blink_timer=0;
+        assert(m_blink_timer==0);
+        m_blink_timer=
+            SDL_AddTimer(time_to_delay, blinktimer->callback, &m_blink_timer);
+        m_blink_timer_state=disp_task_blinktimer_t::BLINK_ON_DELAY;
         }
     }
-else // add a timer
+else if (m_blink_timer_state== disp_task_blinktimer_t::BLINK_ON_DELAY)
     {
-    // The following assertion can not always hold, see the explanations
-    // above. [A new bug found at 2016 Jun.28]
-    //assert(m_blink_timer==0);
+    // this state only accepts SHUTDOWN, and the implicit `expire`.
+    if (action== disp_task_blinktimer_t::SHUTDOWN)
+        {
+        assert(m_blink_timer!=0);
+        SDL_RemoveTimer(m_blink_timer);
+        m_blink_timer=0;
+        m_blink_timer_state=disp_task_blinktimer_t::BLINK_OFF;
+        }
+    }
+else if (m_blink_timer_state== disp_task_blinktimer_t::BLINK_ON_EXPIRED)
+    {
+    // this state accepts FLIP, SHUTDOWN
+    assert(m_blink_timer==0);
 
-    //`m_blink_timer` will be reset to zero when this timer expires, see
-    //the callback function definition in gui_w48.c
-    //
-    //Also note that the timer is automatically shut down because that
-    //callback is designed to return zero deliberately.
-
-    if (m_blink_timer==0)
+    if (action== disp_task_blinktimer_t::SHUTDOWN)
+        {
+        m_blink_timer_state=disp_task_blinktimer_t::BLINK_OFF;
+        }
+    else if (action== disp_task_blinktimer_t::FLIP)
         {
         m_blink_timer=
-            SDL_AddTimer(time_to_delay, addtimer->callback, &m_blink_timer);
+            SDL_AddTimer(time_to_delay, blinktimer->callback, &m_blink_timer);
+        m_blink_timer_state=disp_task_blinktimer_t::BLINK_ON_DELAY;
         }
     }
 }
 
+
+        
+
 static Uint32 m_wait_timer=0;
 
 static void
-_on_disp_addtimer__wait_timer(disp_task_addtimer_t* addtimer)
+_on_disp_wait_timer(disp_task_waittimer_t* waittimer)
 {
-int time_to_delay=addtimer->time_to_delay;
-if (time_to_delay==-1) // remove the timer if alive
-    {
-    if ( m_wait_timer!=0)
-        {
-        SDL_RemoveTimer(m_wait_timer);
-        m_wait_timer=0;
-        }
-    }
-else // add a wait timer
+int action = waittimer->timer_action;
+if (action==disp_task_waittimer_t::START) // start wait timer
     {
     assert(m_wait_timer==0);
 
@@ -1042,9 +1061,23 @@ else // add a wait timer
     //Also note that the timer is automatically shut down because that
     //callback is designed to return zero deliberately.
 
-    m_wait_timer=SDL_AddTimer(time_to_delay, addtimer->callback, &m_wait_timer);
+    int time_to_delay=waittimer->time_to_delay;
+    assert(time_to_delay>0);
+    m_wait_timer=SDL_AddTimer(time_to_delay, waittimer->callback, &m_wait_timer);
+    }
+else // shutdown.
+    {
+    if ( m_wait_timer!=0)
+        {
+        SDL_RemoveTimer(m_wait_timer);
+        m_wait_timer=0;
+        }
+    //else m_wait_timer==0, which means that the internal timer has 
+    //already expired.
     }
 }
+
+
 static void
 myDisplay_draw()
 {
@@ -1136,11 +1169,11 @@ myDisplay_draw()
                 _on_disp_require_esc();
                 //iVim_log("/");
                 break;
-            case DISP_TASK_ADDTIMER:
-                _on_disp_addtimer__blink_timer(&task.addtimer);
+            case DISP_TASK_BLINKTIMER:
+                _on_disp_blink_timer(&task.blinktimer);
                 break;
-            case DISP_TASK_ADDTIMER2:
-                _on_disp_addtimer__wait_timer(&task.addtimer);
+            case DISP_TASK_WAITTIMER:
+                _on_disp_wait_timer(&task.waittimer);
                 break;
             default:
                 fnWarn("unknown display task");

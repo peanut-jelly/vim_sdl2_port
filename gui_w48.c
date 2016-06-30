@@ -429,14 +429,15 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
         assert(s_blink_timer_on==true);
         s_blink_timer_on=false;
         
-        disp_task_addtimer_t addtimer=
+        disp_task_blinktimer_t blinktimer=
             {
-            .type=DISP_TASK_ADDTIMER,
+            .type=DISP_TASK_BLINKTIMER,
+            .timer_action=disp_task_blinktimer_t::FLIP,
             .time_to_delay=blink_offtime,
-            .ud=NULL,
+            //.ud=NULL,
             .callback=_OnBlinkTimer_sdl
             };
-        display_push_task((disp_task_t*)&addtimer);
+        display_push_task((disp_task_t*)&blinktimer);
         }
     else
         {
@@ -449,14 +450,15 @@ myBlinkCallback_sdl(int tt, void* ud0, void* ud1)
         assert(s_blink_timer_on==false);
         s_blink_timer_on=true;
 
-        disp_task_addtimer_t addtimer=
+        disp_task_blinktimer_t blinktimer=
             {
-            .type=DISP_TASK_ADDTIMER,
+            .type=DISP_TASK_BLINKTIMER,
+            .timer_action=disp_task_blinktimer_t::FLIP,
             .time_to_delay=blink_ontime,
-            .ud=NULL,
+            //.ud=NULL,
             .callback=_OnBlinkTimer_sdl
             };
-        display_push_task((disp_task_t*)&addtimer);
+        display_push_task((disp_task_t*)&blinktimer);
         }
 }
 
@@ -479,14 +481,15 @@ if (blink_timer!=0)
 
 iVim_logf("(shutdown blink timer @ %d)", display_getTicks());
 
-disp_task_addtimer_t addtimer=
+disp_task_blinktimer_t blinktimer=
     {
-    .type=DISP_TASK_ADDTIMER, // change blink timer
-    .time_to_delay=-1, // set to -1 to remove
-    .ud=NULL,
+    .type=DISP_TASK_BLINKTIMER, // change blink timer
+    .timer_action=disp_task_blinktimer_t::SHUTDOWN,
+    .time_to_delay=-1, // this value is ignored for SHUTDOWN action.
+    //.ud=NULL,
     .callback=NULL
     };
-display_push_task((disp_task_t*)&addtimer);
+display_push_task((disp_task_t*)&blinktimer);
 }
 
 /*
@@ -517,14 +520,15 @@ gui_mch_start_blink(void)
 
     iVim_logf("(start blink timer @ %d)", display_getTicks());
 
-    disp_task_addtimer_t addtimer=
+    disp_task_blinktimer_t blinktimer=
         {
-        .type=DISP_TASK_ADDTIMER,
+        .type=DISP_TASK_BLINKTIMER,
+        .timer_action=disp_task_blinktimer_t::START,
         .time_to_delay=blink_waittime,
-        .ud=NULL,
+        //.ud=NULL,
         .callback=_OnBlinkTimer_sdl
         };
-    display_push_task((disp_task_t*)&addtimer);
+    display_push_task((disp_task_t*)&blinktimer);
 
     blink_state=BLINK_ON;
     gui_update_cursor(TRUE,FALSE);
@@ -1584,14 +1588,15 @@ iVim_logf("(gui_mch_wait_for_chars @ %d)", display_getTicks());
 	if (s_busy_processing)
 	    return FAIL;
 	//s_wait_timer = SDL_AddTimer(wtime, _OnTimer_sdl, 0);
-        disp_task_addtimer_t addtimer=
+        disp_task_waittimer_t waittimer=
             {
-            .type=DISP_TASK_ADDTIMER2,
+            .type=DISP_TASK_WAITTIMER,
+            .timer_action=disp_task_waittimer_t::START,
             .time_to_delay=wtime,
-            .ud=NULL,
+            //.ud=NULL,
             .callback=_OnTimer_sdl
             };
-        display_push_task((disp_task_t*)&addtimer);
+        display_push_task((disp_task_t*)&waittimer);
     }
 
     allow_scrollbar = TRUE;
@@ -1641,14 +1646,15 @@ iVim_logf("(gui_mch_wait_for_chars @ %d)", display_getTicks());
                 {
                 //SDL_RemoveTimer(s_wait_timer);
 
-                disp_task_addtimer_t addtimer=
+                disp_task_waittimer_t waittimer=
                     {
-                    .type=DISP_TASK_ADDTIMER2, // for wait timer
+                    .type=DISP_TASK_WAITTIMER, // for wait timer
+                    .timer_action=disp_task_waittimer_t::SHUTDOWN,
                     .time_to_delay= -1, // -1 to remove
-                    .ud=NULL,
+                    //.ud=NULL,
                     .callback= NULL
                     };
-                display_push_task((disp_task_t*)&addtimer);
+                display_push_task((disp_task_t*)&waittimer);
                 s_wait_timer = 0;
                 }
             allow_scrollbar = FALSE;

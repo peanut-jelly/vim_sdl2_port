@@ -94,8 +94,8 @@ enum display_task_type
     DISP_TASK_UNDERCURL,
     DISP_TASK_FLUSH,
     DISP_TASK_REQUIREESC,
-    DISP_TASK_ADDTIMER, // for blink timer (blink_timer @ gui_w48.c)
-    DISP_TASK_ADDTIMER2 // for wait timer (s_wait_timer @ gui_w48.c)
+    DISP_TASK_BLINKTIMER, // for blink timer (blink_timer @ gui_w48.c)
+    DISP_TASK_WAITTIMER // for wait timer (s_wait_timer @ gui_w48.c)
 };
 
 typedef struct disp_task_textout_t
@@ -212,13 +212,26 @@ typedef struct disp_task_requireesc_t
     Uint32 type;
 } disp_task_requireesc_t;
 
-typedef struct disp_task_addtimer_t
+typedef struct disp_task_blinktimer_t
 {
     Uint32 type;
+    enum {SHUTDOWN, START, FLIP};
+    int timer_action; // must be one of the enum's above.
     int time_to_delay;
-    void* ud;
+    //void* ud; this value is never used, so just comment it out.
     SDL_TimerCallback callback;
-} disp_task_addtimer_t;
+    enum blink_states {BLINK_OFF, BLINK_ON_DELAY, BLINK_ON_EXPIRED};
+} disp_task_blinktimer_t;
+
+typedef struct disp_task_waittimer_t
+{
+    Uint32 type;
+    enum {SHUTDOWN, START};
+    int timer_action; // must be one of the enum's above.
+    int time_to_delay;
+    //void* ud; never used.
+    SDL_TimerCallback callback;
+} disp_task_waittimer_t;
 
 typedef union disp_task_t
 {
@@ -239,7 +252,8 @@ typedef union disp_task_t
     disp_task_undercurl_t undercurl;
     disp_task_flush_t flush;
     disp_task_requireesc_t requireesc;
-    disp_task_addtimer_t addtimer;
+    disp_task_blinktimer_t blinktimer;
+    disp_task_waittimer_t waittimer;
 } disp_task_t;
 
 extern int display_has_task();
